@@ -55,7 +55,11 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+			rotate: {
+        '30': '30deg', 
+        '-30': '-30deg', 
+      },
   	}
   },
   plugins: [require("tailwindcss-animate")],
