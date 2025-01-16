@@ -5,7 +5,7 @@ export default {
     content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
   	extend: {
@@ -55,7 +55,14 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+			fontFamily: {
+				jersey_10: 'var(--font-jersey10)',
+				ribeye: 'var(--font-ribeye)',
+				audiowide: 'var(--font-audiowide)',
+				roboto: 'var(--font-roboto-serif)',
+				hola: ['Audiowide', 'Poppins', 'sans']
+			}
   	}
   },
   plugins: [require("tailwindcss-animate")],

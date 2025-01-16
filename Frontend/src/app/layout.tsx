@@ -1,27 +1,6 @@
 import type { Metadata } from "next";
-import { Jersey_10, Ribeye, Audiowide, Roboto_Serif } from "next/font/google";
 import "./globals.css";
-
-/*
-const gameTitle = Jersey_10({
-  variable: "--font-jersey10",
-  subsets: ["latin"]
-});
-
-const titlesDay = Ribeye({
-  variable: "--font-ribeye",
-  subsets: ["latin"]
-});
-
-const titlesNight = Audiowide({
-  variable: "--font-audiowide",
-  subsets: ["latin"]
-});
-*/
-const text = Roboto_Serif({
-  variable: "--font-roboto-serif",
-  subsets: ["latin"]
-});
+import { gameTitle, text, titlesDay, titlesNight } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Cats & Dots",
@@ -36,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${text.variable} antialiased`} 
+        className={`${gameTitle.variable} ${titlesDay.variable}  ${text.variable} antialiased`} 
       >
         {children}
       </body>
