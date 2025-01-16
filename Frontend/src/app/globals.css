@@ -8,8 +8,16 @@ body {
 
 @layer base {
   :root {
-    --background: hsl(320, 100%, 95%);
+    --background: 320, 100%, 95%;
+    /*
+    --green-pink-gradient: linear-gradient(to right, hsl(340, 100%, 95%), hsl(140, 100%, 95%));
+    --azul: 240 100% 50%;
+    --red: 0 100% 50%;
+    --background: linear-gradient(to right, var(--azul), var(--red));
+    "green-pink-gradient": 'linear-gradient(to right, hsl(340, 100%, 95%), hsl(140, 100%, 95%)'
+    hsl(320, 100%, 95%);
     --gradient-background: linear-gradient(to right, rgb(255,0,255), rgb(0,255,255));
+    */
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
