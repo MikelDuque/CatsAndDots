@@ -61,7 +61,11 @@ export default {
 				audiowide: ['Audiowide', 'Poppins', 'sans'],
 				ribeye: ['Ribeye', 'Poppins', 'sans'],
 				roboto: ['var(--font-roboto-serif)', 'Vollkorn', 'sans-serif'],
-			}
+			},
+			rotate: {
+        '30': '30deg', 
+        '-30': '-30deg', 
+      },
   	}
   },
   plugins: [require("tailwindcss-animate")],
