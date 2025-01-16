@@ -56,13 +56,10 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-			fontFamily: {
-				jersey_10: 'var(--font-jersey10)',
-				ribeye: 'var(--font-ribeye)',
-				audiowide: 'var(--font-audiowide)',
-				roboto: 'var(--font-roboto-serif)',
-				hola: ['Audiowide', 'Poppins', 'sans']
-			}
+			rotate: {
+        '30': '30deg', 
+        '-30': '-30deg', 
+      },
   	}
   },
   plugins: [require("tailwindcss-animate")],
