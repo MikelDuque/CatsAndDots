@@ -5,7 +5,7 @@ export default {
     content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
   	extend: {
@@ -56,6 +56,12 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+			fontFamily: {
+				jersey_10: ['var(--font-jersey10)', 'Poppins', 'sans'],
+				audiowide: ['Audiowide', 'Poppins', 'sans'],
+				ribeye: ['Ribeye', 'Poppins', 'sans'],
+				roboto: ['var(--font-roboto-serif)', 'Vollkorn', 'sans-serif'],
+			},
 			rotate: {
         '30': '30deg', 
         '-30': '-30deg', 
