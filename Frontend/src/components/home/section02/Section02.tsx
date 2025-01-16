@@ -1,8 +1,10 @@
 import Image from "next/image";
+import Header from "../Header";
 
 function Section2() {
   return (
     <section className="h-screen flex flex-col items-center justify-center text-center bg-gradient-to-r from-purple-400 to-green-500">
+      <Header/>
 
       <h1 className="text-2xl font-bold mb-8">¿En qué consiste?</h1>
 
