@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { gameTitle, text, titlesDay, titlesNight } from "@/lib/fonts";
+import { gameTitle, text } from "@/lib/fonts";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
 export const metadata: Metadata = {
   title: "Cats & Dots",
@@ -15,12 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${gameTitle.variable} ${titlesDay.variable}  ${text.variable} antialiased`} 
+        className={`${gameTitle.variable} ${text.variable} antialiased`} 
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-
-//${gameTitle.variable} ${titlesDay.variable} ${titlesNight.variable} 

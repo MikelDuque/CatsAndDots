@@ -8,7 +8,8 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: hsl(320, 100%, 95%);
+    --gradient-background: linear-gradient(to right, rgb(255,0,255), rgb(0,255,255));
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
@@ -72,10 +73,12 @@ body {
 }
 
 @layer utilities {
-  .title {
-    @apply font-normal text-xl text-center font-hola;
+  .title-day {
+    @apply font-normal text-xl text-center font-ribeye;
   }
-  
+  .title-night {
+    @apply font-normal text-xl text-center font-audiowide;
+  }
   .text-body {
     @apply font-normal text-base text-justify;
   }

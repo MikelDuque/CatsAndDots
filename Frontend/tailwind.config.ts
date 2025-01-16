@@ -10,7 +10,7 @@ export default {
   theme: {
   	extend: {
   		colors: {
-  			background: 'hsl(var(--background))',
+  			background: 'var(--background)',
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
@@ -56,13 +56,12 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-			fontFamily: {
-				jersey_10: 'var(--font-jersey10)',
-				ribeye: 'var(--font-ribeye)',
-				audiowide: 'var(--font-audiowide)',
-				roboto: 'var(--font-roboto-serif)',
-				hola: ['Audiowide', 'Poppins', 'sans']
-			}
+		fontFamily: {
+			jersey_10: ['var(--font-jersey10)', 'Poppins', 'sans'],
+			audiowide: ['Audiowide', 'Poppins', 'sans'],
+			ribeye: ['Ribeye', 'Poppins', 'sans'],
+			roboto: ['var(--font-roboto-serif)', 'Vollkorn', 'sans-serif'],
+		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
