@@ -2,20 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: linear-gradient(90deg, #D5FFE2, #FFD5F2);
+    /*
+    linear-gradient(90deg, #ffa5d0, #a6ffa7);
+    --green-pink-gradient: linear-gradient(to right, hsl(340, 100%, 95%), hsl(140, 100%, 95%));
+    --azul: 240 100% 50%;
+    --red: 0 100% 50%;
+    --background: linear-gradient(to right, var(--azul), var(--red));
+    "green-pink-gradient": 'linear-gradient(to right, hsl(340, 100%, 95%), hsl(140, 100%, 95%)'
+    hsl(320, 100%, 95%);
+    --gradient-background: linear-gradient(to right, rgb(255,0,255), rgb(0,255,255));
+    */
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 265 50% 25%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
@@ -35,13 +42,13 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 275 100% 5%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
+    --primary: 50 100% 85%;
     --primary-foreground: 0 0% 9%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -62,11 +69,40 @@ body {
   }
 }
 
+body {
+  overflow: hidden;
+  font-family: system-ui, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: var(--background);
+}
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .text-body {
+    @apply text-base text-justify font-roboto;
+  }
+
+  .title {
+    @apply text-2xl text-center;
+  }
+}
+
+@layer utilities {
+  .vh-solution {
+    height: 100vh;
+    height: -webkit-fill-available;
+    height: fill-available;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
