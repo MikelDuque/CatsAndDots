@@ -2,12 +2,12 @@ import Image from "next/image"
 import { Button } from "../ui/button";
 function Header() {
   return(
-    <header className="flex justify-between w-4/5  fixed top-0  ">
+    <header className="flex justify-between items-center px-4 py-2 w-3/4  ">
       <Image 
-      src={"/logo.png"} 
+      src={"/gato_naranja.png"} 
       alt={"logo"}
-      height={70}
-      width={70}
+      height={50}
+      width={50}
       />
       <Button>Play</Button>
     </header>

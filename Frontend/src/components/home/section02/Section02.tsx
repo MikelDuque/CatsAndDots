@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Header from "../Header";
 
-function Section2() {
+function Section02() {
   return (
-    <section className="h-screen flex flex-col items-center justify-center text-center">
+    <section className="h-screen flex flex-col items-center ">
       <Header/>
 
-      <h1 className=" mb-7 title">¿En qué consiste?</h1>
+      <h1 className=" mb-7 mt-20 title">¿En qué consiste?</h1>
 
       <div className="flex items-center justify-center space-x-8">
         <Image
@@ -37,4 +37,4 @@ function Section2() {
   );
 }
 
-export default Section2;
+export default Section02;

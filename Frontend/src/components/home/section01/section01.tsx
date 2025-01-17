@@ -4,7 +4,7 @@ import ThemeSwitcher from "@/components/theme/theme-switcher";
 
 export default function Section01() {
   return(
-    <section>
+    <section className="h-screen">
       <ThemeSwitcher/>
       <p className="hola">holaaaaa</p>
       <h1 className="title-day">Titulo</h1>
