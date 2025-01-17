@@ -6,16 +6,6 @@
 @layer base {
   :root {
     --background: linear-gradient(90deg, #D5FFE2, #FFD5F2);
-    /*
-    linear-gradient(90deg, #ffa5d0, #a6ffa7);
-    --green-pink-gradient: linear-gradient(to right, hsl(340, 100%, 95%), hsl(140, 100%, 95%));
-    --azul: 240 100% 50%;
-    --red: 0 100% 50%;
-    --background: linear-gradient(to right, var(--azul), var(--red));
-    "green-pink-gradient": 'linear-gradient(to right, hsl(340, 100%, 95%), hsl(140, 100%, 95%)'
-    hsl(320, 100%, 95%);
-    --gradient-background: linear-gradient(to right, rgb(255,0,255), rgb(0,255,255));
-    */
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
@@ -42,7 +32,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 275 100% 5%;
+    --background: linear-gradient(90deg, #00270c, #27001B);
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -72,7 +62,6 @@
 body {
   overflow: hidden;
   font-family: system-ui, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background: var(--background);
 }
 
 @layer base {
@@ -88,7 +77,6 @@ body {
   .text-body {
     @apply text-base text-justify font-roboto;
   }
-
   .title {
     @apply text-2xl text-center;
   }

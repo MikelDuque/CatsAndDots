@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
     <Header/>
-    <main className="h-screen snap-y snap-mandatory overflow-y-scroll no-scrollbar">
+    <main className="h-screen snap-y snap-mandatory overflow-y-scroll no-scrollbar duration-500">
       <Section01/>
       <Section02/>
       <Section03/>
