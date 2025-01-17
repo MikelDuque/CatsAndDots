@@ -5,7 +5,7 @@ import Title from "../utils/title";
 
 function Section02() {
   return (
-    <section className="h-screen flex flex-col gap-20 justify-center">
+    <section className="h-screen flex flex-col gap-20 justify-center snap-start">
 
       <Title moreClasses="text-6xl">¿En qué consiste?</Title>
 

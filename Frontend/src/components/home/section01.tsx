@@ -10,7 +10,7 @@ import Title from "../utils/title";
 export default function Section01() {
   const {theme} = useTheme();
   return(
-    <section className="h-screen flex flex-col gap-10 pt-20 items-center">
+    <section className="h-screen flex flex-col gap-10 pt-20 items-center snap-start">
       <figure>
         <Image src={theme === "light" ? LogoDia : LogoNoche} alt="Logo"/>
       </figure>

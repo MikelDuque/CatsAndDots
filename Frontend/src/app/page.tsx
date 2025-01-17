@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
     <Header/>
-    <main>
+    <main className="h-screen snap-y snap-mandatory overflow-y-scroll">
       <Section01/>
       <Section02/>
       <Section03/>

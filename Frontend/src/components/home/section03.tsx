@@ -3,7 +3,7 @@ import InfoCard from "./infoCard";
 
 function Section03() {
   return (
-    <section className="h-screen flex gap-20 items-center justify-center">
+    <section className="h-screen flex gap-20 items-center justify-center snap-start">
         <InfoCard title="Conecta segmentos" img={paso1}>
           Conecta las intersecciones entre dos puntos para crear una linea de tu color. Seguidamente, será el turno de tu rival, y así sucesivamente.
         </InfoCard>
