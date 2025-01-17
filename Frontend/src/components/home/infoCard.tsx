@@ -1,25 +1,23 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
+import Title from "../utils/title";
 
 interface InfoCardProps {
-  infoTitle: string;
-  path: string;
-  text: string;
-
+  children: string;
+  title: string;
+  img: StaticImageData;
 }
 
-function InfoCard({infoTitle,path,text}:InfoCardProps ) {
+function InfoCard({children, title, img}:InfoCardProps ) {
   return (
-    <section className="w-[200px] flex flex-col items-center h-3/4 justify-between">
-      <h1>{infoTitle}</h1>
+    <div className="max-w-md flex flex-col items-center gap-10">
+      <Title moreClasses="text-4xl">{title}</Title>
       <Image
-        src={path}
+        src={img}
         alt={"info image"}
-        height={400}
-        width={400}
         className="border-4 border-gray-500 rounded-lg"
       />
-      <p>{text}</p>
-    </section>
+      <p className="text-body text-lg">{children}</p>
+    </div>
   )
 }
 

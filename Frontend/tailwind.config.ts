@@ -65,7 +65,7 @@ export default {
 			rotate: {
         '30': '30deg', 
         '-30': '-30deg', 
-      },
+      }
   	}
   },
   plugins: [require("tailwindcss-animate")],

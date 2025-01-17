@@ -5,8 +5,9 @@
 
 @layer base {
   :root {
-    --background: linear-gradient(90deg, #ffa5d0, #a6ffa7);;
+    --background: linear-gradient(90deg, #D5FFE2, #FFD5F2);
     /*
+    linear-gradient(90deg, #ffa5d0, #a6ffa7);
     --green-pink-gradient: linear-gradient(to right, hsl(340, 100%, 95%), hsl(140, 100%, 95%));
     --azul: 240 100% 50%;
     --red: 0 100% 50%;
@@ -69,7 +70,7 @@
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   background: var(--background);
 }
 
@@ -82,14 +83,16 @@ body {
   }
 }
 
-@layer utilities {
-  .title-day {
-    @apply font-normal text-xl text-center font-ribeye;
-  }
-  .title-night {
-    @apply font-normal text-xl text-center font-audiowide;
-  }
+@layer components {
   .text-body {
-    @apply font-normal text-base text-justify;
+    @apply text-base text-justify font-roboto;
   }
+
+  .title {
+    @apply text-2xl text-center;
+  }
+}
+
+@layer utilities {
+  
 }
