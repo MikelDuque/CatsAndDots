@@ -14,15 +14,14 @@ interface InfoCardProps {
 function InfoCard({children, title, img}:InfoCardProps ) {
   const {theme} = useTheme();
   return (
-    
-    <div className="max-w-xs flex flex-col items-center gap-10">
+    <div className="max-w-xs flex flex-col items-center gap-5">
       <Title>{title}</Title>
       <Image
         src={img}
         alt={"info image"}
         className={theme === "light" ? "border-4 border-[#7741bf] rounded-lg" :"border-4 border-[#fff3b0] rounded-lg"}
       />
-      <p className="text-body text-lg">{children}</p>
+      <p className="text-body text-md">{children}</p>
     </div>
   )
 }

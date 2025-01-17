@@ -9,7 +9,7 @@ export default function ThemeSwitcher() {
   const { setTheme } = useTheme()
 
   return (
-    <Button variant="outline" size="icon" onClick={() => setTheme(
+    <Button variant="default" size="icon" onClick={() => setTheme(
         (prevTheme) => prevTheme === "light" ? "dark" : "light"
     )} className="fixed bottom-5 left-5"
     >

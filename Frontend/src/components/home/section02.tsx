@@ -20,7 +20,7 @@ function Section02() {
 
         <p className="max-w-2xl text-body text-2xl">
           Puntos y Cajas es un juego de estrategia en el que los jugadores toman turnos para dibujar líneas 
-          entre puntos en una cuadrícula.El objetivo principal es completar más cuadrados que el oponente 
+          entre puntos en una cuadrícula. El objetivo principal es completar más cuadrados que el oponente 
           al cerrar los lados de los cuadrados uno por uno. Cada vez que un jugador completa un cuadrado, 
           lo reclama como suyo y obtiene un turno adicional. Al final del juego, gana el jugador que haya reclamado 
           más cuadrados.

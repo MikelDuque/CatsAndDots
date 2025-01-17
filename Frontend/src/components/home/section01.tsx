@@ -10,12 +10,12 @@ import Title from "../utils/title";
 export default function Section01() {
   const {theme} = useTheme();
   return(
-    <section className="h-screen flex flex-col gap-10 pt-20 items-center snap-start">
-      <figure>
+    <section className="h-screen flex flex-col gap-10 justify-center items-center snap-start">
+      <figure className="w-2/3 flex justify-center">
         <Image src={theme === "light" ? LogoDia : LogoNoche} alt="Logo"/>
       </figure>
       <figure className="w-full h-2/5 flex items-center justify-center bg-cover bg-center bg-fixed bg-[url('@/../public/Home/gato-big-bg.jpg')]  bg-black/50 bg-blend-overlay">
-        <Button className="p-10">
+        <Button className="p-10 shadow-md shadow-slate-700">
           <Title moreClasses="text-4xl">Play now!</Title>
         </Button>
       </figure>
