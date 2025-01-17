@@ -70,6 +70,7 @@
 }
 
 body {
+  overflow: hidden;
   font-family: system-ui, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   background: var(--background);
 }
@@ -94,5 +95,14 @@ body {
 }
 
 @layer utilities {
-  
+  .vh-solution {
+    height: 100vh;
+    height: -webkit-fill-available;
+    height: fill-available;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
