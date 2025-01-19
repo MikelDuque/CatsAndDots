@@ -1,6 +1,8 @@
 
 using System.Text;
 using System.Text.Json.Serialization;
+using Backend.Models.Database;
+using Backend.Models.Database.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -64,7 +66,12 @@ public class Program
             });
         });
 
+
+        builder.Services.AddScoped<DataContext>();
+        builder.Services.AddScoped<UnitOfWork>();
+
         //Repositorios
+        builder.Services.AddScoped<UserRepository>();
 
 
         //Servicios
@@ -75,7 +82,13 @@ public class Program
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
+        SeedDatabase(app.Services);
+/*
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
+        });
+*/
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -88,17 +101,10 @@ public class Program
 
         app.MapControllers();
 
-        await SeedDatabase(app.Services);
-
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
-        });
-
         app.Run();
     }
 
-    static async Task SeedDatabase(IServiceProvider serviceProvider)
+    private static void SeedDatabase(IServiceProvider serviceProvider)
     {
         using IServiceScope scope = serviceProvider.CreateScope();
         using DataContext dbContext = scope.ServiceProvider.GetService<DataContext>();
@@ -106,7 +112,7 @@ public class Program
         if (dbContext.Database.EnsureCreated())
         {
             Seeder seeder = new Seeder(dbContext);
-            await seeder.SeedAsync();
+            seeder.SeedAll();
         }
     }
 }
