@@ -97,4 +97,16 @@ public class Program
 
         app.Run();
     }
+
+    static async Task SeedDatabase(IServiceProvider serviceProvider)
+    {
+        using IServiceScope scope = serviceProvider.CreateScope();
+        using DataContext dbContext = scope.ServiceProvider.GetService<DataContext>();
+
+        if (dbContext.Database.EnsureCreated())
+        {
+            Seeder seeder = new Seeder(dbContext);
+            await seeder.SeedAsync();
+        }
+    }
 }
