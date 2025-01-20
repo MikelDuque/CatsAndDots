@@ -10,9 +10,9 @@ public class UserRepository : Repository<User>
 
   }
 
-  public async Task<User> GetByLoginData(string identifier, string password) {
+  public async Task<User> GetByMailOrUsername(string identifier) {
     return await GetQueryable()
-    .Where(user => (user.Username == identifier || user.Mail == identifier) && user.Password == password )
+    .Where(user => user.Username == identifier || user.Mail == identifier)
     .FirstOrDefaultAsync();
   }
 }

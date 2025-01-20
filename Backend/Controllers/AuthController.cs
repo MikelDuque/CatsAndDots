@@ -13,13 +13,11 @@ namespace Backend.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly TokenValidationParameters _tokenParameters;
-    private readonly UserService _userService;
     private readonly AuthService _authService;
 
-    public AuthController(IOptionsMonitor<JwtBearerOptions> jwtOptions, UserService userService, AuthService authService)
+    public AuthController(IOptionsMonitor<JwtBearerOptions> jwtOptions, AuthService authService)
     {
         _tokenParameters = jwtOptions.Get(JwtBearerDefaults.AuthenticationScheme).TokenValidationParameters;
-        _userService = userService;
         _authService = authService;
     }
 
@@ -30,12 +28,12 @@ public class AuthController : ControllerBase
 
         try
         {
-            string stringToken = await _authService.Login(model);
+            string stringToken = await _authService.ProcessWithLogin(model);
             return Ok(new LoginResult { AccessToken = stringToken });
         }
-        catch (UnauthorizedAccessException)
+        catch (UnauthorizedAccessException errorAuth)
         {
-            return Unauthorized(new {Message = "El mail, nombre de usuario o contraseña introducidos son incorrectos"});
+            return Unauthorized(new {Message = errorAuth.ToString()});
         }
     }
 
@@ -44,12 +42,15 @@ public class AuthController : ControllerBase
     {
         if (userRequest == null) return BadRequest(new {Message= "Los datos de usuario son inválidos."});
 
-        if (await _userService.GetByMailOrUsername(userRequest.Mail) != null)
+        try
         {
-            return BadRequest(new {message = "El usuario ya existe"});
+            string stringToken = await _authService.Register(userRequest);
+            return Ok(new LoginResult { AccessToken = stringToken });
         }
-
-        string stringToken = await _authService.Register(userRequest);
-        return Ok(new LoginResult { AccessToken = stringToken });
+        catch (Exception error)
+        {
+            return BadRequest(new {Message = error.ToString()});
+        }
+        
     }
 }
