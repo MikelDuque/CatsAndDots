@@ -14,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
+    <html suppressHydrationWarning lang="en">
+      <body suppressHydrationWarning
         className={`${gameTitle.variable} ${text.variable} antialiased`} 
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

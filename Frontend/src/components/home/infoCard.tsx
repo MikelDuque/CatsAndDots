@@ -6,7 +6,7 @@ import Title from "../utils/title";
 
 
 interface InfoCardProps {
-  children: string;
+  children: React.ReactNode;
   title: string;
   img: StaticImageData;
 }

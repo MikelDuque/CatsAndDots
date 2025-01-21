@@ -2,7 +2,12 @@
 
 import { useTheme } from "next-themes"
 
-export default function Title({children, moreClasses}) {
+interface TitleProps {
+  children: React.ReactNode;
+  moreClasses?: string;
+}
+
+export default function Title({children, moreClasses}: TitleProps) {
   const { theme } = useTheme();
   
   return (
