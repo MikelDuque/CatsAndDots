@@ -20,8 +20,6 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         
         //SERVICES
-        builder.Services.Configure<Settings>(builder.Configuration.GetSection(Settings.SECTION_NAME));
-
         builder.Services.AddControllers();
         builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
         builder.Services.AddControllers().AddJsonOptions(options => {options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;});
@@ -43,9 +41,7 @@ public class Program
         });
         builder.Services.AddAuthentication().AddJwtBearer(options =>
         {
-            //Accedemos a la clase settings donde esta el get de JwtKey (Donde se encuentra nuestra clave)
-            Settings settings = builder.Configuration.GetSection(Settings.SECTION_NAME).Get<Settings>()!;
-            //Dicha clave se guarda en la variable key
+            
             string key = Environment.GetEnvironmentVariable("JWT_KEY");
 
             options.TokenValidationParameters = new TokenValidationParameters
@@ -82,24 +78,22 @@ public class Program
 
         var app = builder.Build();
 
-        SeedDatabase(app.Services);
-/*
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
-        });
-*/
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.MapControllers();
+
+        app.UseStaticFiles();
+
+        SeedDatabase(app.Services);
+
         app.UseCors();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
-
-        app.MapControllers();
 
         app.Run();
     }
