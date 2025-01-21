@@ -13,7 +13,7 @@ export default function Section01() {
   const {theme} = useTheme();
 
   return(
-    <section className="h-screen flex flex-col gap-10 justify-center items-center snap-start">
+    <section id="section01" className="h-screen flex flex-col gap-10 justify-center items-center snap-start">
       <figure className="w-2/3 flex justify-center">
         <Image src={theme === "light" ? LogoDia : LogoNoche} alt="Logo"/>
       </figure>
