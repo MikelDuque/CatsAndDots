@@ -1,8 +1,8 @@
-export default function Login() {
+export default function Menu() {
   return (
     <>
     <main>
-      Hola login
+      Hola menu
     </main>
     </>
   );
