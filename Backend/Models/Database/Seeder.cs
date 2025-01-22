@@ -27,7 +27,7 @@ public class Seeder
       {
         Username = "catministrator",
         Mail = "admin@catsanddots.es",
-        Password = "", //AQUI HAY QUE HASHEAR
+        Password = "1234", //AQUI HAY QUE HASHEAR
         Avatar = "",
         Role = "admin",
         State = UserState.Offline
