@@ -78,7 +78,7 @@ body {
     @apply text-base text-justify font-roboto;
   }
   .title {
-    @apply text-2xl text-center;
+    @apply text-2xl text-center font-light;
   }
 }
 
