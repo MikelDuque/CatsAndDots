@@ -10,9 +10,10 @@ import {
   FormMessage,
   FormField,
 } from "@/components/ui/form";
-import fetchEndpoint from "@/features/auth/queries/fetch-endpoint";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import Title from "../utils/title";
+import { LoginAction } from "@/features/auth/actions/server-actions";
+import { useActionState } from "react";
 
 interface LoginFormInputs {
   identifier: string;
@@ -20,6 +21,11 @@ interface LoginFormInputs {
 }
 
 export default function LoginForm() {
+  const [loginActionState, loginAction] = useActionState(LoginAction, {
+    message: "",
+    fieldErrors: {},
+  });
+
   const form = useForm<LoginFormInputs>({
     defaultValues: {
       identifier: "",
@@ -28,21 +34,7 @@ export default function LoginForm() {
     mode: "onSubmit",
   });
 
-  const onSubmit = async (data: LoginFormInputs) => {
-    console.log("Datos del formulario:", data);
-    try {
-      const response = await fetchEndpoint({
-        url: "https://localhost:7252/api/Auth/Login",
-        type: "POST",
-        token: null,
-        params: data,
-      });
-
-      console.log("Inicio de sesión exitoso:", response);
-    } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-    }
-  };
+ 
 
   return (
     <Card className="w-1/4 h-fit">
@@ -53,7 +45,7 @@ export default function LoginForm() {
 
       <CardContent>
         <Form {...form}>
-          <form className="flex flex-col gap-5 text-body text-left" onSubmit={form.handleSubmit(onSubmit)}>
+          <form className="flex flex-col gap-5 text-body text-left" action={loginAction}>
 
             <FormField
               name="identifier"
