@@ -28,7 +28,7 @@ public class AuthController : ControllerBase
 
         try
         {
-            string stringToken = await _authService.ProcessWithLogin(model);
+            string stringToken = await _authService.ProceedWithLogin(model);
             return Ok(new LoginResult { AccessToken = stringToken });
         }
         catch (UnauthorizedAccessException errorAuth)
@@ -38,7 +38,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Register")]
-    public async Task<ActionResult> Register([FromBody] RegisterRequest userRequest)
+    public async Task<ActionResult> Register([FromForm] RegisterRequest userRequest)
     {
         if (userRequest == null) return BadRequest(new {Message= "Los datos de usuario son inválidos."});
 

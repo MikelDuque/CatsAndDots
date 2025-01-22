@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
+using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Database;
 using Backend.Models.Database.Entities;
@@ -26,27 +25,27 @@ public class AuthService
 
   public async Task<string> Register(RegisterRequest userData)
   {
+    if (_unitOfWork.UserRepository.GetByMailOrUsername(userData.Mail) != null) throw new Exception("El usuario ya se encuentra registrado");
+
     User newUser = new User {
-      Username = userData.Username,
+      Username = userData.Username.ToLowerInvariant(),
       Mail = userData.Mail,
-      Password = HashPassword(userData.Password),
-      Avatar = userData.Avatar,
+      Password = HashHelper.Hash(userData.Password),
+      Avatar = await FileHelper.SaveAvatar(userData.Avatar, userData.Username),
       Role = null,
       State = UserState.Offline //Cambiar cuando hagamos lo de los sockets
     };
-
-    if (_unitOfWork.UserRepository.GetByMailOrUsername(newUser.Mail) != null) throw new Exception("El usuario ya se encuentra registrado");
 
     User registeredUser = await _unitOfWork.UserRepository.InsertAsync(newUser) ?? throw new Exception("Error al registrar el usuario");
 
     return Login(registeredUser);
   }
 
-  public async Task<string> ProcessWithLogin(LoginRequest model)
+  public async Task<string> ProceedWithLogin(LoginRequest model)
   {
     User loggedUser = await _unitOfWork.UserRepository.GetByMailOrUsername(model.Identifier) ?? throw new UnauthorizedAccessException("El usuario introducido no existe");
     
-    if (loggedUser.Password != HashPassword(model.Password)) throw new UnauthorizedAccessException("Usuario o contraseña incorrectos");
+    if (loggedUser.Password != HashHelper.Hash(model.Password)) throw new UnauthorizedAccessException("Usuario o contraseña incorrectos");
 
     return Login(loggedUser);
   }
@@ -75,13 +74,5 @@ public class AuthService
     string stringToken = tokenHandler.WriteToken(token);
 
     return stringToken;
-  }
-
-  /* OTROS MÉTODOS */
-  public static string HashPassword(string password)
-  {
-    byte[] inputBytes = Encoding.UTF8.GetBytes(password);
-    byte[] inputHash = SHA256.HashData(inputBytes);
-    return Encoding.UTF8.GetString(inputHash);
   }
 }
