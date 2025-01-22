@@ -77,8 +77,8 @@ public class AuthService
     return stringToken;
   }
 
-  /* MÉTODOS PRIVADOS */
-  private string HashPassword(string password)
+  /* OTROS MÉTODOS */
+  public static string HashPassword(string password)
   {
     byte[] inputBytes = Encoding.UTF8.GetBytes(password);
     byte[] inputHash = SHA256.HashData(inputBytes);

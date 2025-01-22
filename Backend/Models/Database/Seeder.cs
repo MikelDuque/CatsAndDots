@@ -1,5 +1,5 @@
-using System.Data;
 using Backend.Models.Database.Entities;
+using Backend.Services;
 
 namespace Backend.Models.Database;
 
@@ -27,7 +27,7 @@ public class Seeder
       {
         Username = "catministrator",
         Mail = "admin@catsanddots.es",
-        Password = "1234", //AQUI HAY QUE HASHEAR
+        Password = AuthService.HashPassword("12345"),
         Avatar = "",
         Role = "admin",
         State = UserState.Offline

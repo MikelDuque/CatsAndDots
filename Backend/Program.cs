@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Backend.Models.Database;
 using Backend.Models.Database.Repositories;
+using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -71,6 +72,7 @@ public class Program
 
 
         //Servicios
+        builder.Services.AddScoped<AuthService>();
 
 
         //Mappers
