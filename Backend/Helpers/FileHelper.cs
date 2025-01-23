@@ -16,6 +16,6 @@ public class FileHelper
       await image.CopyToAsync(stream);
     }
 
-    return "/ProfilePictures/" + image == null ? defaultImage : fileName;
+    return $"/ProfilePictures/{(image == null ? defaultImage : fileName)}";
   }
 }

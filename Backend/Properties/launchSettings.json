@@ -1,5 +1,17 @@
 {
   "profiles": {
+    "https": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_KEY": "kj453gjku_.ewh345rgf¡kuwshb455gfuswgufh567swbguf876gswedufgs<uwygfus345wg.-fug",
+        "CONNECTION_STRING": ""
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7252;http://localhost:5146"
+    },
     "http": {
       "commandName": "Project",
       "launchBrowser": true,
@@ -9,17 +21,6 @@
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5146"
-    },
-    "https": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_KEY": "kj453gjku_.ewh345rgf¡kuwshb455gfuswgufh567swbguf876gswedufgs<uwygfus345wg.-fug"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7252;http://localhost:5146"
     },
     "IIS Express": {
       "commandName": "IISExpress",

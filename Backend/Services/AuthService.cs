@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Backend.Helpers;
@@ -25,11 +26,11 @@ public class AuthService
 
   public async Task<string> Register(RegisterRequest userData)
   {
-    if (_unitOfWork.UserRepository.GetByMailOrUsername(userData.Mail) != null) throw new Exception("El usuario ya se encuentra registrado");
+    if (await _unitOfWork.UserRepository.GetByMailOrUsername(userData.Username.ToLowerInvariant()) != null) throw new Exception("El usuario ya se encuentra registrado");
 
     User newUser = new User {
       Username = userData.Username.ToLowerInvariant(),
-      Mail = userData.Mail,
+      Mail = userData.Mail.ToLowerInvariant(),
       Password = HashHelper.Hash(userData.Password),
       Avatar = await FileHelper.SaveAvatar(userData.Avatar, userData.Username),
       Role = null,
@@ -37,8 +38,9 @@ public class AuthService
     };
 
     User registeredUser = await _unitOfWork.UserRepository.InsertAsync(newUser) ?? throw new Exception("Error al registrar el usuario");
+    await _unitOfWork.SaveAsync();
 
-    return Login(registeredUser);
+        return registeredUser.ToString(); //Login(registeredUser);
   }
 
   public async Task<string> ProceedWithLogin(LoginRequest model)

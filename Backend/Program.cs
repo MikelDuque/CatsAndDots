@@ -42,12 +42,11 @@ public class Program
         });
         builder.Services.AddAuthentication().AddJwtBearer(options =>
         {
-            
+            Settings settings = builder.Configuration.GetSection(Settings.SECTION_NAME).Get<Settings>()!;
             string key = Environment.GetEnvironmentVariable("JWT_KEY");
 
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                //la unica validacion va a ser la clave
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
@@ -80,22 +79,25 @@ public class Program
 
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.MapControllers();
-
-        app.UseStaticFiles();
-
         SeedDatabase(app.Services);
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
+        });
 
         app.UseCors();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapControllers();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
 
         app.Run();
     }
