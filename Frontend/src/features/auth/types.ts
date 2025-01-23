@@ -1,5 +1,5 @@
 export type ActionState = {
-  status?: "ERROR" | "SUCCESS" | "ERROR2";
+  status?: "FORM-ERROR" | "SUCCESS" | "PROMISE-ERROR";
   message: string;
   payload?: FormData;
   fieldErrors: Record<string, string[] | undefined>;

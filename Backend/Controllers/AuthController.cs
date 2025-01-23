@@ -33,7 +33,7 @@ public class AuthController : ControllerBase
         }
         catch (UnauthorizedAccessException errorAuth)
         {
-            return Unauthorized(new {Message = errorAuth.ToString()});
+            return Unauthorized(new {Message = errorAuth.Message.ToString()});
         }
     }
 

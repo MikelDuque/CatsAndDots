@@ -13,7 +13,8 @@ import {
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import Title from "../utils/title";
 import { LoginAction } from "@/features/auth/actions/server-actions";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface LoginFormInputs {
   identifier: string;
@@ -26,6 +27,16 @@ export default function LoginForm() {
     fieldErrors: {},
   });
 
+  useEffect(() => {
+    switch (loginActionState.status) {
+      case "SUCCESS":
+        toast.success(loginActionState.message)
+        break;
+      case "PROMISE-ERROR":
+        toast.error(loginActionState.message)
+    }
+  }, [loginActionState])
+
   const form = useForm<LoginFormInputs>({
     defaultValues: {
       identifier: "",
@@ -33,8 +44,6 @@ export default function LoginForm() {
     },
     mode: "onSubmit",
   });
-
- 
 
   return (
     <Card className="w-1/4 h-fit">
@@ -61,7 +70,6 @@ export default function LoginForm() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -80,12 +88,11 @@ export default function LoginForm() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button className="w-full">
               Iniciar Sesión
             </Button>
           </form>
