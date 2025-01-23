@@ -1,8 +1,8 @@
 import { z } from "zod"
 
 const emptyMessage = "Es requerido especificar este campo";
-const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])$/);
-const usernameValidation = new RegExp(/^(?!.*?[#?!@$%^&*+-\s])$/);
+const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-_])$/);
+const usernameValidation = new RegExp(/^(?=.*?[a-z])(?!.*?[#?!@$%^&*+\s])$/);
 const maxFileSize = 5000000;
 const imageTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
@@ -10,7 +10,7 @@ export const formSchema = z.object({
   username: z.string()
     .min(1, {message: emptyMessage})
     .max(24, {message: "El nombre de usuario es demasido largo"})
-    .regex(usernameValidation),
+    .regex(usernameValidation, {message: "El nombre de usuario no puede contener mayúsculas ni ciertos símbolos especiales"}),
   email: z.string()
     .min(1, {message: emptyMessage})
     .max(50, {message: "El correo introducido es demasiado largo"})
