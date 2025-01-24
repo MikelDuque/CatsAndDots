@@ -68,6 +68,7 @@ export default {
 			rotate: {
         '30': '30deg', 
         '-30': '-30deg', 
+				'180': '180deg',
       }
   	}
   },

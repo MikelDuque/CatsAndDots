@@ -14,6 +14,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card
 import Title from "../utils/title";
 import { LoginAction } from "@/features/auth/actions/server-actions";
 import { useActionState } from "react";
+import { Input } from "../ui/input";
 
 interface LoginFormInputs {
   identifier: string;
@@ -54,10 +55,9 @@ export default function LoginForm() {
                 <FormItem>
                   <FormLabel>Nombre de Usuario o Correo Electrónico</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       type="text"
                       placeholder="Introduce tu usuario o correo"
-                      className="w-full px-4 py-2 border rounded-md"
                       {...field}
                     />
                   </FormControl>
@@ -73,10 +73,9 @@ export default function LoginForm() {
                 <FormItem>
                   <FormLabel>Contraseña</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       type="password"
                       placeholder="Introduce tu contraseña"
-                      className="w-full px-4 py-2 border rounded-md"
                       {...field}
                     />
                   </FormControl>
@@ -94,7 +93,7 @@ export default function LoginForm() {
 
       <CardFooter>
         <p className="text-body">
-          ¿Aún no tienes cuenta?
+          ¿No tienes cuenta?
           <Button variant="link" >¡Regístrate!</Button>
         </p> 
       </CardFooter>
