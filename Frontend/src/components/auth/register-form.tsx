@@ -140,7 +140,7 @@ export default function RegisterForm() {
               )}
             />
 
-            <Button type="submit" size="lg">
+            <Button type="submit" size="lg" onClick={() => console.log("VARIABLE ENTORNO", process.env.NEXT_PUBLIC_API_HTTP_URL)}>
               Regístrate
             </Button>
           </form>

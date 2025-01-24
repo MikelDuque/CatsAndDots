@@ -1,5 +1,5 @@
-export const home = "/";
+export const homePath = "/";
 
-export const loginPath = "/login";
-export const menu = "/menu";
-export const matchMaking = "/matchMaking";
+export const loginPath = `${homePath}login/`;
+export const menuPath = `${homePath}menu/`;
+export const matchMakingPath = `${homePath}match-making/`;

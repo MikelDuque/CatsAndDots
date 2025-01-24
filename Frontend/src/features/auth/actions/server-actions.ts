@@ -1,36 +1,66 @@
 "use server"
+
 import { ActionState } from "../types";
 import fetchEndpoint from "../queries/fetch-endpoint";
 import { redirect } from "next/navigation";
-import { home, menu } from "@/lib/paths";
-import { LOGIN_URL } from "@/lib/endpoints";
+import { menuPath } from "@/lib/paths";
+import { LOGIN_URL, REGISTER_URL } from "@/lib/endpoints";
 
-export async function LoginAction(_actionState: ActionState, formData: FormData): Promise<ActionState> {
-    
-  console.log("Datos del formulario:", formData);
-
-  const data = {identifier:formData.get("identifier"), password:formData.get("password")};
+export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
+  const loginRequest = {
+    identifier:formData.get("identifier"),
+    password:formData.get("password")
+  };
   
   try {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; //esto hay que invesitgarlo (rocio y mikel y las dos IAs (van a ser las protas))
     const response = await fetchEndpoint({
-      url: "https://localhost:7252/api/Auth/Login", //falla la variable de entorno (mikel sabe y la IA tambien (pero no tanto))
+      url: LOGIN_URL,
       type: "POST",
       token: null,
-      params: data,
+      params: loginRequest,
     });
-    console.log("respuesta",response)
+
   } catch (error) {
-    console.log("HOlaaaaa",error);
-    
     return {
-      status: "ERROR",
-      message: error instanceof Error ? error.message : "Algo falló inesperadamente",
+      status: "PROMISE-ERROR",
+      message: error? error.toString() : "Algo falló inesperadamente",
       payload: formData,
       fieldErrors: {},
     };
   }
-  console.log("Nos vamos");
   
-  redirect(menu);
+  redirect(menuPath);
 };
+
+export async function RegisterAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
+  const registerRequest = new FormData;
+    registerRequest.append('username', formData.get("username") as string);
+    registerRequest.append('mail', formData.get("email") as string);
+    registerRequest.append('password', formData.get("password") as string);
+    registerRequest.append('avatar', formData.get("avatar") as File);
+
+  try {
+    const response = fetchEndpoint({
+      url: REGISTER_URL,
+      type: 'POST',
+      token: null,
+      haveFile: true,
+      params: registerRequest
+    });
+
+  } catch (error) {
+    return error instanceof Error ? {
+      status: "FORM-ERROR",
+      message: "Ha ocurrido un error al cumplimentar los datos de registro",
+      payload: formData,
+      fieldErrors: error.flatten().fieldErrors,
+    } : {
+      status: "PROMISE-ERROR",
+      message: error? error.toString() : "Algo falló inesperadamente",
+      payload: formData,
+      fieldErrors: {},
+    };
+  }
+
+  redirect(menuPath);
+}
