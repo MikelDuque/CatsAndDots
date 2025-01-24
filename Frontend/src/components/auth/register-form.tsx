@@ -16,7 +16,11 @@ type RegisterFormInputs = {
   avatar: File;
 }
 
-export default function RegisterForm() {
+type RegisterFormProps = {
+  onSwitchToLogin: () => void;
+};
+
+export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const form = useForm<RegisterFormInputs>({
       defaultValues: {
         username: "",
@@ -150,7 +154,7 @@ export default function RegisterForm() {
       <CardFooter>
         <p className="text-body">
           ¿Ya tienes cuenta?
-          <Button variant="link" >Inicia Sesión</Button>
+          <Button variant="link" onClick={onSwitchToLogin}>Inicia Sesión</Button>
         </p>
       </CardFooter>
     </Card>

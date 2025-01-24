@@ -15,13 +15,17 @@ import Title from "../utils/title";
 import { LoginAction } from "@/features/auth/actions/server-actions";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
+import { Input } from "../ui/input";
 
 interface LoginFormInputs {
   identifier: string;
   password: string;
 }
+interface LoginFormProps {
+  onSwitchToRegister: () => void;
+}
 
-export default function LoginForm() {
+export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [loginActionState, loginAction] = useActionState(LoginAction, {
     message: "",
     fieldErrors: {},
@@ -100,7 +104,7 @@ export default function LoginForm() {
       <CardFooter>
         <p className="text-body">
           ¿No tienes cuenta?
-          <Button variant="link" >¡Regístrate!</Button>
+          <Button variant="link" onClick={onSwitchToRegister}>¡Regístrate!</Button>
         </p> 
       </CardFooter>
     </Card>
