@@ -31,22 +31,24 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       }
     }, [registerActionState])
 
-  const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
-        username: "",
-        mail: "",
-        password: "",
-        confirmPassword: "",
-        avatar: undefined
+        username: registerActionState?.payload?.get("username") as string,
+        mail: registerActionState?.payload?.get("mail") as string || "",
+        password: registerActionState?.payload?.get("password") as string || "",
+        confirmPassword: registerActionState?.payload?.get("confirmPassword") as string || "",
+        avatar: registerActionState?.payload?.get("username") as File || undefined
       },
       mode: "onSubmit"
     });
 
+    /*
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       form.setValue("avatar", file || undefined);
     }
+    */
 
   return(
     <Card className="w-1/3 h-fit">
@@ -141,7 +143,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                       type="file"
                       accept="image/*"
                       placeholder="Seleccione una imagen"
-                      onChange={handleAvatarChange}
+                      //onChange={handleAvatarChange}
                       {...field}
                     />
                   </FormControl>
