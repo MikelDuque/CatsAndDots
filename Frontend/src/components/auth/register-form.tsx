@@ -11,15 +11,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formSchema } from "@/features/auth/queries/form-validator";
 
-
-type RegisterFormInputs = {
-  username: string;
-  mail: string;
-  password: string;
-  confirmPassword: string;
-  avatar: File;
-}
-
 type RegisterFormProps = {
   onSwitchToLogin: () => void;
 };
@@ -27,7 +18,7 @@ type RegisterFormProps = {
 export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [registerActionState, registerAction] = useActionState(RegisterAction, {
       message: "",
-      fieldErrors: {},
+      fieldErrors: {}
     });
 
     useEffect(() => {
@@ -51,6 +42,11 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       },
       mode: "onSubmit"
     });
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      form.setValue("avatar", file || undefined);
+    }
 
   return(
     <Card className="w-1/3 h-fit">
@@ -145,6 +141,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                       type="file"
                       accept="image/*"
                       placeholder="Seleccione una imagen"
+                      onChange={handleAvatarChange}
                       {...field}
                     />
                   </FormControl>

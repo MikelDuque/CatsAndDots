@@ -21,8 +21,26 @@ export const formSchema = z.object({
     .regex(passwordValidation, {message: "La contraseña debe contener al menos una mayúscula, un número y un carácter especial"}),
   confirmPassword: z.string(),
   avatar: z.any()
-    .refine((file) => !file || file?.size <= maxFileSize, `La imagen no puede ser superior a 10MB.`)
-    .refine((file) => !file || imageTypes.includes(file?.type), "Los únicos formatos soportados son: .jpg, .jpeg, .png y .webp")
+    .optional()
+    .superRefine((file, ctx) => {
+      if (!file || file.size <= 0) return;
+
+      if (file.size > maxFileSize) {
+        ctx.addIssue({
+          message: "La imagen no puede ser superior a 10MB.",
+          code: z.ZodIssueCode.custom
+        })
+      }
+
+      if (!imageTypes.includes(file.type)) {
+        ctx.addIssue({
+          message: "Los únicos formatos soportados son: .jpg, .jpeg, .png y .webp",
+          code: z.ZodIssueCode.custom
+        })
+      }
+    })
+    //.refine((file) => !file || file?.size <= maxFileSize, `La imagen no puede ser superior a 10MB.`)
+    //.refine((file) => !file || imageTypes.includes(file?.type), "Los únicos formatos soportados son: .jpg, .jpeg, .png y .webp")
 })
 .refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas introducidas no coinciden",
