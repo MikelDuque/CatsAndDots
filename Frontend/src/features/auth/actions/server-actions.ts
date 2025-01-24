@@ -16,7 +16,6 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
   };
   
   try {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED="0";
     const response = await fetchEndpoint({
       url: LOGIN_URL,
       type: "POST",
@@ -40,8 +39,6 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
 };
 
 export async function RegisterAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
-  console.log("imagen", formData.get("avatar"));
-  
   const registerRequest = new FormData;
     registerRequest.append('username', formData.get("username") as string);
     registerRequest.append('mail', formData.get("mail") as string);
@@ -58,6 +55,8 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
       params: registerRequest
     });
 
+    saveAuthToken(response.accessToken);
+
   } catch (error) {
     return error instanceof ZodError ? {
       status: "FORM-ERROR",
@@ -70,11 +69,9 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
       payload: formData,
       fieldErrors: {},
     };
-    
   }
-
   redirect(menuPath);
-}
+};
 
 async function saveAuthToken(token: string) {
   const cookieStore = await cookies();
@@ -86,4 +83,4 @@ async function saveAuthToken(token: string) {
     path: "/", 
     maxAge: 60 * 60 * 24 * 7, 
   });
-}
+};

@@ -2,7 +2,7 @@ type FetchProps = {
   url: string;
   type: string;
   token: string | null;
-  params: BodyInit | Object;
+  params: BodyInit | object;
   needAuth?: boolean;
 }
 

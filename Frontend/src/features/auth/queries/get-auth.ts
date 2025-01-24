@@ -3,12 +3,13 @@ import { cache } from "react";
 import { jwtDecode, } from "jwt-decode";
 
 type decodedToken = {
-  id: Number,
-  unique_name: String,
-  email: String,
-  role: String,
-  exp: Number,
+  id: number,
+  unique_name: string,
+  email: string,
+  role: string,
+  exp: number,
 }
+
 export const getAuth = cache(async () => {
   const cookieStore = await cookies();
 
