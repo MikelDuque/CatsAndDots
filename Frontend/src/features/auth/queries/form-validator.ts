@@ -2,7 +2,7 @@ import { z } from "zod"
 
 const emptyMessage = "Es requerido especificar este campo";
 const passwordValidation = new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64}$/);
-const usernameValidation = new RegExp(/^[a-z]+$/);
+const usernameValidation = new RegExp(/^(?=.*[a-z])(?=.*\d)$/);
 const maxFileSize = 10e6;
 const imageTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 

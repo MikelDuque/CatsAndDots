@@ -44,7 +44,7 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
     registerRequest.append('username', formData.get("username") as string);
     registerRequest.append('mail', formData.get("mail") as string);
     registerRequest.append('password', formData.get("password") as string);
-    if(formAvatar?.size >= 0) registerRequest.append('avatar', formData.get("avatar") as File);
+    if(formAvatar && formAvatar.size >= 0) registerRequest.append('avatar', formData.get("avatar") as File);
 
   try {
     formSchema.parse(Object.fromEntries(formData));
