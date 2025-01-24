@@ -2,17 +2,16 @@ type FetchProps = {
   url: string;
   type: string;
   token: string | null;
-  params: BodyInit | FormData;
-  haveFile: boolean;
+  params: object;
   needAuth?: boolean;
 }
 
-export default async function fetchEndpoint({url, type, token, params, haveFile, needAuth} : FetchProps) {
+export default async function fetchEndpoint({url, type, token, params, needAuth} : FetchProps) {
   console.log(`PETICION: URL: ${url}, tipo: ${type}, token: ${token}, params stringtify: ${JSON.stringify(params)}, needAuth: ${needAuth}`);
   
   const response = (token && needAuth) ?
-    await defineFetch({url, type, token, haveFile, params}).then((response) => {if(response.status !== 401){return response} throw "Unauthorized"}) :
-    await defineFetch({url, type, token, haveFile, params});
+    await defineFetch({url, type, token, params}).then((response) => {if(response.status !== 401){return response} throw "Unauthorized"}) :
+    await defineFetch({url, type, token, params});
 
   const jsonResponse = await response.json();
 
@@ -23,13 +22,13 @@ export default async function fetchEndpoint({url, type, token, params, haveFile,
 
 /* ------------------------- */
 
-async function defineFetch({url, type, token, params, haveFile} : FetchProps) {
+async function defineFetch({url, type, token, params} : FetchProps) {
   
   if(type !== 'GET' && params) return (
     await fetch(url, {
       method: type,
       headers: printHeaders(token),
-      body: haveFile ? params : JSON.stringify(params)
+      body: params instanceof FormData ? params : JSON.stringify(params)
   }));
 
   return await fetch(url, {headers: printHeaders(token)});

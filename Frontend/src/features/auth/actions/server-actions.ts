@@ -5,6 +5,7 @@ import fetchEndpoint from "../queries/fetch-endpoint";
 import { redirect } from "next/navigation";
 import { menuPath } from "@/lib/paths";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/endpoints";
+import { ZodError } from "zod";
 
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
   const loginRequest = {
@@ -17,7 +18,7 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       url: LOGIN_URL,
       type: "POST",
       token: null,
-      params: loginRequest,
+      params: loginRequest
     });
 
   } catch (error) {
@@ -44,16 +45,15 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
       url: REGISTER_URL,
       type: 'POST',
       token: null,
-      haveFile: true,
       params: registerRequest
     });
 
   } catch (error) {
-    return error instanceof Error ? {
+    return error instanceof ZodError ? {
       status: "FORM-ERROR",
       message: "Ha ocurrido un error al cumplimentar los datos de registro",
       payload: formData,
-      fieldErrors: error.flatten().fieldErrors,
+      fieldErrors: error.flatten().fieldErrors
     } : {
       status: "PROMISE-ERROR",
       message: error? error.toString() : "Algo falló inesperadamente",
