@@ -32,18 +32,19 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       payload: formData,
       fieldErrors: {},
     };
-   
-  }
+  };
   
   redirect(menuPath);
 };
 
 export async function RegisterAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
+  const formAvatar = formData.get("avatar");
+  
   const registerRequest = new FormData;
     registerRequest.append('username', formData.get("username") as string);
     registerRequest.append('mail', formData.get("mail") as string);
     registerRequest.append('password', formData.get("password") as string);
-    registerRequest.append('avatar', formData.get("avatar") as File);
+    if(formAvatar?.size >= 0) registerRequest.append('avatar', formData.get("avatar") as File);
 
   try {
     formSchema.parse(Object.fromEntries(formData));
@@ -54,7 +55,8 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
       token: null,
       params: registerRequest
     });
-
+    console.log("respuest registro", response);
+    
     saveAuthToken(response.accessToken);
 
   } catch (error) {
