@@ -7,6 +7,7 @@ import { menuPath } from "@/lib/paths";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
+import { cookies } from "next/headers";
 
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
   const loginRequest = {
@@ -15,21 +16,24 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
   };
   
   try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED="0";
     const response = await fetchEndpoint({
       url: LOGIN_URL,
       type: "POST",
       token: null,
       params: loginRequest
     });
+   
+    saveAuthToken(response.accessToken);
 
   } catch (error) {
-    console.log("error", error);
     return {
       status: "PROMISE-ERROR",
       message: error? error.toString() : "Algo falló inesperadamente",
       payload: formData,
       fieldErrors: {},
     };
+   
   }
   
   redirect(menuPath);
@@ -54,12 +58,7 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
       params: registerRequest
     });
 
-    console.log("response", JSON.stringify(response));
-    
-
   } catch (error) {
-    console.log("error", error);
-    
     return error instanceof ZodError ? {
       status: "FORM-ERROR",
       message: "Ha ocurrido un error al cumplimentar los datos de registro",
@@ -71,7 +70,20 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
       payload: formData,
       fieldErrors: {},
     };
+    
   }
 
   redirect(menuPath);
+}
+
+async function saveAuthToken(token: string) {
+  const cookieStore = await cookies();
+  cookieStore.set({
+    name: "authToken",
+    value: token,
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === "production", 
+    path: "/", 
+    maxAge: 60 * 60 * 24 * 7, 
+  });
 }
