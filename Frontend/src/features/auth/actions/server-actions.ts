@@ -49,7 +49,7 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
   try {
     formSchema.parse(Object.fromEntries(formData));
     
-    const response = fetchEndpoint({
+    const response = await fetchEndpoint({
       url: REGISTER_URL,
       type: 'POST',
       token: null,

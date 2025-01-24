@@ -39,7 +39,7 @@ public class AuthService
     User registeredUser = await _unitOfWork.UserRepository.InsertAsync(newUser) ?? throw new Exception("Error al registrar el usuario");
     await _unitOfWork.SaveAsync();
 
-    return Login(newUser);
+    return Login(registeredUser);
   }
 
   public async Task<string> ProceedWithLogin(LoginRequest model)
