@@ -2,12 +2,14 @@ type FetchProps = {
   url: string;
   type: string;
   token: string | null;
-  params: object;
+  params: BodyInit | Object;
   needAuth?: boolean;
 }
 
 export default async function fetchEndpoint({url, type, token, params, needAuth} : FetchProps) {
-  console.log(`PETICION: URL: ${url}, tipo: ${type}, token: ${token}, params stringtify: ${JSON.stringify(params)}, needAuth: ${needAuth}`);
+  console.log(`PETICION: URL: ${url}, tipo: ${type}, token: ${token}, params stringtify: ${params}, needAuth: ${needAuth}`);
+
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   
   const response = (token && needAuth) ?
     await defineFetch({url, type, token, params}).then((response) => {if(response.status !== 401){return response} throw "Unauthorized"}) :
@@ -23,12 +25,18 @@ export default async function fetchEndpoint({url, type, token, params, needAuth}
 /* ------------------------- */
 
 async function defineFetch({url, type, token, params} : FetchProps) {
+
+  if(type !== 'GET' && params instanceof FormData) return (
+    await fetch(url, {
+      method: type,
+      body: params
+  }));
   
   if(type !== 'GET' && params) return (
     await fetch(url, {
       method: type,
       headers: printHeaders(token),
-      body: params instanceof FormData ? params : JSON.stringify(params)
+      body: JSON.stringify(params)
   }));
 
   return await fetch(url, {headers: printHeaders(token)});

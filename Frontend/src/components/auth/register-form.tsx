@@ -2,10 +2,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import Title from "../utils/title";
 import { useForm } from "react-hook-form";
-import fetchEndpoint from "@/features/auth/queries/fetch-endpoint";
-import { REGISTER_URL } from "@/lib/endpoints";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useActionState, useEffect } from "react";
+import { RegisterAction } from "@/features/auth/actions/server-actions";
+import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { formSchema } from "@/features/auth/queries/form-validator";
 
 
 type RegisterFormInputs = {
@@ -21,7 +25,23 @@ type RegisterFormProps = {
 };
 
 export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
-  const form = useForm<RegisterFormInputs>({
+  const [registerActionState, registerAction] = useActionState(RegisterAction, {
+      message: "",
+      fieldErrors: {},
+    });
+
+    useEffect(() => {
+      switch (registerActionState.status) {
+        case "SUCCESS":
+          toast.success(registerActionState.message)
+          break;
+        case "PROMISE-ERROR":
+          toast.error(registerActionState.message)
+      }
+    }, [registerActionState])
+
+  const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
       defaultValues: {
         username: "",
         mail: "",
@@ -29,24 +49,8 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         confirmPassword: "",
         avatar: undefined
       },
-      mode: "onSubmit",
+      mode: "onSubmit"
     });
-
-     async function onSubmit (data: RegisterFormInputs) {
-        console.log("Datos del formulario:", data);
-        try {
-          const response = await fetchEndpoint({
-            url: REGISTER_URL,
-            type: "POST",
-            token: null,
-            params: data,
-          });
-    
-          console.log("Inicio de sesión exitoso:", response);
-        } catch (error) {
-          console.error("Error al iniciar sesión:", error);
-        }
-      };
 
   return(
     <Card className="w-1/3 h-fit">
@@ -55,7 +59,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form className="flex flex-col gap-5 text-body text-left" onSubmit={form.handleSubmit(onSubmit)}>
+          <form className="flex flex-col gap-5 text-body text-left" action={registerAction}>
 
             <FormField
               name="username"
@@ -70,7 +74,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage>{registerActionState.fieldErrors["username"]?.[0]}</FormMessage>
                 </FormItem>
               )}
             />
@@ -88,7 +92,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage>{registerActionState.fieldErrors["mail"]?.[0]}</FormMessage>
                 </FormItem>
               )}
             />
@@ -106,7 +110,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage>{registerActionState.fieldErrors["password"]?.[0]}</FormMessage>
                 </FormItem>
               )}
             />
@@ -124,7 +128,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage>{registerActionState.fieldErrors["confirmPassword"]?.[0]}</FormMessage>
                 </FormItem>
               )}
             />
@@ -132,19 +136,24 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             <FormField
               name="avatar"
               control={form.control}
-              render={() => (
+              render={({field}) => (
                 <FormItem>
                   <FormLabel>Avatar</FormLabel>
                   <FormDescription>Puede añadir a continuación una avatar personalizado</FormDescription>
                   <FormControl>
-                    <Input type="file"/>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      placeholder="Seleccione una imagen"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage>{registerActionState.fieldErrors["avatar"]?.[0]}</FormMessage>
                 </FormItem>
               )}
             />
 
-            <Button type="submit" size="lg" onClick={() => console.log("VARIABLE ENTORNO", process.env.NEXT_PUBLIC_API_HTTP_URL)}>
+            <Button size="lg">
               Regístrate
             </Button>
           </form>

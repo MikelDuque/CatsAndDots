@@ -17,6 +17,6 @@ export const getAuth = cache(async () => {
 
   return {
     token: { token: authToken },
-    decodedToken: { decodedToken: decodedToken }
+    decodedToken: decodedToken
   };
 });

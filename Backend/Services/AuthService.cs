@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Backend.Helpers;
@@ -40,7 +39,7 @@ public class AuthService
     User registeredUser = await _unitOfWork.UserRepository.InsertAsync(newUser) ?? throw new Exception("Error al registrar el usuario");
     await _unitOfWork.SaveAsync();
 
-        return registeredUser.ToString(); //Login(registeredUser);
+    return Login(newUser);
   }
 
   public async Task<string> ProceedWithLogin(LoginRequest model)
@@ -52,7 +51,7 @@ public class AuthService
     return Login(loggedUser);
   }
 
-  public string Login(User user)
+  string Login(User user)
   {
     SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
     {
