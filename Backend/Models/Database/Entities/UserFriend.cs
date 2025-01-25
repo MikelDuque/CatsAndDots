@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Backend.Models.Database.Entities
 {
     [PrimaryKey(nameof(UserAId), nameof(UserBId))]
-    public class UserFriendship
+    public class UserFriend
     {
         public bool IsFriendship { get; set; }
         public User Sender { get; set; }

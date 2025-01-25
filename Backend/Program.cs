@@ -71,7 +71,7 @@ public class Program
 
         //Repositorios
         builder.Services.AddScoped<UserRepository>();
-        builder.Services.AddScoped<UserFriendshipRepository>();
+        builder.Services.AddScoped<UserUserRepository>();
 
 
         //Servicios

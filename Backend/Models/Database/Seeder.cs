@@ -31,10 +31,41 @@ public class Seeder
         Avatar = "/ProfilePictures/Default-Avatar.png",
         Role = "admin",
         State = UserState.Offline
+      },
+      new User
+      {
+        Username = "mikel",
+        Mail = "mikel@catsanddots.es",
+        Password = HashHelper.Hash("12345"),
+        Avatar = "/ProfilePictures/Default-Avatar.png",
+        Role = "admin",
+        State = UserState.Offline
+      },
+      new User
+      {
+        Username = "fer",
+        Mail = "fernando@catsanddots.es",
+        Password = HashHelper.Hash("12345"),
+        Avatar = "/ProfilePictures/Default-Avatar.png",
+        Role = "admin",
+        State = UserState.Offline
+      }
+    ];
+
+    /* --- FRIENDSHIPS --- */
+    UserFriend[] friendships =
+    [
+      new UserFriend
+      {
+        UserAId = 2,
+        UserBId = 3,
+        IsFriendship = true
       }
     ];
 
     /* --- INSERCCIÓN ENTIDADES --- */
     _dataContext.Users.AddRange(users);
+    _dataContext.SaveChanges();
+    _dataContext.UserFriendships.AddRange(friendships);
   }
 }
