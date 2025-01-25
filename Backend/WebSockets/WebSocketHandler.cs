@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Net.WebSockets;
+using System.Text;
 
 namespace Backend.WebSockets;
 
@@ -12,6 +14,7 @@ public class WebSocketHandler : IDisposable
     public int Id { get; init; }
     public bool IsOpen => _webSocket.State == WebSocketState.Open;
 
+    public event Func<WebSocketHandler, string, Task> MessageRecived;
     public event Func<WebSocketHandler, Task> Disconnected;
 
     public WebSocketHandler(int id, WebSocket webSocket)
@@ -24,12 +27,50 @@ public class WebSocketHandler : IDisposable
 
     public async Task HandleAsync() {
         while (IsOpen) {
-        //FUNCIONALIDAD MIENTRAS ESTÁ ABIERTO EL WEBSOCKET
+            //FUNCIONALIDAD MIENTRAS ESTï¿½ ABIERTO EL WEBSOCKET
+            string message = await ReadAsync();
+
+            if (!string.IsNullOrWhiteSpace(message)&& MessageRecived != null) 
+            {
+                await MessageRecived.Invoke(this, message);
+            } 
         }
 
         if (Disconnected != null)
         {
             await Disconnected.Invoke(this);
+        }
+    }
+     
+    private async Task<string> ReadAsync() 
+    {
+        using MemoryStream stream = new MemoryStream();
+        WebSocketReceiveResult receiveResult;
+
+        do
+        {
+            receiveResult = await _webSocket.ReceiveAsync(_buffer, CancellationToken.None);
+
+            if (receiveResult.MessageType == WebSocketMessageType.Text)
+            {
+                stream.Write(_buffer, 0, receiveResult.Count);
+            }
+            else if (receiveResult.CloseStatus.HasValue)
+            {
+                await _webSocket.CloseAsync(receiveResult.CloseStatus.Value, receiveResult.CloseStatusDescription, CancellationToken.None);
+            }
+        }
+        while (!receiveResult.EndOfMessage);
+
+        return Encoding.UTF8.GetString(stream.ToArray());
+    }
+
+    public async Task SendAsync(string message)
+    {
+        if (IsOpen)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            await _webSocket.SendAsync(bytes, WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 

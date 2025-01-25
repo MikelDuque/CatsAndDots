@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using Backend.Models.Database;
 using Backend.Models.Database.Repositories;
 using Backend.Services;
-using Backend.WebSocket;
+using Backend.WebSockets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;

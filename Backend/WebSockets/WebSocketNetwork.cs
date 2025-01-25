@@ -13,6 +13,7 @@ public class WebSocketNetwork
     WebSocketHandler handler = await AddWebsocketAsync(webSocket);
 
     //FUNCIONES EJECUTADAS AL CONECTAR
+    await GetMenuData(handler);
 
     await handler.HandleAsync();
   }
@@ -24,10 +25,10 @@ public class WebSocketNetwork
     WebSocketHandler handler = new WebSocketHandler(_onlineUsersCounter, webSocket);
     handler.Disconnected += OnDisconnectedAsync;
 
+   
+
     _handlers.Add(handler);
-
     _onlineUsersCounter++;
-
     _semaphore.Release();
 
     return handler;
@@ -51,4 +52,17 @@ public class WebSocketNetwork
 
     await Task.WhenAll(tasks);
   }
+    
+  private Task GetMenuData(WebSocketHandler newHandler) 
+  {
+        List<Task> tasks = [];
+        WebSocketHandler[] handlers = [];
+
+        foreach (WebSocketHandler handler in handlers)
+        {
+            tasks.Add(handler.SendAsync($"{_onlineUsersCounter}"));
+        }
+
+        return Task.WhenAll(tasks);
+    }
 }
