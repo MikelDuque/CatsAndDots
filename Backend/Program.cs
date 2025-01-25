@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Backend.Models.Database;
 using Backend.Models.Database.Repositories;
 using Backend.Services;
+using Backend.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +20,9 @@ public class Program
         Directory.SetCurrentDirectory(AppContext.BaseDirectory);
 
         var builder = WebApplication.CreateBuilder(args);
-        
+
+        builder.Services.AddSingleton<WebSocketNetwork>();
+
         //SERVICES
         builder.Services.AddControllers();
         builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
@@ -68,10 +71,12 @@ public class Program
 
         //Repositorios
         builder.Services.AddScoped<UserRepository>();
+        builder.Services.AddScoped<UserFriendshipRepository>();
 
 
         //Servicios
         builder.Services.AddScoped<AuthService>();
+        builder.Services.AddScoped<FriendshipService>();
 
 
         //Mappers
@@ -86,7 +91,12 @@ public class Program
             FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
         });
 
-        app.UseCors();
+        app.UseCors(options =>
+            options.AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowAnyOrigin());
+
+        app.UseWebSockets();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();

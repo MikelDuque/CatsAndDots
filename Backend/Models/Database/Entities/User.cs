@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Backend.Models.Database.Entities;
 
+[Index(nameof(Mail), IsUnique = true), Index(nameof(Username), IsUnique = true)]
 public class User
 {
     public long Id {get; set;}
@@ -9,4 +12,9 @@ public class User
     public required string Avatar {get; set;}
     public string Role {get; set;}
     public UserState State {get; set;}  //¿Lo haremos "required"?
+
+
+    /* RELACIONES N:M */
+    public ICollection<User> Friends { get; } = [];
+    public ICollection<UserFriendship> Friendships { get; } = [];
 }
