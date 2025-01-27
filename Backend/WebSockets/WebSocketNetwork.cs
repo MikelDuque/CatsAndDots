@@ -7,24 +7,19 @@ namespace Backend.WebSockets;
 
 public class WebSocketNetwork
 {
-  //private static int _onlineUsersCounter = 0;
-  private readonly List<WebSocketHandler> _handlers = [];
+  private readonly List<WebSocketHandler> _handlers = new();
   private readonly SemaphoreSlim _semaphore = new(1, 1);
+  private readonly IServiceProvider _serviceProvider;
 
-  private readonly UserService _userService;
-  private readonly FriendshipService _friendshipService;
-
-  public WebSocketNetwork(FriendshipService friendshipService, UserService userService)
+  public WebSocketNetwork(IServiceProvider serviceProvider)
   {
-    _friendshipService = friendshipService;
-    _userService = userService;
+    _serviceProvider = serviceProvider;
   }
 
-	public async Task HandleAsync(WebSocket webSocket, long userId)
+  public async Task HandleAsync(WebSocket webSocket, long userId)
   {
     WebSocketHandler handler = await AddWebsocketAsync(webSocket, userId);
-
-		await handler.HandleAsync();
+    await handler.HandleAsync();
   }
 
   private async Task<WebSocketHandler> AddWebsocketAsync(WebSocket webSocket, long userId)
@@ -35,12 +30,11 @@ public class WebSocketNetwork
     handler.Disconnected += OnDisconnectedAsync;
 
     _handlers.Add(handler);
-    //_onlineUsersCounter++;
     _semaphore.Release();
 
-		await OnConnectedAsync(handler);
+    await OnConnectedAsync(handler);
 
-		return handler;
+    return handler;
   }
 
   private async Task OnDisconnectedAsync(WebSocketHandler disconnectedHandler)
@@ -48,32 +42,36 @@ public class WebSocketNetwork
     await _semaphore.WaitAsync();
 
     disconnectedHandler.Disconnected -= OnDisconnectedAsync;
-
     _handlers.Remove(disconnectedHandler);
-
     _semaphore.Release();
 
-    await GetMenuData(disconnectedHandler);
-		await _userService.ChangeUserState(disconnectedHandler.Id, Models.UserState.Offline);
-	}
+    using var scope = _serviceProvider.CreateScope();
+    var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+
+    await userService.ChangeUserState(disconnectedHandler.Id, Models.UserState.Offline);
+  }
 
   private async Task OnConnectedAsync(WebSocketHandler connectedHandler)
   {
+    using var scope = _serviceProvider.CreateScope();
+    var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+    var friendshipService = scope.ServiceProvider.GetRequiredService<FriendshipService>();
+
+    await userService.ChangeUserState(connectedHandler.Id, Models.UserState.Online);
     await GetMenuData(connectedHandler);
-    await _userService.ChangeUserState(connectedHandler.Id, Models.UserState.Online);
-    await GetFriendlist(connectedHandler);
+    await GetFriendlist(connectedHandler, friendshipService);
   }
 
   private Task GetMenuData(WebSocketHandler newHandler)
   {
-    List<Task> tasks = [];
+    List<Task> tasks = new();
     WebSocketHandler[] handlers = _handlers.ToArray();
 
-    MenuData menuData = new MenuData
+    MenuData menuData = new()
     {
       OnlineUsers = handlers.Length,
       PlayingUsers = 0, //CAMBIAR
-      CurrentMatches = 0  //CAMBIAR
+      CurrentMatches = 0 //CAMBIAR
     };
 
     foreach (WebSocketHandler handler in handlers)
@@ -84,18 +82,16 @@ public class WebSocketNetwork
     return Task.WhenAll(tasks);
   }
 
-	private async Task<Task> GetFriendlist(WebSocketHandler newHandler)
-	{
-		List<Task> tasks = [];
-		WebSocketHandler[] handlers = _handlers.ToArray();
+  private async Task GetFriendlist(WebSocketHandler newHandler, FriendshipService friendshipService)
+  {
+    List<Task> tasks = new();
+    IEnumerable<FriendDto> friendList = await friendshipService.GetFriendList(newHandler.Id);
 
-    IEnumerable<FriendDto> friendList = await _friendshipService.GetFriendList(newHandler.Id);
+    foreach (WebSocketHandler handler in _handlers)
+    {
+      tasks.Add(handler.SendAsync(JsonSerializer.Serialize(friendList)));
+    }
 
-		foreach (WebSocketHandler handler in handlers)
-		{
-			tasks.Add(newHandler.SendAsync(JsonSerializer.Serialize(friendList)));
-		}
-
-		return Task.WhenAll(tasks);
-	}
+    await Task.WhenAll(tasks);
+  }
 }
