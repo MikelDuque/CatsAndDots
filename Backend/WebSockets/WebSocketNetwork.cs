@@ -1,37 +1,46 @@
 using System.Net.WebSockets;
+using System.Text.Json;
+using Backend.Models.DTOs;
+using Backend.Services;
 
 namespace Backend.WebSockets;
 
 public class WebSocketNetwork
 {
-  private static int _onlineUsersCounter = 0;
+  //private static int _onlineUsersCounter = 0;
   private readonly List<WebSocketHandler> _handlers = [];
   private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-  public async Task HandleAsync(WebSocket webSocket)
+  private readonly UserService _userService;
+  private readonly FriendshipService _friendshipService;
+
+  public WebSocketNetwork(FriendshipService friendshipService, UserService userService)
   {
-    WebSocketHandler handler = await AddWebsocketAsync(webSocket);
-
-    //FUNCIONES EJECUTADAS AL CONECTAR
-    await GetMenuData(handler);
-
-    await handler.HandleAsync();
+    _friendshipService = friendshipService;
+    _userService = userService;
   }
 
-  private async Task<WebSocketHandler> AddWebsocketAsync(WebSocket webSocket)
+	public async Task HandleAsync(WebSocket webSocket, long userId)
+  {
+    WebSocketHandler handler = await AddWebsocketAsync(webSocket, userId);
+
+		await handler.HandleAsync();
+  }
+
+  private async Task<WebSocketHandler> AddWebsocketAsync(WebSocket webSocket, long userId)
   {
     await _semaphore.WaitAsync();
 
-    WebSocketHandler handler = new WebSocketHandler(_onlineUsersCounter, webSocket);
+    WebSocketHandler handler = new WebSocketHandler(userId, webSocket);
     handler.Disconnected += OnDisconnectedAsync;
 
-   
-
     _handlers.Add(handler);
-    _onlineUsersCounter++;
+    //_onlineUsersCounter++;
     _semaphore.Release();
 
-    return handler;
+		await OnConnectedAsync(handler);
+
+		return handler;
   }
 
   private async Task OnDisconnectedAsync(WebSocketHandler disconnectedHandler)
@@ -39,30 +48,54 @@ public class WebSocketNetwork
     await _semaphore.WaitAsync();
 
     disconnectedHandler.Disconnected -= OnDisconnectedAsync;
-   
+
     _handlers.Remove(disconnectedHandler);
 
     _semaphore.Release();
 
-    List<Task> tasks = new List<Task>();
-    
+    await GetMenuData(disconnectedHandler);
+		await _userService.ChangeUserState(disconnectedHandler.Id, Models.UserState.Offline);
+	}
+
+  private async Task OnConnectedAsync(WebSocketHandler connectedHandler)
+  {
+    await GetMenuData(connectedHandler);
+    await _userService.ChangeUserState(connectedHandler.Id, Models.UserState.Online);
+    await GetFriendlist(connectedHandler);
+  }
+
+  private Task GetMenuData(WebSocketHandler newHandler)
+  {
+    List<Task> tasks = [];
     WebSocketHandler[] handlers = _handlers.ToArray();
 
-    //FUNCIONALIDAD AL CONECTAR
+    MenuData menuData = new MenuData
+    {
+      OnlineUsers = handlers.Length,
+      PlayingUsers = 0, //CAMBIAR
+      CurrentMatches = 0  //CAMBIAR
+    };
 
-    await Task.WhenAll(tasks);
-  }
-    
-  private Task GetMenuData(WebSocketHandler newHandler) 
-  {
-        List<Task> tasks = [];
-        WebSocketHandler[] handlers = [];
-
-        foreach (WebSocketHandler handler in handlers)
-        {
-            tasks.Add(handler.SendAsync($"{_onlineUsersCounter}"));
-        }
-
-        return Task.WhenAll(tasks);
+    foreach (WebSocketHandler handler in handlers)
+    {
+      tasks.Add(handler.SendAsync(JsonSerializer.Serialize(menuData)));
     }
+
+    return Task.WhenAll(tasks);
+  }
+
+	private async Task<Task> GetFriendlist(WebSocketHandler newHandler)
+	{
+		List<Task> tasks = [];
+		WebSocketHandler[] handlers = _handlers.ToArray();
+
+    IEnumerable<FriendDto> friendList = await _friendshipService.GetFriendList(newHandler.Id);
+
+		foreach (WebSocketHandler handler in handlers)
+		{
+			tasks.Add(newHandler.SendAsync(JsonSerializer.Serialize(friendList)));
+		}
+
+		return Task.WhenAll(tasks);
+	}
 }

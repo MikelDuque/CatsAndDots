@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Backend.Models.Database;
 using Backend.Models.Database.Repositories;
+using Backend.Models.Mappers;
 using Backend.Services;
 using Backend.WebSockets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,7 +22,7 @@ public class Program
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddSingleton<WebSocketNetwork>();
+        
 
         //SERVICES
         builder.Services.AddControllers();
@@ -73,16 +74,19 @@ public class Program
         builder.Services.AddScoped<UserRepository>();
         builder.Services.AddScoped<UserUserRepository>();
 
+		    //Mappers
+		    builder.Services.AddScoped<FriendMapper>();
 
-        //Servicios
-        builder.Services.AddScoped<AuthService>();
+		    //Servicios
+		    builder.Services.AddScoped<AuthService>();
         builder.Services.AddScoped<FriendshipService>();
+        builder.Services.AddScoped<UserService>();
+
+		    builder.Services.AddSingleton<WebSocketNetwork>();
 
 
-        //Mappers
 
-
-        var app = builder.Build();
+		var app = builder.Build();
 
         SeedDatabase(app.Services);
 

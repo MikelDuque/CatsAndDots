@@ -11,13 +11,13 @@ public class WebSocketHandler : IDisposable
     private readonly WebSocket _webSocket;
     private readonly byte[] _buffer;
 
-    public int Id { get; init; }
+    public long Id { get; init; }
     public bool IsOpen => _webSocket.State == WebSocketState.Open;
 
     public event Func<WebSocketHandler, string, Task> MessageRecived;
     public event Func<WebSocketHandler, Task> Disconnected;
 
-    public WebSocketHandler(int id, WebSocket webSocket)
+    public WebSocketHandler(long id, WebSocket webSocket)
     {
         Id = id;
 

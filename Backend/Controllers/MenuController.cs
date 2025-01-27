@@ -18,13 +18,13 @@ public class MenuController : ControllerBase
         _websocketNetwork = webSocketNetwork;
     }
 
-    [HttpGet]
-    public async Task ConnectAsync()
+    [HttpGet("{id}")]
+    public async Task ConnectAsync(long id)
     {
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
             WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            await _websocketNetwork.HandleAsync(webSocket);
+            await _websocketNetwork.HandleAsync(webSocket, id);
         }
         else
         {
