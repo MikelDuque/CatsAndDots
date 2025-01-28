@@ -30,7 +30,6 @@ public class Seeder
         Password = HashHelper.Hash("12345"),
         Avatar = "/ProfilePictures/Default-Avatar.png",
         Role = "admin",
-        State = UserState.Offline
       },
       new User
       {
@@ -39,7 +38,6 @@ public class Seeder
         Password = HashHelper.Hash("12345"),
         Avatar = "/ProfilePictures/Default-Avatar.png",
         Role = "admin",
-        State = UserState.Offline
       },
       new User
       {
@@ -48,7 +46,6 @@ public class Seeder
         Password = HashHelper.Hash("12345"),
         Avatar = "/ProfilePictures/Default-Avatar.png",
         Role = "admin",
-        State = UserState.Offline
       }
     ];
 

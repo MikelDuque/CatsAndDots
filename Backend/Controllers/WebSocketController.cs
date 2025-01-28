@@ -9,11 +9,11 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class MenuController : ControllerBase
+public class WebSocketController : ControllerBase
 {
     private readonly WebSocketNetwork _websocketNetwork;
 
-    public MenuController(WebSocketNetwork webSocketNetwork) 
+    public WebSocketController(WebSocketNetwork webSocketNetwork) 
     {
         _websocketNetwork = webSocketNetwork;
     }
