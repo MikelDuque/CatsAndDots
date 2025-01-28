@@ -5,19 +5,20 @@ namespace Backend.Models.Mappers;
 
 public class FriendMapper
 {
-    //TO DTO
-    public FriendDto ToDto(User friend)
+  //TO DTO
+  public FriendDto ToDto(User friend, bool isOpen)
+  {
+    return new FriendDto
     {
-        return new FriendDto
-        {
-            Id = friend.Id,
-            Username = friend.Username,
-            Avatar = friend.Avatar,
-        };
-    }
+      Id = friend.Id,
+      Username = friend.Username,
+      Avatar = friend.Avatar,
+      ConnectionState = isOpen ? ConnectionState.Online : ConnectionState.Offline
+    };
+  }
 
-    public IEnumerable<FriendDto> ToDto(IEnumerable<User> friends) 
-    {
-        return friends.Select(ToDto);
-    }
+  public IEnumerable<FriendDto> ToDto(IEnumerable<User> friends, bool isOpen) 
+  {
+    return friends.Select(friend => ToDto(friend, isOpen));
+  }
 }

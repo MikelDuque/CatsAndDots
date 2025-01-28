@@ -2,8 +2,8 @@
 
 public class FriendDto
 {
-    public long Id { get; set; }
-    public string Username { get; set; }
-    public string Avatar { get; set; }
-    public int State { get; set; }
+  public long Id { get; set; }
+  public string Username { get; set; }
+  public string Avatar { get; set; }
+  public ConnectionState ConnectionState { get; set; }
 }

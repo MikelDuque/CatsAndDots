@@ -33,7 +33,7 @@ public class AuthService
       Password = HashHelper.Hash(userData.Password),
       Avatar = await FileHelper.SaveAvatar(userData.Avatar, userData.Username),
       Role = null,
-      State = UserState.Offline //Cambiar cuando hagamos lo de los sockets
+      State = ConnectionState.Offline //Cambiar cuando hagamos lo de los sockets
     };
 
     User registeredUser = await _unitOfWork.UserRepository.InsertAsync(newUser) ?? throw new Exception("Error al registrar el usuario");
