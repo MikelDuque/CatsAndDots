@@ -10,9 +10,9 @@ public class FriendMapper
     {
         return new FriendDto
         {
+            Id = friend.Id,
             Username = friend.Username,
             Avatar = friend.Avatar,
-            State = (int)friend.State
         };
     }
 

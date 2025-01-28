@@ -11,8 +11,6 @@ public class User
     public required string Password {get; set;}
     public required string Avatar {get; set;}
     public string Role {get; set;}
-    public UserState State {get; set;}  //¿Lo haremos "required"?
-
 
     /* RELACIONES N:M */
     public ICollection<User> Friends { get; } = [];

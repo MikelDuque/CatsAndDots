@@ -44,22 +44,12 @@ public class WebSocketNetwork
     disconnectedHandler.Disconnected -= OnDisconnectedAsync;
     _handlers.Remove(disconnectedHandler);
     _semaphore.Release();
-
-    using var scope = _serviceProvider.CreateScope();
-    var userService = scope.ServiceProvider.GetRequiredService<UserService>();
-
-    await userService.ChangeUserState(disconnectedHandler.Id, Models.UserState.Offline);
   }
 
   private async Task OnConnectedAsync(WebSocketHandler connectedHandler)
   {
-    using var scope = _serviceProvider.CreateScope();
-    var userService = scope.ServiceProvider.GetRequiredService<UserService>();
-    var friendshipService = scope.ServiceProvider.GetRequiredService<FriendshipService>();
-
-    await userService.ChangeUserState(connectedHandler.Id, Models.UserState.Online);
     await GetMenuData(connectedHandler);
-    await GetFriendlist(connectedHandler, friendshipService);
+    await GetFriendlist(connectedHandler);
   }
 
   private Task GetMenuData(WebSocketHandler newHandler)
@@ -82,10 +72,15 @@ public class WebSocketNetwork
     return Task.WhenAll(tasks);
   }
 
-  private async Task GetFriendlist(WebSocketHandler newHandler, FriendshipService friendshipService)
+  private async Task GetFriendlist(WebSocketHandler newHandler)
   {
+    using IServiceScope scope = _serviceProvider.CreateScope();
+    FriendshipService friendshipService = scope.ServiceProvider.GetRequiredService<FriendshipService>();
+
     List<Task> tasks = new();
     IEnumerable<FriendDto> friendList = await friendshipService.GetFriendList(newHandler.Id);
+
+    WebSocketHandler[] handlerFriends = _handlers.Where(user => friendList.Any(friend => friend.Id == user.Id)).ToArray();
 
     foreach (WebSocketHandler handler in _handlers)
     {
@@ -95,3 +90,4 @@ public class WebSocketNetwork
     await Task.WhenAll(tasks);
   }
 }
+
