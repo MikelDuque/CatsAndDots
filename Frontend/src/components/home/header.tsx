@@ -26,5 +26,3 @@ export default function Header() {
     </header>
   )
 }
-
-/* No me deja usar el "navigation" por que dice que es un componente del cliente; pero tampoco el "useRouter" por que dice que no se monta el componente, QUE LECHES? */
