@@ -23,7 +23,9 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       params: loginRequest
     });
    
+    
     await saveAuthToken(response.accessToken);
+
 
   } catch (error) {
     return {
@@ -33,7 +35,7 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       fieldErrors: {},
     };
   };
-  
+  console.log("Redireccionando a menu")
   redirect(menuPath);
 };
 
@@ -85,3 +87,4 @@ async function saveAuthToken(token: string) {
     maxAge: 60 * 60 * 24 * 7, 
   });
 };
+
