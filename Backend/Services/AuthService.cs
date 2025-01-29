@@ -32,8 +32,7 @@ public class AuthService
       Mail = userData.Mail.ToLowerInvariant(),
       Password = HashHelper.Hash(userData.Password),
       Avatar = await FileHelper.SaveAvatar(userData.Avatar, userData.Username),
-      Role = null,
-      State = UserState.Offline //Cambiar cuando hagamos lo de los sockets
+      Role = null
     };
 
     User registeredUser = await _unitOfWork.UserRepository.InsertAsync(newUser) ?? throw new Exception("Error al registrar el usuario");

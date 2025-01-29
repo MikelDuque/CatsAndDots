@@ -8,7 +8,7 @@ public class DataContext : DbContext
     public const string DATABASE_PATH = "CatsAndDotsDB.db";
 
     public DbSet<User> Users {get; set;}
-    public DbSet<UserFriend> UserFriendships {get; set;}
+    public DbSet<UserFriendship> UserFriendships {get; set;}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

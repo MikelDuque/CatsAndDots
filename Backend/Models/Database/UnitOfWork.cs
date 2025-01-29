@@ -8,11 +8,11 @@ public class UnitOfWork
   private readonly DataContext _dataContext;
 
   private UserRepository _userRepository = null!;
-  private UserUserRepository _userFriendshipRepository = null!;
+  private UserFriendshipRepository _userFriendshipRepository = null!;
 
 
   public UserRepository UserRepository => _userRepository ??= new UserRepository(_dataContext);
-  public UserUserRepository userFriendshipRepository => _userFriendshipRepository ??= new UserUserRepository(_dataContext);
+  public UserFriendshipRepository userFriendshipRepository => _userFriendshipRepository ??= new UserFriendshipRepository(_dataContext);
 
 
   public UnitOfWork(DataContext dataContext)

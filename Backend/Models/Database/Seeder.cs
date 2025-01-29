@@ -50,13 +50,13 @@ public class Seeder
     ];
 
     /* --- FRIENDSHIPS --- */
-    UserFriend[] friendships =
+    UserFriendship[] friendships =
     [
-      new UserFriend
+      new UserFriendship
       {
         UserAId = 2,
         UserBId = 3,
-        IsFriendship = true
+        WhenFriendship = DateTime.Now
       }
     ];
 

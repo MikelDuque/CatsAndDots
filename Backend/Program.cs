@@ -16,115 +16,111 @@ namespace Backend;
 
 public class Program
 {
-    public static void Main(string[] args)
+  public static void Main(string[] args)
+  {
+    Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+
+    var builder = WebApplication.CreateBuilder(args);    
+
+    //SERVICES
+    builder.Services.AddControllers();
+    builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
+    builder.Services.AddControllers().AddJsonOptions(options => {options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;});
+
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(options =>
     {
-        Directory.SetCurrentDirectory(AppContext.BaseDirectory);
-
-        var builder = WebApplication.CreateBuilder(args);
-
-        
-
-        //SERVICES
-        builder.Services.AddControllers();
-        builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
-        builder.Services.AddControllers().AddJsonOptions(options => {options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;});
-
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        builder.Services.AddSwaggerGen(options =>
+        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
         {
-            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-            {
-                BearerFormat = "JWT",
-                Name = "Authorization",
-                Description = "Ajusta cosas del JWTBearer",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = JwtBearerDefaults.AuthenticationScheme
-            });
-            options.OperationFilter<SecurityRequirementsOperationFilter>(true, JwtBearerDefaults.AuthenticationScheme);
+            BearerFormat = "JWT",
+            Name = "Authorization",
+            Description = "Ajusta cosas del JWTBearer",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = JwtBearerDefaults.AuthenticationScheme
         });
-        builder.Services.AddAuthentication().AddJwtBearer(options =>
-        {
-            Settings settings = builder.Configuration.GetSection(Settings.SECTION_NAME).Get<Settings>()!;
-            string key = Environment.GetEnvironmentVariable("JWT_KEY");
+        options.OperationFilter<SecurityRequirementsOperationFilter>(true, JwtBearerDefaults.AuthenticationScheme);
+    });
+    builder.Services.AddAuthentication().AddJwtBearer(options =>
+    {
+        Settings settings = builder.Configuration.GetSection(Settings.SECTION_NAME).Get<Settings>()!;
+        string key = Environment.GetEnvironmentVariable("JWT_KEY");
 
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
-            };
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+        };
+    });
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(builder =>
+        {
+            builder.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
         });
-        builder.Services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(builder =>
-            {
-                builder.AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-            });
-        });
+    });
+
+    //Database
+    builder.Services.AddScoped<DataContext>();
+    builder.Services.AddScoped<UnitOfWork>();
+
+    //Repositorios
+    builder.Services.AddScoped<UserRepository>();
+    builder.Services.AddScoped<UserFriendshipRepository>();
+
+		//Mappers
+		builder.Services.AddScoped<UserMapper>();
+
+    //Servicios
+    builder.Services.AddSingleton<WebSocketNetwork>();
+
+    builder.Services.AddScoped<AuthService>();
+    builder.Services.AddScoped<FriendshipService>();
 
 
-        builder.Services.AddScoped<DataContext>();
-        builder.Services.AddScoped<UnitOfWork>();
+    var app = builder.Build();
 
-        //Repositorios
-        builder.Services.AddScoped<UserRepository>();
-        builder.Services.AddScoped<UserUserRepository>();
+    SeedDatabase(app.Services);
 
-		    //Mappers
-		    builder.Services.AddScoped<FriendMapper>();
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
+    });
 
-		    //Servicios
-		    builder.Services.AddScoped<AuthService>();
-        builder.Services.AddScoped<FriendshipService>();
-        builder.Services.AddScoped<UserService>();
+    app.UseCors(options =>
+        options.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
 
-		    builder.Services.AddSingleton<WebSocketNetwork>();
+    app.UseWebSockets();
+    app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
+    app.MapControllers();
 
-
-		var app = builder.Build();
-
-        SeedDatabase(app.Services);
-
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
-        });
-
-        app.UseCors(options =>
-            options.AllowAnyHeader()
-                   .AllowAnyMethod()
-                   .AllowAnyOrigin());
-
-        app.UseWebSockets();
-        app.UseHttpsRedirection();
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.Run();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
     }
 
-    private static void SeedDatabase(IServiceProvider serviceProvider)
-    {
-        using IServiceScope scope = serviceProvider.CreateScope();
-        using DataContext dbContext = scope.ServiceProvider.GetService<DataContext>();
+    app.Run();
+  }
 
-        if (dbContext.Database.EnsureCreated())
-        {
-            Seeder seeder = new Seeder(dbContext);
-            seeder.SeedAll();
-        }
+  private static void SeedDatabase(IServiceProvider serviceProvider)
+  {
+    using IServiceScope scope = serviceProvider.CreateScope();
+    using DataContext dbContext = scope.ServiceProvider.GetService<DataContext>();
+
+    if (dbContext.Database.EnsureCreated())
+    {
+      Seeder seeder = new Seeder(dbContext);
+      seeder.SeedAll();
     }
+  }
 }

@@ -1,0 +1,9 @@
+﻿namespace Backend.Models.DTOs;
+
+public class UserDto
+{
+  public long Id { get; set; }
+  public string Username { get; set; }
+  public string Avatar { get; set; }
+  public ConnectionState ConnectionState { get; set; }
+}

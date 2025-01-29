@@ -2,24 +2,25 @@
 using Backend.Models.Database.Entities;
 using Backend.Models.DTOs;
 using Backend.Models.Mappers;
+using Backend.WebSockets;
 
 namespace Backend.Services;
 
 public class FriendshipService
 {
   private readonly UnitOfWork _unitOfWork;
-	private readonly FriendMapper _friendMapper;
+	private readonly UserMapper _userMapper;
 
-	public FriendshipService(UnitOfWork unitOfWork, FriendMapper friendMapper)
+	public FriendshipService(UnitOfWork unitOfWork, UserMapper friendMapper)
 	{
 		_unitOfWork = unitOfWork;
-		_friendMapper = friendMapper;
+		_userMapper = friendMapper;
 	}
 
-	public async Task<IEnumerable<FriendDto>> GetFriendList(long userId)
+	public async Task<IEnumerable<UserDto>> GetFriendList(WebSocketLink connection)
 	{
-		User thisUser = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+		List<User> friendList = await _unitOfWork.userFriendshipRepository.GetFriendList(connection.Id);
 
-		return _friendMapper.ToDto(thisUser.Friends);
+		return _userMapper.ToDto(friendList);
 	}
 }

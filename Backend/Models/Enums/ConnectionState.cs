@@ -1,6 +1,6 @@
 namespace Backend.Models;
 
-public enum UserState
+public enum ConnectionState
 {
     Offline,
     Online,
