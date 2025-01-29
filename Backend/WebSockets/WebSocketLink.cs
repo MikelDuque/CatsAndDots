@@ -32,35 +32,18 @@ public class WebSocketLink : IDisposable
   }
 
   //EVENTOS
-  public event Func<WebSocketLink, string, Task> MessageRecived;
   public event Func<WebSocketLink, string, Task> FriendRequest;
   public event Func<WebSocketLink, Task> Disconnected;
 
   public async Task HandleEventAsync() {
     while (connectionState == ConnectionState.Online)
     {
-      //HACER LOGICA DE MENSAJE STRING => JSON, PARA SACAR EL TIPO DE EVENTO
-
       string message = await ReadAsync();
 
-      if (!message.IsNullOrEmpty())
-      {
-        if (MessageRecived != null)
-        {
-          await MessageRecived.Invoke(this, message);
-        }
-        
-        if (FriendRequest != null)
-        {
-          await FriendRequest.Invoke(this, message);
-        }
-      }
+      if (!message.IsNullOrEmpty()) InvokeEvents(message);
 		}
 
-    if (Disconnected != null)
-    {
-      await Disconnected.Invoke(this);
-    }
+    if (Disconnected != null) await Disconnected.Invoke(this);
   }
      
   private async Task<string> ReadAsync() 
@@ -99,6 +82,18 @@ public class WebSocketLink : IDisposable
   {
     connectionState = ConnectionState.Offline;
     _webSocket.Dispose();
+  }
+
+  private async void InvokeEvents(string message)
+  {
+    string type = GetMessageType(message);
+
+    switch (type)
+    {
+      case "FriendRequest":
+        await FriendRequest.Invoke(this, message);
+        break;
+    }
   }
 
   private string GetMessageType(string JsonObject)

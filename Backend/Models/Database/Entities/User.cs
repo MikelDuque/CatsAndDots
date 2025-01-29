@@ -14,5 +14,4 @@ public class User
 
   /* RELACIONES N:M */
   public ICollection<User> Friends { get; } = [];
-  public ICollection<UserFriend> FriendConnections { get; }
 }

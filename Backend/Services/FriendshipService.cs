@@ -9,18 +9,18 @@ namespace Backend.Services;
 public class FriendshipService
 {
   private readonly UnitOfWork _unitOfWork;
-	private readonly FriendMapper _friendMapper;
+	private readonly UserMapper _userMapper;
 
-	public FriendshipService(UnitOfWork unitOfWork, FriendMapper friendMapper)
+	public FriendshipService(UnitOfWork unitOfWork, UserMapper friendMapper)
 	{
 		_unitOfWork = unitOfWork;
-		_friendMapper = friendMapper;
+		_userMapper = friendMapper;
 	}
 
 	public async Task<IEnumerable<UserDto>> GetFriendList(WebSocketLink connection)
 	{
-		List<User> friendList = await _unitOfWork.UserRepository.GetFriendList(connection.Id);
+		List<User> friendList = await _unitOfWork.userFriendshipRepository.GetFriendList(connection.Id);
 
-		return _friendMapper.ToDto(friendList);
+		return _userMapper.ToDto(friendList);
 	}
 }

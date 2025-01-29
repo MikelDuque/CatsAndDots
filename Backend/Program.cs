@@ -70,10 +70,10 @@ public class Program
 
     //Repositorios
     builder.Services.AddScoped<UserRepository>();
-    builder.Services.AddScoped<UserUserRepository>();
+    builder.Services.AddScoped<UserFriendshipRepository>();
 
 		//Mappers
-		builder.Services.AddScoped<FriendMapper>();
+		builder.Services.AddScoped<UserMapper>();
 
     //Servicios
     builder.Services.AddSingleton<WebSocketNetwork>();
