@@ -2,7 +2,7 @@ namespace Backend.Models.Database.Repositories;
 
 public interface IRepository<TEntity> where TEntity : class
 {
-Task<ICollection<TEntity>> GetAllAsync();
+  Task<ICollection<TEntity>> GetAllAsync();
   IQueryable<TEntity> GetQueryable(bool asNoTracking = true);
 
   Task<TEntity> GetByIdAsync(object id);

@@ -1,82 +1,77 @@
 using System.Net.WebSockets;
 using System.Text.Json;
-using Backend.Models.Database;
-using Backend.Models.Database.Entities;
 using Backend.Models.DTOs;
-using Backend.Models.Enums;
-using Backend.Models.Mappers;
-using Backend.Services;
 
 namespace Backend.WebSockets;
 
 public class WebSocketNetwork
 {
-  private readonly List<WebSocketHandler> _handlers = new();
+  private readonly List<WebSocketLink> _connections = new();
   private readonly SemaphoreSlim _semaphore = new(1, 1);
-  private readonly IServiceScopeFactory _scopeFactory;
+  private readonly FriendshipSystem _friendshipSystem;
 
   public WebSocketNetwork(IServiceScopeFactory scopeFactory)
   {
-    _scopeFactory = scopeFactory;
+    _friendshipSystem = new FriendshipSystem(scopeFactory);
   }
 
   public async Task HandleAsync(WebSocket webSocket, long userId)
   {
-    WebSocketHandler handler = await AddWebsocketAsync(webSocket, userId);
+    WebSocketLink connection = await AddWebsocketAsync(webSocket, userId);
 
-    await handler.HandleAsync();
+    await connection.HandleEventAsync();
   }
 
-  private async Task<WebSocketHandler> AddWebsocketAsync(WebSocket webSocket, long userId)
+  private async Task<WebSocketLink> AddWebsocketAsync(WebSocket webSocket, long userId)
   {
     await _semaphore.WaitAsync();
 
-    WebSocketHandler handler = new WebSocketHandler(userId, webSocket);
-    handler.Disconnected += OnDisconnectedAsync;
-    handler.FriendRequest += OnFriendRequestAsync;
+    WebSocketLink connection = new WebSocketLink(userId, webSocket);
+    connection.Disconnected += OnDisconnectedAsync;
+    connection.FriendRequest += OnFriendRequestAsync;
 
-    _handlers.Add(handler);
+    _connections.Add(connection);
     _semaphore.Release();
 
-    await OnConnectedAsync(handler);
+    await OnConnectedAsync(connection);
 
-    return handler;
+    return connection;
   }
 
-  private async Task OnDisconnectedAsync(WebSocketHandler disconnectedHandler)
+  private async Task OnDisconnectedAsync(WebSocketLink disconnectedHandler)
   {
     await _semaphore.WaitAsync();
 
     disconnectedHandler.Disconnected -= OnDisconnectedAsync;
     disconnectedHandler.FriendRequest -= OnFriendRequestAsync;
 
-    _handlers.Remove(disconnectedHandler);
+    _connections.Remove(disconnectedHandler);
     _semaphore.Release();
   }
 
-  private async Task OnConnectedAsync(WebSocketHandler connectedHandler)
+  private async Task OnConnectedAsync(WebSocketLink connectedUser)
   {
-    await GetMenuData(connectedHandler);
-    await GetFriendlist(connectedHandler);
+    await GetMenuData(connectedUser);
+    await _friendshipSystem.GetFriendlist(connectedUser, _connections.ToArray());
   }
 
-  private Task OnFriendRequestAsync(WebSocketHandler userHandler, string jsonObject)
+  private Task OnFriendRequestAsync(WebSocketLink userHandler, string jsonObject)
   {
     FriendRequest request = JsonSerializer.Deserialize<FriendRequest>(jsonObject);
 
 		List<Task> tasks = new List<Task>();
-		WebSocketHandler[] handlers = _handlers.ToArray();
+		WebSocketLink[] handlers = _connections.ToArray();
 
     //SEGUIR
 
 		return Task.WhenAll(tasks);
 	}
 
-  //SUBMÉTODOS
-  private Task GetMenuData(WebSocketHandler newHandler)
+  //SUBMETODOS
+  private Task GetMenuData(WebSocketLink newHandler)
   {
     List<Task> tasks = new();
-    WebSocketHandler[] handlers = _handlers.ToArray();
+    WebSocketLink[] handlers = _connections.ToArray();
 
     MenuData menuData = new()
     {
@@ -85,41 +80,12 @@ public class WebSocketNetwork
       CurrentMatches = 0 //CAMBIAR
     };
 
-    foreach (WebSocketHandler handler in handlers)
+    foreach (WebSocketLink handler in handlers)
     {
       tasks.Add(handler.SendAsync(JsonSerializer.Serialize(menuData)));
     }
 
     return Task.WhenAll(tasks);
-  }
-
-  private async Task GetFriendlist(WebSocketHandler newHandler)
-  {
-		List<Task> tasks = new();
-
-    IEnumerable<FriendDto> friendList = await GetFriendListScoped(newHandler);
-
-		WebSocketHandler[] handlerFriends = _handlers.Where(handler => friendList.Any(friend => friend.Id == handler.Id)).ToArray();
-
-    foreach (WebSocketHandler handler in handlerFriends)
-    {
-			IEnumerable<FriendDto> handlerFriendList = await GetFriendListScoped(handler);
-
-			tasks.Add(handler.SendAsync(JsonSerializer.Serialize(handlerFriendList)));
-    }
-
-    await Task.WhenAll(tasks);
-  }
-
-  //SUBMÉTODOS SCOPED
-  private async Task<IEnumerable<FriendDto>> GetFriendListScoped(WebSocketHandler handler)
-  {
-    using (IServiceScope serviceScope = _scopeFactory.CreateScope())
-    {
-      FriendshipService friendService = serviceScope.ServiceProvider.GetRequiredService<FriendshipService>();
-
-      return await friendService.GetFriendList(handler);
-    }
   }
 }
 

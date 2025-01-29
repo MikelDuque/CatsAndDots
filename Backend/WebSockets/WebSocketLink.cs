@@ -1,42 +1,51 @@
+
 using System.Net.WebSockets;
 using System.Text;
+using Backend.Models;
 
 namespace Backend.WebSockets;
 
-public class WebSocketHandler : IDisposable
+public class WebSocketLink : IDisposable
 {
+
+  //VARIABLES INICIALES
   private const int BUFFER_SIZE = 4096;
 
   private readonly WebSocket _webSocket;
   private readonly byte[] _buffer;
 
   public long Id { get; init; }
-  public bool IsOpen => _webSocket.State == WebSocketState.Open;
+  public ConnectionState connectionState { get; set; }
 
-  public event Func<WebSocketHandler, string, Task> MessageRecived;
-  public event Func<WebSocketHandler, string, Task> FriendRequest;
-  public event Func<WebSocketHandler, Task> Disconnected;
 
-  public WebSocketHandler(long id, WebSocket webSocket)
+  //CONSTRUCTOR
+  public WebSocketLink(long id, WebSocket webSocket)
   {
     Id = id;
+    connectionState = ConnectionState.Online;
 
     _webSocket = webSocket;
     _buffer = new byte[BUFFER_SIZE];
   }
 
-  public async Task HandleAsync() {
-    while (IsOpen) {
-      //FUNCIONALIDAD MIENTRAS ESTÁ ABIERTO EL WEBSOCKET
+  //EVENTOS
+  public event Func<WebSocketLink, string, Task> MessageRecived;
+  public event Func<WebSocketLink, string, Task> FriendRequest;
+  public event Func<WebSocketLink, Task> Disconnected;
+
+  public async Task HandleEventAsync() {
+    while (connectionState == ConnectionState.Online)
+    {
       string message = await ReadAsync();
 
       if (string.IsNullOrEmpty(message)) { break; }
 
-      else if (MessageRecived != null)
+      if (MessageRecived != null)
 			{
 				await MessageRecived.Invoke(this, message);
 			}
-      else if (FriendRequest != null)
+      
+      if (FriendRequest != null)
 			{
         await FriendRequest.Invoke(this, message);
 			}
@@ -73,7 +82,7 @@ public class WebSocketHandler : IDisposable
 
   public async Task SendAsync(string message)
   {
-    if (IsOpen)
+    if (connectionState == ConnectionState.Online)
     {
       byte[] bytes = Encoding.UTF8.GetBytes(message);
       await _webSocket.SendAsync(bytes, WebSocketMessageType.Text, true, CancellationToken.None);
@@ -82,6 +91,7 @@ public class WebSocketHandler : IDisposable
 
   public void Dispose()
   {
+    connectionState = ConnectionState.Offline;
     _webSocket.Dispose();
   }
 }

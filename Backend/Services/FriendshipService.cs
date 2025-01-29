@@ -17,10 +17,10 @@ public class FriendshipService
 		_friendMapper = friendMapper;
 	}
 
-	public async Task<IEnumerable<FriendDto>> GetFriendList(WebSocketHandler handler)
+	public async Task<IEnumerable<FriendDto>> GetFriendList(WebSocketLink connection)
 	{
-		List<User> friendList = await _unitOfWork.UserRepository.GetFriendList(handler.Id);
+		List<User> friendList = await _unitOfWork.UserRepository.GetFriendList(connection.Id);
 
-		return _friendMapper.ToDto(friendList, handler.IsOpen);
+		return _friendMapper.ToDto(friendList);
 	}
 }
