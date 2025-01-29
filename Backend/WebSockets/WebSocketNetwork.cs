@@ -26,38 +26,40 @@ public class WebSocketNetwork
   {
     await _semaphore.WaitAsync();
 
-    WebSocketLink connection = new WebSocketLink(userId, webSocket);
-    connection.Disconnected += OnDisconnectedAsync;
-    connection.FriendRequest += OnFriendRequestAsync;
+    WebSocketLink newConnection = new WebSocketLink(userId, webSocket);
+    newConnection.Disconnected += OnDisconnectedAsync;
+    newConnection.FriendRequest += OnFriendRequestAsync;
 
-    _connections.Add(connection);
+    _connections.Add(newConnection);
     _semaphore.Release();
 
-    await OnConnectedAsync(connection);
+    await OnConnectedAsync(newConnection);
 
-    return connection;
+    return newConnection;
   }
 
-  private async Task OnDisconnectedAsync(WebSocketLink disconnectedHandler)
+  private async Task OnDisconnectedAsync(WebSocketLink disconnectedUser)
   {
     await _semaphore.WaitAsync();
 
-    disconnectedHandler.Disconnected -= OnDisconnectedAsync;
-    disconnectedHandler.FriendRequest -= OnFriendRequestAsync;
+    await _friendshipSystem.UpdateUserData(disconnectedUser.Id, _connections.ToArray());
 
-    _connections.Remove(disconnectedHandler);
+    disconnectedUser.Disconnected -= OnDisconnectedAsync;
+    disconnectedUser.FriendRequest -= OnFriendRequestAsync;
+
+    _connections.Remove(disconnectedUser);
     _semaphore.Release();
   }
 
   private async Task OnConnectedAsync(WebSocketLink connectedUser)
   {
-    await GetMenuData(connectedUser);
-    await _friendshipSystem.GetFriendlist(connectedUser, _connections.ToArray());
+    await GetMenuData();
+    await _friendshipSystem.OnConnectFriendData(connectedUser, _connections.ToArray());
   }
 
-  private Task OnFriendRequestAsync(WebSocketLink userHandler, string jsonObject)
+  private Task OnFriendRequestAsync(WebSocketLink connection, string message)
   {
-    FriendRequest request = JsonSerializer.Deserialize<FriendRequest>(jsonObject);
+    FriendRequest request = JsonSerializer.Deserialize<FriendRequest>(message);
 
 		List<Task> tasks = new List<Task>();
 		WebSocketLink[] handlers = _connections.ToArray();
@@ -68,21 +70,21 @@ public class WebSocketNetwork
 	}
 
   //SUBMETODOS
-  private Task GetMenuData(WebSocketLink newHandler)
+  private Task GetMenuData()
   {
     List<Task> tasks = new();
-    WebSocketLink[] handlers = _connections.ToArray();
+    WebSocketLink[] connections = _connections.ToArray();
 
     MenuData menuData = new()
     {
-      OnlineUsers = handlers.Length,
+      OnlineUsers = connections.Length,
       PlayingUsers = 0, //CAMBIAR
       CurrentMatches = 0 //CAMBIAR
     };
 
-    foreach (WebSocketLink handler in handlers)
+    foreach (WebSocketLink user in connections)
     {
-      tasks.Add(handler.SendAsync(JsonSerializer.Serialize(menuData)));
+      tasks.Add(user.SendAsync(JsonSerializer.Serialize(menuData)));
     }
 
     return Task.WhenAll(tasks);

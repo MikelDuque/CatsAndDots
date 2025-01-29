@@ -1,5 +1,8 @@
 using System.Text.Json;
+using Backend.Models.Database;
+using Backend.Models.Database.Entities;
 using Backend.Models.DTOs;
+using Backend.Models.Mappers;
 using Backend.Services;
 
 namespace Backend.WebSockets;
@@ -7,38 +10,68 @@ namespace Backend.WebSockets;
 public class FriendshipSystem
 {
   private readonly IServiceScopeFactory _scopeFactory;
+  private readonly IServiceScope _serviceScope;
+  private readonly UnitOfWork _unitOfWork;
+  private readonly FriendMapper _friendMapper;
 
   public FriendshipSystem(IServiceScopeFactory scopeFactory)
   {
     _scopeFactory = scopeFactory;
+    _serviceScope = _scopeFactory.CreateScope();
+    _unitOfWork = _serviceScope.ServiceProvider.GetRequiredService<UnitOfWork>();
+    _friendMapper = _serviceScope.ServiceProvider.GetRequiredService<FriendMapper>();
   }
 
-  public async Task GetFriendlist(WebSocketLink WSUser, WebSocketLink[] connections)
+  public async Task OnConnectFriendData(WebSocketLink connectedUser, WebSocketLink[] connections)
   {
-		List<Task> tasks = new();
+		await SendFriendList(connectedUser);
+    await UpdateUserData(connectedUser.Id, connections);
+  }
 
-    IEnumerable<FriendDto> friendList = await GetFriendListScoped(WSUser);
+  public async Task SendFriendList(WebSocketLink thisUser)
+  {
+    IEnumerable<UserDto> friendList = await GetFriendListDB(thisUser.Id);
 
-		WebSocketLink[] userFriends = connections.Where(user => friendList.Any(friend => friend.Id == user.Id)).ToArray();
+    await thisUser.SendAsync(JsonSerializer.Serialize(friendList));
+  }
 
-    foreach (WebSocketLink friend in userFriends)
+  //MOVER FUNCIÓN AL SISTEMA DE USUARIO. SE LLAMA TRAS HABER HECHO EL SAVE DE LOS CAMBIOS DE INFO EN LA BDD
+  public async Task UpdateUserData(long thisUserId, WebSocketLink[] connections)
+  {
+    List<Task> tasks = new();
+
+    UserDto thisUser = await GetUserDto(thisUserId);
+    IEnumerable<UserDto> friendList = await GetFriendListDB(thisUserId);
+
+    foreach (WebSocketLink connectedUser in connections)
     {
-			IEnumerable<FriendDto> handlerFriendList = await GetFriendListScoped(friend);
-
-			tasks.Add(WSUser.SendAsync(JsonSerializer.Serialize(handlerFriendList)));
+      if (friendList.Any(friend => friend.Id == connectedUser.Id))
+      {
+        tasks.Add(connectedUser.SendAsync(JsonSerializer.Serialize(thisUser)));
+      }
     }
 
     await Task.WhenAll(tasks);
   }
 
   //SUBMETODOS SCOPED
-  private async Task<IEnumerable<FriendDto>> GetFriendListScoped(WebSocketLink connection)
+  private async Task<IEnumerable<UserDto>> GetFriendListDB(long userId)
   {
     using (IServiceScope serviceScope = _scopeFactory.CreateScope())
     {
-      FriendshipService friendService = serviceScope.ServiceProvider.GetRequiredService<FriendshipService>();
+      List<User> friendList = await _unitOfWork.UserRepository.GetFriendList(userId);
 
-      return await friendService.GetFriendList(connection);
+		  return _friendMapper.ToDto(friendList);
+    }
+  }
+
+  private async Task<UserDto> GetUserDto(long userId)
+  {
+    using (IServiceScope serviceScope = _scopeFactory.CreateScope())
+    {
+      User user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+
+		  return _friendMapper.ToDto(user);
     }
   }
 

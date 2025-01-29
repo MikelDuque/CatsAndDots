@@ -17,7 +17,7 @@ public class FriendshipService
 		_friendMapper = friendMapper;
 	}
 
-	public async Task<IEnumerable<FriendDto>> GetFriendList(WebSocketLink connection)
+	public async Task<IEnumerable<UserDto>> GetFriendList(WebSocketLink connection)
 	{
 		List<User> friendList = await _unitOfWork.UserRepository.GetFriendList(connection.Id);
 

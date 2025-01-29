@@ -1,6 +1,6 @@
 ﻿namespace Backend.Models.DTOs;
 
-public class FriendDto
+public class UserDto
 {
   public long Id { get; set; }
   public string Username { get; set; }

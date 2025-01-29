@@ -1,7 +1,10 @@
 
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using Backend.Models;
+using Backend.WebSockets.Messages;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.WebSockets;
 
@@ -36,19 +39,22 @@ public class WebSocketLink : IDisposable
   public async Task HandleEventAsync() {
     while (connectionState == ConnectionState.Online)
     {
+      //HACER LOGICA DE MENSAJE STRING => JSON, PARA SACAR EL TIPO DE EVENTO
+
       string message = await ReadAsync();
 
-      if (string.IsNullOrEmpty(message)) { break; }
-
-      if (MessageRecived != null)
-			{
-				await MessageRecived.Invoke(this, message);
-			}
-      
-      if (FriendRequest != null)
-			{
-        await FriendRequest.Invoke(this, message);
-			}
+      if (!message.IsNullOrEmpty())
+      {
+        if (MessageRecived != null)
+        {
+          await MessageRecived.Invoke(this, message);
+        }
+        
+        if (FriendRequest != null)
+        {
+          await FriendRequest.Invoke(this, message);
+        }
+      }
 		}
 
     if (Disconnected != null)
@@ -93,5 +99,12 @@ public class WebSocketLink : IDisposable
   {
     connectionState = ConnectionState.Offline;
     _webSocket.Dispose();
+  }
+
+  private string GetMessageType(string JsonObject)
+  {
+    IMessage<Object> message = JsonSerializer.Deserialize<IMessage<Object>>(JsonObject);
+
+    return message.MessageType;
   }
 }
