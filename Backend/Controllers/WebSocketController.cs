@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.WebSockets;
-using System.Security.Claims;
-
 
 namespace Backend.Controllers;
 
@@ -28,13 +26,7 @@ public class WebSocketController : ControllerBase
   public async Task ConnectAsync()
   {
 		WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-		// authHeader = HttpContext.Request.Headers["Authorization"].ToString();
-		//string token = authHeader.Substring("Bearer ".Length).Trim();
-
 		string token = await HttpContext.GetTokenAsync("access_token");
-
-		//WebSocket webSocket = (WebSocket)HttpContext.Items["WebSocket"];
-		//object userId = HttpContext.Items["UserId"];
 
 		try
 		{
@@ -49,19 +41,5 @@ public class WebSocketController : ControllerBase
 		{
 			HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 		}
-
-		/*
-    if (HttpContext.WebSockets.IsWebSocketRequest)
-    {
-      WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-			//long userId = (long)HttpContext.Items["UserId"];
-
-			await _websocketNetwork.HandleAsync(webSocket, 1);
-    }
-    else
-    {
-      HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-    }
-    */
 	}
 }
