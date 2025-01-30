@@ -20,7 +20,7 @@ export default function MenuHeader({ decodedToken }: MenuHeaderProps) {
         </div>
       </section>
       <section>
-        Hola {decodedToken ? decodedToken : "Invitado"}
+        Hola {decodedToken}
       </section>
 
     </header>

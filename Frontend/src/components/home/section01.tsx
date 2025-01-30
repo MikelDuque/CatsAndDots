@@ -18,9 +18,9 @@ export default function Section01() {
         <Image src={theme === "light" ? LogoDia : LogoNoche} alt="Logo"/>
       </figure>
       <figure className="w-full h-2/5 flex items-center justify-center bg-cover bg-center bg-fixed bg-[url('@/../public/Home/gato-big-bg.jpg')]  bg-black/50 bg-blend-overlay">
-        <Button className="p-10 shadow-md shadow-slate-700" onClick={() => router.push("/login")}>
-          <Title moreClasses="text-4xl">Play now!</Title>
-        </Button>
+          <Button className="p-10 shadow-md shadow-slate-700" onClick={() => router.push("/login")}>
+            <Title moreClasses="text-4xl">Play now!</Title>
+          </Button>
       </figure>
     </section>
   );

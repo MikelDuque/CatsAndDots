@@ -1,32 +1,31 @@
 "use client"
-import { getAuth } from "@/features/auth/queries/get-auth";
+
 import { useState, useEffect } from "react";
 import { useWebsocketContext } from "@/features/websocket/contextApi";
 import MenuHeader from "@/components/menu/menuHeader";
+import Friends from "@/components/menu/friends";
 import ThemeSwitcher from "@/components/theme/theme-switcher";
-export default  function Menu() {
-  const [decodeToken, setDecodeToken] = useState<string | null>(null);  
-  const { establecerConexion } = useWebsocketContext();
-  useEffect(() => {
-      async function establecerCanal() {
-        const authData = await getAuth();
-        if (authData?.token) {
-          setDecodeToken(authData?.decodedToken?.unique_name ?? "Invitado");
-          console.log("Establecer conexions")
-            establecerConexion(authData.token);
-           
-        }
-      }
+import { Button } from "@/components/ui/button";
+import Title from "@/components/utils/title";
+
+export default function Menu() {
   
-      establecerCanal();
-  }, []);
+  const { isConnected, token } = useWebsocketContext();
+ console.log("is connected", isConnected)
 
   return (
     <>
-    <main>
-    <MenuHeader decodedToken={decodeToken} />
-    </main>
-    <ThemeSwitcher/>
+      <main>
+        <MenuHeader decodedToken={token.decodeToken} />
+        <section className="flex justify-center items-center">
+          <Button className="p-10 shadow-md shadow-slate-700 " >
+            <Title moreClasses="text-4xl">Buscar Partida</Title>
+          </Button>
+        </section>
+
+        <Friends />
+      </main>
+      <ThemeSwitcher />
     </>
   );
 }
