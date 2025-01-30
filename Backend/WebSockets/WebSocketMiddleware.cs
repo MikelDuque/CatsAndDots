@@ -1,9 +1,4 @@
-﻿using Backend.Models.Database.Entities;
-using System.Security.Claims;
-using Backend.Services;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Backend.WebSockets;
+﻿namespace Backend.WebSockets;
 
 public class WebSocketMiddleware
 {
@@ -32,7 +27,7 @@ public class WebSocketMiddleware
 			return;
 		}
 
-		context.Request.Headers["Authorization"] = "Bearer " + token;
+		context.Request.Headers.Authorization = "Bearer " + token;
 
 		/*
 

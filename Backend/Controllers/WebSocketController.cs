@@ -38,7 +38,7 @@ public class WebSocketController : ControllerBase
 
 		try
 		{
-			long userId = (long)await _authService.GetUserIdFromToken(token);
+			long userId = await _authService.GetUserIdFromToken(token);
 			await _websocketNetwork.HandleAsync(webSocket, userId);
 		}
 		catch (SecurityTokenValidationException)
