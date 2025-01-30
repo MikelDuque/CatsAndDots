@@ -20,7 +20,7 @@ export default function MenuHeader({ decodedToken }: MenuHeaderProps) {
         </div>
       </section>
       <section>
-        Hola {decodedToken ? decodedToken : "Invitado"}
+        Hola {decodedToken ? decodedToken : "Invitado"} {/* Esto no es necesario, en nuestro modelo no existen los invitados, ya que solo aquellos que inicien sesión pueden acceder al menú */}
       </section>
 
     </header>

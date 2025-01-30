@@ -35,8 +35,10 @@ export const WebsocketProvider = ({ children }: WebsocketProviderProps) => {
             console.warn("WebSocket ya está conectado.");
             return;
         }
-        console.log(`establecerConexion ${WEBSOCKET_URL}?token=${token}`)
-        const ws = new WebSocket(`${WEBSOCKET_URL}`);
+        console.log(`establecerConexion ${WEBSOCKET_URL}?access_token=${token}`)
+        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
+        console.log("ws:", ws);
+        
 
         ws.onopen = () => {
             console.log("WebSocket conectado.");

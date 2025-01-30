@@ -91,7 +91,7 @@ public class WebSocketLink : IDisposable
     switch (type)
     {
       case "FriendRequest":
-        await FriendRequest.Invoke(this, message);
+        if (FriendRequest != null) await FriendRequest.Invoke(this, message);
         break;
     }
   }
