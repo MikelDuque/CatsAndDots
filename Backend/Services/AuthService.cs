@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Backend.Helpers;
-using Backend.Models;
 using Backend.Models.Database;
 using Backend.Models.Database.Entities;
 using Backend.Models.DTOs;
@@ -50,7 +49,7 @@ public class AuthService
     return Login(loggedUser);
   }
 
-  string Login(User user)
+  private string Login(User user)
   {
     SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
     {
@@ -64,9 +63,7 @@ public class AuthService
 
       Expires = DateTime.UtcNow.AddHours(1),
 
-      SigningCredentials = new SigningCredentials(
-      _tokenParameters.IssuerSigningKey,
-      SecurityAlgorithms.HmacSha256Signature)
+      SigningCredentials = new SigningCredentials(_tokenParameters.IssuerSigningKey, SecurityAlgorithms.HmacSha256Signature)
     };
 
     JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
@@ -75,4 +72,24 @@ public class AuthService
 
     return stringToken;
   }
+
+  public async Task<long> GetUserIdFromToken(string token)
+  {
+    try
+    {
+			JwtSecurityTokenHandler tokenHandler = new();
+
+			TokenValidationResult decodedToken = await tokenHandler.ValidateTokenAsync(token, _tokenParameters);
+
+			IDictionary<string, object> claims = decodedToken.Claims;
+
+      if (claims.TryGetValue("id", out object id)) return Convert.ToInt64(id);
+
+      throw new SecurityTokenValidationException("No se ha podido obtener el ID de usuario");
+		}
+    catch (SecurityTokenValidationException)
+    {
+			throw;
+		}
+	}
 }

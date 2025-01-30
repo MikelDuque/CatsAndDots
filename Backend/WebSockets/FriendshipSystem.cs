@@ -56,22 +56,18 @@ public class FriendshipSystem
   //SUBMETODOS SCOPED
   private async Task<IEnumerable<UserDto>> GetFriendListDB(long userId)
   {
-    using (IServiceScope serviceScope = _scopeFactory.CreateScope())
-    {
-      List<User> friendList = await _unitOfWork.userFriendshipRepository.GetFriendList(userId);
+    using IServiceScope serviceScope = _scopeFactory.CreateScope();
+    List<User> friendList = await _unitOfWork.userFriendshipRepository.GetFriendList(userId);
 
-		  return _userMapper.ToDto(friendList);
-    }
+    return _userMapper.ToDto(friendList);
   }
 
   private async Task<UserDto> GetUserDto(long userId)
   {
-    using (IServiceScope serviceScope = _scopeFactory.CreateScope())
-    {
-      User user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+    using IServiceScope serviceScope = _scopeFactory.CreateScope();
+    User user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
 
-		  return _userMapper.ToDto(user);
-    }
+    return _userMapper.ToDto(user);
   }
 
 }

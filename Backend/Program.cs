@@ -75,8 +75,8 @@ public class Program
 		//Mappers
 		builder.Services.AddScoped<UserMapper>();
 
-    //Servicios
-    builder.Services.AddSingleton<WebSocketNetwork>();
+		//Servicios
+		builder.Services.AddSingleton<WebSocketNetwork>();
 
     builder.Services.AddScoped<AuthService>();
     builder.Services.AddScoped<FriendshipService>();
@@ -96,9 +96,13 @@ public class Program
                 .AllowAnyMethod()
                 .AllowAnyOrigin());
 
-    app.UseWebSockets();
-    app.UseHttpsRedirection();
-    app.UseAuthentication();
+		app.UseHttpsRedirection();
+		app.UseRouting();
+
+		app.UseWebSockets();
+    app.UseMiddleware<WebSocketMiddleware>();
+
+		app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();

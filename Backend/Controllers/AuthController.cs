@@ -4,7 +4,6 @@ using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Controllers;
 
@@ -12,12 +11,10 @@ namespace Backend.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly TokenValidationParameters _tokenParameters;
     private readonly AuthService _authService;
 
     public AuthController(IOptionsMonitor<JwtBearerOptions> jwtOptions, AuthService authService)
     {
-        _tokenParameters = jwtOptions.Get(JwtBearerDefaults.AuthenticationScheme).TokenValidationParameters;
         _authService = authService;
     }
 
