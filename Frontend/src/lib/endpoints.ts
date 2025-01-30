@@ -8,6 +8,6 @@ const API_AUTH_URL = `${BASE_HTTP_URL}/api/Auth`;
   export const REGISTER_URL = `${API_AUTH_URL}/Register`;
 
 /* --- WEBSOCKET CONTROLLER --- */
-export const WEBSOCKET_URL = `${BASE_WS_URL}/api/Websocket`;
+export const WEBSOCKET_URL = `${BASE_WS_URL}/Websocket`;
 
 console.log('BASE_WS_URL:', BASE_WS_URL);

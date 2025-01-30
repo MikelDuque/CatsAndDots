@@ -39,10 +39,10 @@ export const WebsocketProvider = ({ children }: WebsocketProviderProps) => {
     useEffect(() => {
         if (!token || socket) return; // No conectar si no hay token o ya hay un socket activo
 
-        const ws = new WebSocket(`${WEBSOCKET_URL}?token=${token}`);
+        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
 
         ws.onopen = () => {
-            console.log("WebSocket conectado.");
+            console.log("WebSocket conectado.", ws);
             setSocket(ws);
             setIsConnected(true);
         };

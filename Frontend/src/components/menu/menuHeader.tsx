@@ -1,5 +1,5 @@
 interface MenuHeaderProps {
-  decodedToken: string | null;
+  decodedToken: string | undefined;
 }
 
 export default function MenuHeader({ decodedToken }: MenuHeaderProps) {
