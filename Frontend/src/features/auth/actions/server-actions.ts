@@ -7,7 +7,7 @@ import { menuPath } from "@/lib/paths";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
-import { cookies } from "next/headers";
+import { cookies } from "next/headers";;
 
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
   const loginRequest = {
@@ -88,3 +88,9 @@ async function saveAuthToken(token: string) {
   });
 };
 
+export async function LogOut() {
+  const cookieStore = await cookies();
+  
+  // Eliminar la cookie authToken
+  cookieStore.delete("authToken");
+}

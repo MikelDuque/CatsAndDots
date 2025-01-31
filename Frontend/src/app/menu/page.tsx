@@ -6,23 +6,26 @@ import ThemeSwitcher from "@/components/theme/theme-switcher";
 import { Button } from "@/components/ui/button";
 import Title from "@/components/utils/title";
 import { getAuth } from "@/features/auth/queries/get-auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Menu() {
-  var username;
+  const [userData, setUserData] = useState<string | undefined>(undefined);
+  
   useEffect(() => {
     async function GetDecodedToken() {
       const {decodedToken} = await getAuth();
-      username=decodedToken?.unique_name
+      setUserData(decodedToken?.unique_name)
+    
     }
-
+    
+    GetDecodedToken();
   }, [])
   
 
   return (
     <>
       <main>
-        <MenuHeader decodedToken={username} />
+        <MenuHeader decodedToken={userData} />
         <section className="flex justify-center items-center">
           <Button className="p-10 shadow-md shadow-slate-700 " >
             <Title moreClasses="text-4xl">Buscar Partida</Title>

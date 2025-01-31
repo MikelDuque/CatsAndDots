@@ -7,6 +7,12 @@ import { getAuth } from "@/features/auth/queries/get-auth";
 interface WebsocketContextType {
     sendMessage: (message: object) => void;
     isConnected: boolean;
+    data: WebsocketData;
+}
+interface WebsocketData {
+    onlineUsers: number;
+    playingUsers: number;
+    currentMatches: number;
 }
 
 export const WebsocketContext = createContext<WebsocketContextType | undefined>(undefined);
@@ -27,6 +33,7 @@ export const WebsocketProvider = ({ children }: WebsocketProviderProps) => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState(false);
+    const [data, setData] = useState<WebsocketData>({ onlineUsers: 0, playingUsers: 0, currentMatches: 0 });
 
     useEffect(() => {
         async function LeerToken() {
@@ -48,8 +55,12 @@ export const WebsocketProvider = ({ children }: WebsocketProviderProps) => {
         };
 
         ws.onmessage = (event: MessageEvent) => {
-            const data = JSON.parse(event.data);
-            console.log("Mensaje recibido:", data);
+            const parsedData = JSON.parse(event.data);
+            setData({
+                onlineUsers: parsedData.OnlineUsers || 0,
+                playingUsers: parsedData.PlayingUsers || 0,
+                currentMatches: parsedData.CurrentMatches || 0
+            });
         };
 
         ws.onclose = () => {
@@ -78,6 +89,7 @@ export const WebsocketProvider = ({ children }: WebsocketProviderProps) => {
     const contextValue: WebsocketContextType = {
         sendMessage,
         isConnected,
+        data,
     };
 
     return (
