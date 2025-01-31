@@ -1,18 +1,23 @@
 using System.Net.WebSockets;
 using System.Text.Json;
-using Backend.Models.DTOs;
+using Backend.Models;
+using Backend.WebSockets.Messages;
+using Backend.WebSockets.Systems;
 
 namespace Backend.WebSockets;
 
 public class WebSocketNetwork
 {
-  private readonly List<WebSocketLink> _connections = new();
+  private readonly List<WebSocketLink> _connections = [];
   private readonly SemaphoreSlim _semaphore = new(1, 1);
+
+  private readonly UserSystem _userSystem;
   private readonly FriendshipSystem _friendshipSystem;
 
   public WebSocketNetwork(IServiceScopeFactory scopeFactory)
   {
     _friendshipSystem = new FriendshipSystem(scopeFactory);
+    _userSystem = new UserSystem(scopeFactory);
   }
 
   public async Task HandleAsync(WebSocket webSocket, long userId)
@@ -26,9 +31,9 @@ public class WebSocketNetwork
   {
     await _semaphore.WaitAsync();
 
-    WebSocketLink newConnection = new WebSocketLink(userId, webSocket);
-    newConnection.Disconnected += OnDisconnectedAsync;
-    newConnection.FriendRequest += OnFriendRequestAsync;
+    WebSocketLink newConnection = new(userId, webSocket);
+		newConnection.FriendRequest += OnFriendRequestAsync;
+		newConnection.Disconnected += OnDisconnectedAsync;
 
     _connections.Add(newConnection);
     _semaphore.Release();
@@ -42,10 +47,10 @@ public class WebSocketNetwork
   {
     await _semaphore.WaitAsync();
 
-    await _friendshipSystem.UpdateUserData(disconnectedUser.Id, _connections.ToArray());
+    await _userSystem.OnDisconnectedAsync(disconnectedUser, _connections.ToArray());
 
-    disconnectedUser.Disconnected -= OnDisconnectedAsync;
-    disconnectedUser.FriendRequest -= OnFriendRequestAsync;
+		disconnectedUser.FriendRequest -= OnFriendRequestAsync;
+		disconnectedUser.Disconnected -= OnDisconnectedAsync;    
 
     _connections.Remove(disconnectedUser);
     _semaphore.Release();
@@ -53,41 +58,15 @@ public class WebSocketNetwork
 
   private async Task OnConnectedAsync(WebSocketLink connectedUser)
   {
-    await GetMenuData();
-    await _friendshipSystem.OnConnectFriendData(connectedUser, _connections.ToArray());
+    await _userSystem.OnConnectedAsync(connectedUser, _connections.ToArray());
   }
 
-  private Task OnFriendRequestAsync(WebSocketLink connection, string message)
+  private async Task OnFriendRequestAsync(WebSocketLink connectedUser, string message)
   {
-    FriendRequest request = JsonSerializer.Deserialize<FriendRequest>(message);
+    FriendRequestMessage request = JsonSerializer.Deserialize<FriendRequestMessage>(message);
 
-		List<Task> tasks = new List<Task>();
-		WebSocketLink[] handlers = _connections.ToArray();
-
-    //SEGUIR
-
-		return Task.WhenAll(tasks);
+		await _friendshipSystem.ChangeFriendship(_connections.ToArray(), connectedUser, request.Body);
 	}
-
-  //SUBMETODOS
-  private Task GetMenuData()
-  {
-    List<Task> tasks = new();
-    WebSocketLink[] connections = _connections.ToArray();
-
-    MenuData menuData = new()
-    {
-      OnlineUsers = connections.Length,
-      PlayingUsers = 0, //CAMBIAR
-      CurrentMatches = 0 //CAMBIAR
-    };
-
-    foreach (WebSocketLink user in connections)
-    {
-      tasks.Add(user.SendAsync(JsonSerializer.Serialize(menuData)));
-    }
-
-    return Task.WhenAll(tasks);
-  }
+  
 }
 

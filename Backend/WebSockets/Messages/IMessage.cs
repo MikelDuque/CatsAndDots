@@ -2,8 +2,8 @@ namespace Backend.WebSockets;
 
 public interface IMessage<TBody> where TBody : class
 {
-  public string MessageType { get; set; }
-  public TBody Body { get; set; }
+  string MessageType { get; set; }
+  TBody Body { get; set; }
 }
 
 /*

@@ -5,7 +5,6 @@ namespace Backend.Models.Mappers;
 
 public class UserMapper
 {
-  //TO DTO
   public UserDto ToDto(User user)
   {
     return new UserDto
