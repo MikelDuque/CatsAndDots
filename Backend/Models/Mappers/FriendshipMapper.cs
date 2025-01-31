@@ -5,20 +5,32 @@ namespace Backend.Models.Mappers;
 
 public class FriendshipMapper
 {
-	public UserFriendship ToEntity(FriendRequest request)
+	public UserFriendship ToPendingEntity(FriendRequest request)
 	{
-		FriendRequestState state = request.RequestState;
-
 		return new UserFriendship
 		{
 			UserAId = request.SenderId,
 			UserBId = request.ReceiverId,
-			WhenFriendship = state == FriendRequestState.Accepted ? DateTime.UtcNow : null
+			WhenFriendship = null
+		};
+	}
+	public UserFriendship ToAcceptedEntity(FriendRequest request)
+	{
+		return new UserFriendship
+		{
+			UserAId = request.ReceiverId,
+			UserBId = request.SenderId,
+			WhenFriendship = DateTime.UtcNow
 		};
 	}
 
-	public IEnumerable<UserFriendship> ToEntity(IEnumerable<FriendRequest> friendRequests)
+	public IEnumerable<UserFriendship> ToPendingEntity(IEnumerable<FriendRequest> friendRequests)
 	{
-		return friendRequests.Select(ToEntity);
+		return friendRequests.Select(ToPendingEntity);
+	}
+
+	public IEnumerable<UserFriendship> ToAcceptedEntity(IEnumerable<FriendRequest> friendRequests)
+	{
+		return friendRequests.Select(ToAcceptedEntity);
 	}
 }
