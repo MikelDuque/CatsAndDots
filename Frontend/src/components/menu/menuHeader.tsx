@@ -4,14 +4,16 @@ import { useWebsocketContext } from "@/features/websocket/contextApi";
 import { Button } from "../ui/button";
 import { useRouter } from 'next/navigation'
 import { LogOut } from "@/features/auth/actions/server-actions";
-
-
+import Image from "next/image";
+import { BASE_HTTPS_URL } from "@/lib/endpoints";
 
 interface MenuHeaderProps {
-  decodedToken: string | undefined;
+  username: string | undefined;
+  userImg: string | undefined;
 }
 
-export default function MenuHeader({ decodedToken }: MenuHeaderProps) {
+export default function MenuHeader({ username, userImg }: MenuHeaderProps) {
+
   const { data } = useWebsocketContext();
   const router = useRouter()
 
@@ -37,8 +39,13 @@ export default function MenuHeader({ decodedToken }: MenuHeaderProps) {
 
         </div>
         <div>
-          Hola {decodedToken}
+          Hola {username}
         </div>
+        <figure className="relative aspect-square max-w-[40px] max-h-[40px]">
+          <img src={`${BASE_HTTPS_URL}${userImg}`} alt="" />
+        </figure>
+
+
       </section>
     </header>
   );
