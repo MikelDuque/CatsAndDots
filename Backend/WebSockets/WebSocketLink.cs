@@ -42,7 +42,11 @@ public class WebSocketLink : IDisposable
       if (!string.IsNullOrWhiteSpace(message)) InvokeEvents(message);
 		}
 
-    if (Disconnected != null) await Disconnected.Invoke(this);
+    if (Disconnected != null)
+    {
+      await Disconnected.Invoke(this);
+      ConnectionState = ConnectionState.Offline;
+    }
   }
      
   private async Task<string> ReadAsync() 
@@ -94,7 +98,6 @@ public class WebSocketLink : IDisposable
         break;
     }
   }
-
   private string GetMessageType(string JsonObject)
   {
     IMessage<Object> message = JsonSerializer.Deserialize<IMessage<Object>>(JsonObject);

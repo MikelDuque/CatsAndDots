@@ -57,8 +57,14 @@ public class Seeder
         UserAId = 2,
         UserBId = 3,
         WhenFriendship = DateTime.Now
-      }
-    ];
+      },
+			new UserFriendship
+			{
+				UserAId = 3,
+				UserBId = 2,
+				WhenFriendship = DateTime.Now
+			}
+		];
 
     /* --- INSERCCIÓN ENTIDADES --- */
     _dataContext.Users.AddRange(users);

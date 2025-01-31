@@ -29,9 +29,18 @@ public class FriendshipSystem
 		UnitOfWork unitOfWork = serviceScope.ServiceProvider.GetService<UnitOfWork>();
 		FriendshipMapper friendshipMapper = serviceScope.ServiceProvider.GetService<FriendshipMapper>();
 
-		if (friendRequest.RequestState == FriendRequestState.Declined) unitOfWork.userFriendshipRepository.Delete(friendshipMapper.ToEntity(friendRequest));
-
-		await unitOfWork.userFriendshipRepository.InsertAsync(friendshipMapper.ToEntity(friendRequest));
+		switch (friendRequest.RequestState)
+		{
+			case FriendRequestState.Declined:
+				unitOfWork.userFriendshipRepository.DeleteFriendship(friendRequest.SenderId, friendRequest.ReceiverId);
+				break;
+			case FriendRequestState.Pending:
+				await unitOfWork.userFriendshipRepository.InsertAsync(friendshipMapper.ToPendingEntity(friendRequest));
+				break;
+			case FriendRequestState.Accepted:
+				await unitOfWork.userFriendshipRepository.InsertAsync(friendshipMapper.ToAcceptedEntity(friendRequest));
+				break;
+		}
 		await unitOfWork.SaveAsync();
 	}
 

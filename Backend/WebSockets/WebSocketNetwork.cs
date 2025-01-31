@@ -1,6 +1,5 @@
 using System.Net.WebSockets;
 using System.Text.Json;
-using Backend.Models;
 using Backend.WebSockets.Messages;
 using Backend.WebSockets.Systems;
 
@@ -8,7 +7,7 @@ namespace Backend.WebSockets;
 
 public class WebSocketNetwork
 {
-  private readonly List<WebSocketLink> _connections = [];
+  private readonly HashSet<WebSocketLink> _connections = [];
   private readonly SemaphoreSlim _semaphore = new(1, 1);
 
   private readonly UserSystem _userSystem;
@@ -47,13 +46,12 @@ public class WebSocketNetwork
   {
     await _semaphore.WaitAsync();
 
-    await _userSystem.OnDisconnectedAsync(disconnectedUser, _connections.ToArray());
-
 		disconnectedUser.FriendRequest -= OnFriendRequestAsync;
 		disconnectedUser.Disconnected -= OnDisconnectedAsync;    
 
     _connections.Remove(disconnectedUser);
-    _semaphore.Release();
+		await _userSystem.OnDisconnectedAsync(disconnectedUser, _connections.ToArray());
+		_semaphore.Release();
   }
 
   private async Task OnConnectedAsync(WebSocketLink connectedUser)
