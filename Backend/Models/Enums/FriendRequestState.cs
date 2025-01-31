@@ -2,7 +2,7 @@
 
 public enum FriendRequestState
 {
-	None,
-	Friend,
-	Pending
+	Declined,
+	Pending,
+	Accepted
 }

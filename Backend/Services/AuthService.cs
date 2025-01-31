@@ -59,6 +59,7 @@ public class AuthService
         { ClaimTypes.Name, user.Username},
         { ClaimTypes.Email, user.Mail },
         { ClaimTypes.Role, user.Role },
+        { "avatar", user.Avatar }
       },
 
       Expires = DateTime.UtcNow.AddHours(1),
