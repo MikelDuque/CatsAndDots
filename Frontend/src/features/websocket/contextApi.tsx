@@ -3,104 +3,96 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { WEBSOCKET_URL } from "@/lib/endpoints";
 import { getAuth } from "@/features/auth/queries/get-auth";
+import { GenericMessage } from "../auth/types";
 
-interface WebsocketContextType {
+/* ---- TIPADOS ---- */
+type WebsocketContextType = {
+    data: GenericMessage | null | undefined;
     sendMessage: (message: object) => void;
-    isConnected: boolean;
-    data: WebsocketData;
-}
-interface WebsocketData {
-    onlineUsers: number;
-    playingUsers: number;
-    currentMatches: number;
+    setToken: (token: string | null) => void;
 }
 
-export const WebsocketContext = createContext<WebsocketContextType | undefined>(undefined);
-
-export const useWebsocketContext = (): WebsocketContextType => {
-    const context = useContext(WebsocketContext);
-    if (!context) {
-        throw new Error("useWebsocketContext debe usarse dentro de un WebsocketProvider");
-    }
-    return context;
-};
-
-interface WebsocketProviderProps {
+type WebsocketProviderProps = {
     children: ReactNode;
 }
 
-export const WebsocketProvider = ({ children }: WebsocketProviderProps) => {
-    const [socket, setSocket] = useState<WebSocket | null>(null);
-    const [token, setToken] = useState<string | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
-    const [data, setData] = useState<WebsocketData>({ onlineUsers: 0, playingUsers: 0, currentMatches: 0 });
+/* ----- DECLARACIÓN Context ----- */
+const WebsocketContext = createContext<WebsocketContextType | undefined>(undefined);
 
+export const useWebsocketContext = (): WebsocketContextType => {
+    const context = useContext(WebsocketContext);
+    if (!context) throw new Error("El contexto debe usarse dentro del provider");
+    return context;
+};
+
+/* ----- CUERPO del Context ----- */
+export function WebsocketProvider({ children }: WebsocketProviderProps) {
+    const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const [data, setData] = useState<GenericMessage | null | undefined>(null);
+
+    /*
+    //Guarda el Token en un state para usarlo en la llamada al websocket
     useEffect(() => {
         async function LeerToken() {
             const authData = await getAuth();
-            setToken(authData.token);
+            setToken(authData.token);    
         }
         LeerToken();
     }, []);
+    */
 
     useEffect(() => {
-        if (!token || socket) return; // No conectar si no hay token o ya hay un socket activo
+        if (!token || webSocket) return; // No conectar si no hay token o ya hay un webSocket activo
 
         const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
 
         ws.onopen = () => {
+            setWebSocket(ws);
             console.log("WebSocket conectado.", ws);
-            setSocket(ws);
-            setIsConnected(true);
         };
 
         ws.onmessage = (event: MessageEvent) => {
-            const parsedData = JSON.parse(event.data);
-            console.log("mensaje ws: ", parsedData)
-            setData({
-                onlineUsers: parsedData.OnlineUsers || 0,
-                playingUsers: parsedData.PlayingUsers || 0,
-                currentMatches: parsedData.CurrentMatches || 0
-            });
+            console.log("evento", event);
+            
+            const jsonData = JSON.parse(event.data);
+            setData(jsonData);
+            console.log("mensaje ws: ", jsonData)
         };
 
         ws.onclose = () => {
+            setWebSocket(null);
             console.log("WebSocket desconectado.");
-            setSocket(null);
-            setIsConnected(false);
         };
 
         ws.onerror = (error) => {
             console.error("Error en WebSocket:", error);
             if (error instanceof Error) {
-              console.error("Detalles del error:", error.message);
+                console.error("Detalles del error:", error.message);
             } else {
-              console.error("Detalles del error desconocido", error);
+                console.error("Detalles del error desconocido", error);
             }
-          };
+        };    
 
         return () => {
             ws.close();
         };
     }, [token]);
 
-    const sendMessage = (message: object) => {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(message));
+    function sendMessage(message: object) {
+        if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+            webSocket.send(JSON.stringify(message));
         } else {
             console.warn("No hay conexión WebSocket activa.");
         }
     };
 
+    /* ----- Fin Context ----- */
     const contextValue: WebsocketContextType = {
-        sendMessage,
-        isConnected,
         data,
+        sendMessage,
+        setToken
     };
 
-    return (
-        <WebsocketContext.Provider value={contextValue}>
-            {children}
-        </WebsocketContext.Provider>
-    );
+    return <WebsocketContext.Provider value={contextValue}>{children}</WebsocketContext.Provider>
 };

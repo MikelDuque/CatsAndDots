@@ -15,13 +15,13 @@ export default function Friends() {
   const { data } = useWebsocketContext();
   const [friends, setFriends] = useState<Friend[]>([]);
 
-
+/*
   useEffect(() => {
     if (data.friends) {
       setFriends(data.friends);
     }
   }, [data]);
-
+*/
   return (
     <aside className="flex flex-col w-1/4 h-screen  p-8 bg-secondary">
       <form className="flex">

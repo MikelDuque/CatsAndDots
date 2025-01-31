@@ -4,12 +4,13 @@ import { gameTitle, text } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { WebsocketProvider } from "@/features/websocket/contextApi";
+
 export const metadata: Metadata = {
   title: "Cats & Dots",
   description: "Play the infamous game \"Dots and Boxes\" with kitties!",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -22,7 +23,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Toaster/>
           <WebsocketProvider>
-          {children}
+            {children}
           </WebsocketProvider>
         </ThemeProvider>
       </body>

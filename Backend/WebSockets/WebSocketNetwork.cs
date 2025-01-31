@@ -8,7 +8,7 @@ namespace Backend.WebSockets;
 public class WebSocketNetwork
 {
   private readonly HashSet<WebSocketLink> _connections = [];
-  private readonly SemaphoreSlim _semaphore = new(1, 1);
+  private readonly SemaphoreSlim _semaphore = new(10);
 
   private readonly UserSystem _userSystem;
   private readonly FriendshipSystem _friendshipSystem;
@@ -51,6 +51,7 @@ public class WebSocketNetwork
 
     _connections.Remove(disconnectedUser);
 		await _userSystem.OnDisconnectedAsync(disconnectedUser, _connections.ToArray());
+
 		_semaphore.Release();
   }
 

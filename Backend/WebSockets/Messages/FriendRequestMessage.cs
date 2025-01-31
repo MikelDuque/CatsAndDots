@@ -4,12 +4,11 @@ namespace Backend.WebSockets.Messages;
 
 public class FriendRequestMessage : IMessage<FriendRequest>
 {
-  public string MessageType { get; set; }
+  public string MessageType => "FriendRequest";
   public FriendRequest Body { get; set; }
 
-  public FriendRequestMessage(string messageType, FriendRequest body)
+  public FriendRequestMessage(FriendRequest body)
   {
-    this.MessageType = messageType;
-    this.Body = body;
+    Body = body;
   }
 }

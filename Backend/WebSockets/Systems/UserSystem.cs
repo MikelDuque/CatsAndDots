@@ -4,6 +4,7 @@ using Backend.Models.Database;
 using Backend.Models.DTOs;
 using Backend.Models.Mappers;
 using System.Text.Json;
+using Backend.WebSockets.Messages;
 
 namespace Backend.WebSockets.Systems;
 
@@ -63,7 +64,7 @@ public class UserSystem
 
 		foreach (WebSocketLink user in connections)
 		{
-			tasks.Add(user.SendAsync(JsonSerializer.Serialize(menuData)));
+			tasks.Add(user.SendAsync(JsonSerializer.Serialize(new MenuDataMessage(menuData))));
 		}
 
 		return Task.WhenAll(tasks);
@@ -73,7 +74,7 @@ public class UserSystem
 	{
 		IEnumerable<UserDto> friendList = await GetFriendListDB(thisUser.Id);
 
-		await thisUser.SendAsync(JsonSerializer.Serialize(friendList));
+		await thisUser.SendAsync(JsonSerializer.Serialize(new FriendListMessage(friendList)));
 	}
 	
 

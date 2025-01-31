@@ -7,14 +7,19 @@ import { Button } from "@/components/ui/button";
 import Title from "@/components/utils/title";
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { useEffect, useState } from "react";
+import { useWebsocketContext } from "@/features/websocket/contextApi";
 
 export default function Menu() {
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [userImg, setUserImg] = useState<string | undefined>(undefined);
+  const {setToken} = useWebsocketContext();
 
   useEffect(() => {
     async function GetDecodedToken() {
-      const { decodedToken } = await getAuth();
+      const { decodedToken, token } = await getAuth();
+
+      setToken(token);
+      
       setUsername(decodedToken?.unique_name)
       setUserImg(decodedToken?.avatar)
       console.log(decodedToken?.avatar, "AAAAHHHH")
@@ -22,6 +27,8 @@ export default function Menu() {
 
     GetDecodedToken();
   }, [])
+
+
 
 
   return (
