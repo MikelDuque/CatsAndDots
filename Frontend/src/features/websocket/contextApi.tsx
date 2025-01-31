@@ -56,6 +56,7 @@ export const WebsocketProvider = ({ children }: WebsocketProviderProps) => {
 
         ws.onmessage = (event: MessageEvent) => {
             const parsedData = JSON.parse(event.data);
+            console.log("mensaje ws: ", parsedData)
             setData({
                 onlineUsers: parsedData.OnlineUsers || 0,
                 playingUsers: parsedData.PlayingUsers || 0,

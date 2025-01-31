@@ -10,17 +10,17 @@ import { useEffect, useState } from "react";
 
 export default function Menu() {
   const [userData, setUserData] = useState<string | undefined>(undefined);
-  
+
   useEffect(() => {
     async function GetDecodedToken() {
-      const {decodedToken} = await getAuth();
+      const { decodedToken } = await getAuth();
       setUserData(decodedToken?.unique_name)
-    
+
     }
-    
+
     GetDecodedToken();
   }, [])
-  
+
 
   return (
     <>
@@ -32,9 +32,11 @@ export default function Menu() {
           </Button>
           <Friends />
         </section>
-        
       </main>
       <ThemeSwitcher />
+      <Button variant="default" size="icon" className="fixed top-20 left-5">
+        🔎
+      </Button>
     </>
   );
 }
