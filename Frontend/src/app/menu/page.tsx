@@ -26,13 +26,13 @@ export default function Menu() {
     <>
       <main>
         <MenuHeader decodedToken={userData} />
-        <section className="flex justify-center items-center">
-          <Button className="p-10 shadow-md shadow-slate-700 " >
+        <section className="flex justify-center items-center justify-between">
+          <Button className="ml-[200] shadow-md shadow-slate-700 " >
             <Title moreClasses="text-4xl">Buscar Partida</Title>
           </Button>
+          <Friends />
         </section>
-
-        <Friends />
+        
       </main>
       <ThemeSwitcher />
     </>
