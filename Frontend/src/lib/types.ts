@@ -23,4 +23,4 @@ export type MenuData = {
   OnlineUsers: number;
   PlayingUsers: number;
 	CurrentMatches: number;
-};
+} | null | undefined;

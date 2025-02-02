@@ -46,7 +46,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
     
 
     useEffect(() => {
-        if (!token || socket) return; // No conectar si no hay token o ya hay un socket activo
+        if (!token || socket) return;
 
         const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
 
