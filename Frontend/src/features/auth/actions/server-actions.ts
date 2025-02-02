@@ -1,9 +1,9 @@
 "use server"
 
-import { ActionState } from "../types";
+import { ActionState } from "../../../lib/types";
 import fetchEndpoint from "../queries/fetch-endpoint";
 import { redirect } from "next/navigation";
-import { menuPath } from "@/lib/paths";
+import { homePath, menuPath } from "@/lib/paths";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
@@ -90,7 +90,6 @@ async function saveAuthToken(token: string) {
 
 export async function LogOut() {
   const cookieStore = await cookies();
-  
-  // Eliminar la cookie authToken
-  cookieStore.delete("authToken");
+  const hola = cookieStore.delete("authToken");
+  redirect(homePath);
 }

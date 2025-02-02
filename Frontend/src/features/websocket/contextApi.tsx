@@ -3,11 +3,13 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { WEBSOCKET_URL } from "@/lib/endpoints";
 import { getAuth } from "@/features/auth/queries/get-auth";
-import { GenericMessage } from "../auth/types";
+import { GenericMessage } from "../../lib/types";
+import { useRouter } from "next/navigation";
 
 /* ---- TIPADOS ---- */
 type WebsocketContextType = {
-    data: GenericMessage | null | undefined;
+    socket: WebSocket | null | undefined;
+    message: GenericMessage;
     sendMessage: (message: object) => void;
     setToken: (token: string | null) => void;
 }
@@ -27,28 +29,29 @@ export const useWebsocketContext = (): WebsocketContextType => {
 
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
-    const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
+    
     const [token, setToken] = useState<string | null>(null);
-    const [data, setData] = useState<GenericMessage | null | undefined>(null);
-
-    /*
+    const [socket, setSocket] = useState<WebSocket | null>(null);
+    const [message, setMessage] = useState<GenericMessage | null | undefined>(null);
+    
     //Guarda el Token en un state para usarlo en la llamada al websocket
     useEffect(() => {
+        
         async function LeerToken() {
             const authData = await getAuth();
             setToken(authData.token);    
         }
         LeerToken();
-    }, []);
-    */
+    }, [useRouter()]);
+    
 
     useEffect(() => {
-        if (!token || webSocket) return; // No conectar si no hay token o ya hay un webSocket activo
+        if (!token || socket) return; // No conectar si no hay token o ya hay un socket activo
 
         const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
 
         ws.onopen = () => {
-            setWebSocket(ws);
+            setSocket(ws);
             console.log("WebSocket conectado.", ws);
         };
 
@@ -56,12 +59,12 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
             console.log("evento", event);
             
             const jsonData = JSON.parse(event.data);
-            setData(jsonData);
+            setMessage(jsonData);
             console.log("mensaje ws: ", jsonData)
         };
 
         ws.onclose = () => {
-            setWebSocket(null);
+            setSocket(null);
             console.log("WebSocket desconectado.");
         };
 
@@ -80,8 +83,8 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
     }, [token]);
 
     function sendMessage(message: object) {
-        if (webSocket && webSocket.readyState === WebSocket.OPEN) {
-            webSocket.send(JSON.stringify(message));
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(message));
         } else {
             console.warn("No hay conexión WebSocket activa.");
         }
@@ -89,7 +92,8 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
 
     /* ----- Fin Context ----- */
     const contextValue: WebsocketContextType = {
-        data,
+        socket,
+        message,
         sendMessage,
         setToken
     };

@@ -11,8 +11,8 @@ interface Friend {
 
 }
 
-export default function Friends() {
-  const { data } = useWebsocketContext();
+export default function FriendList() {
+  const { message } = useWebsocketContext();
   const [friends, setFriends] = useState<Friend[]>([]);
 
 /*
@@ -23,7 +23,7 @@ export default function Friends() {
   }, [data]);
 */
   return (
-    <aside className="flex flex-col w-1/4 h-screen  p-8 bg-secondary">
+    <aside className="flex flex-col w-1/4 p-8 bg-secondary">
       <form className="flex">
         <input
           type="search"
@@ -45,7 +45,6 @@ export default function Friends() {
           ))
         )}
       </ul>
-
     </aside>
   );
 }
