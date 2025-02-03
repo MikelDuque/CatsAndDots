@@ -8,7 +8,7 @@ import { DecodedToken } from "@/lib/types";
 export const getAuth = cache(async () => {
   const cookieStore = await cookies();
 
-  const authToken = cookieStore.get("authToken")?.value ?? null;
+  const authToken = cookieStore.get("authToken")?.value;
   const decodedToken = authToken ? jwtDecode<DecodedToken>(authToken) : null;
 
   return {

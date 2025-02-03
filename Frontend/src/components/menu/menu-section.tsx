@@ -5,7 +5,7 @@ import Title from "../utils/title";
 
 export default function MenuSection() {
   return (
-    <section className="size-full">
+    <section className="w-3/4">
       <Button className="ml-[200] shadow-md shadow-slate-700 " >
         <Title moreClasses="text-4xl">Buscar Partida</Title>
       </Button>

@@ -9,3 +9,4 @@ const API_AUTH_URL = `${BASE_HTTPS_URL}/api/Auth`;
 
 /* --- WEBSOCKET CONTROLLER --- */
 export const WEBSOCKET_URL = `${BASE_WSS_URL}/Websocket`;
+export const HTTPS_WEBSOCKET = `${BASE_HTTPS_URL}/Websocket`;

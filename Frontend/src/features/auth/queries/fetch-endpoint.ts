@@ -1,10 +1,4 @@
-type FetchProps = {
-  url: string;
-  type: string;
-  token: string | null;
-  params: BodyInit | object;
-  needAuth?: boolean;
-}
+import { FetchProps } from "@/lib/types";
 
 export default async function fetchEndpoint({url, type, token, params, needAuth} : FetchProps) {
   console.log(`PETICION: URL: ${url}, tipo: ${type}, token: ${token}, params stringtify: ${params}, needAuth: ${needAuth}`);
@@ -42,7 +36,7 @@ async function defineFetch({url, type, token, params} : FetchProps) {
   return await fetch(url, {headers: printHeaders(token)});
 }
 
-function printHeaders(token : string | null) : {[key : string] : string} {
+function printHeaders(token : string | unknown) : {[key : string] : string} {
   if(!token) return {'Content-Type': 'application/json'};
 
   return {

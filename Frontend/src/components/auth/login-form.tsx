@@ -64,7 +64,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre de Usuario o Correo Electrónico</FormLabel>
+                  <FormLabel>Nombre de Usuario o Correo</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -101,7 +101,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       </CardContent>
 
       <CardFooter>
-        <p className="text-body">
+        <p className="text-body text-left">
           ¿No tienes cuenta?
           <Button variant="link" onClick={onSwitchToRegister}>¡Regístrate!</Button>
         </p> 

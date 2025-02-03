@@ -11,21 +11,18 @@ import { cookies } from "next/headers";;
 
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
   const loginRequest = {
-    identifier:formData.get("identifier"),
-    password:formData.get("password")
+    identifier: formData.get("identifier"),
+    password: formData.get("password")
   };
   
   try {
     const response = await fetchEndpoint({
       url: LOGIN_URL,
       type: "POST",
-      token: null,
       params: loginRequest
     });
    
-    
     await saveAuthToken(response.accessToken);
-
 
   } catch (error) {
     return {
@@ -54,7 +51,6 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
     const response = await fetchEndpoint({
       url: REGISTER_URL,
       type: 'POST',
-      token: null,
       params: registerRequest
     });
     
@@ -90,6 +86,6 @@ async function saveAuthToken(token: string) {
 
 export async function LogOut() {
   const cookieStore = await cookies();
-  const hola = cookieStore.delete("authToken");
+  cookieStore.delete("authToken");
   redirect(homePath);
 }

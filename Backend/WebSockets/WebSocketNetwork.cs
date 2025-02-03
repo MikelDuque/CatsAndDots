@@ -8,7 +8,7 @@ namespace Backend.WebSockets;
 public class WebSocketNetwork
 {
   private readonly HashSet<WebSocketLink> _connections = [];
-  private readonly SemaphoreSlim _semaphore = new(10);
+  private readonly SemaphoreSlim _semaphore = new(5);
 
   private readonly UserSystem _userSystem;
   private readonly FriendshipSystem _friendshipSystem;

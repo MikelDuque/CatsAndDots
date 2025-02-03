@@ -1,17 +1,17 @@
 "use client";
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { WEBSOCKET_URL } from "@/lib/endpoints";
+import { HTTPS_WEBSOCKET, WEBSOCKET_URL } from "@/lib/endpoints";
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { GenericMessage } from "../../lib/types";
 import { useRouter } from "next/navigation";
+import useFetch from "../auth/queries/useFetch";
 
 /* ---- TIPADOS ---- */
 type WebsocketContextType = {
     socket: WebSocket | null | undefined;
     message: GenericMessage;
     sendMessage: (message: object) => void;
-    setToken: (token: string | null) => void;
 }
 
 type WebsocketProviderProps = {
@@ -29,24 +29,25 @@ export const useWebsocketContext = (): WebsocketContextType => {
 
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
+    const {fetchingData, fetchError} = useFetch();
+    const router = useRouter();
     
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string>();
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [message, setMessage] = useState<GenericMessage | null | undefined>(null);
     
-    //Guarda el Token en un state para usarlo en la llamada al websocket
     useEffect(() => {
         
         async function LeerToken() {
-            const authData = await getAuth();
-            setToken(authData.token);    
+            const auth = await getAuth();
+            setToken(auth.token);
+            if (!auth.token) await fetchingData({url: HTTPS_WEBSOCKET, type: "GET", token: auth.token, needAuth: true});
         }
         LeerToken();
-    }, [useRouter()]);
-    
+    }, [router]);
 
     useEffect(() => {
-        if (!token || socket) return;
+        if (!token || socket || fetchError) return;
 
         const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
 
@@ -56,7 +57,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
         };
 
         ws.onmessage = (event: MessageEvent) => {
-            console.log("evento", event);
+            console.log("evento", event.data);
             
             const jsonData = JSON.parse(event.data);
             setMessage(jsonData);
@@ -73,13 +74,14 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
             if (error instanceof Error) {
                 console.error("Detalles del error:", error.message);
             } else {
-                console.error("Detalles del error desconocido", error);
+                console.error("Detalles del error desconocido", error); 
             }
         };    
 
         return () => {
             ws.close();
         };
+
     }, [token]);
 
     function sendMessage(message: object) {
@@ -94,8 +96,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
     const contextValue: WebsocketContextType = {
         socket,
         message,
-        sendMessage,
-        setToken
+        sendMessage
     };
 
     return <WebsocketContext.Provider value={contextValue}>{children}</WebsocketContext.Provider>
