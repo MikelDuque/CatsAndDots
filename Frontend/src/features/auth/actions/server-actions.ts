@@ -7,9 +7,12 @@ import { homePath, menuPath } from "@/lib/paths";
 import { LOGIN_URL, REGISTER_URL } from "@/lib/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
-import { cookies } from "next/headers";;
+import { cookies } from "next/headers";
+import { useWebsocketContext } from "@/features/websocket/contextApi";
+
 
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
+ 
   const loginRequest = {
     identifier: formData.get("identifier"),
     password: formData.get("password")
@@ -85,7 +88,10 @@ async function saveAuthToken(token: string) {
 };
 
 export async function LogOut() {
+  
   const cookieStore = await cookies();
+ 
   cookieStore.delete("authToken");
+  
   redirect(homePath);
 }

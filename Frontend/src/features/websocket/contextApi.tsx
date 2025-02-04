@@ -9,7 +9,7 @@ import useFetch from "../auth/queries/useFetch";
 
 /* ---- TIPADOS ---- */
 type WebsocketContextType = {
-    socket: WebSocket | null | undefined;
+    socket: WebSocket | undefined | null;
     message: GenericMessage;
     sendMessage: (message: object) => void;
 }
@@ -29,7 +29,7 @@ export const useWebsocketContext = (): WebsocketContextType => {
 
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
-    const {fetchingData, fetchError} = useFetch();
+    const {fetchingData} = useFetch();
     const router = useRouter();
     
     const [token, setToken] = useState<string>();
@@ -47,7 +47,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
     }, [router]);
 
     useEffect(() => {
-        if (!token || socket || fetchError) return;
+        if (!token || socket) return;
 
         const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
 
