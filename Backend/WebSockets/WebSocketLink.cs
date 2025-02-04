@@ -32,6 +32,7 @@ public class WebSocketLink : IDisposable
   //EVENTOS
   public event Func<WebSocketLink, string, Task> FriendRequest;
   public event Func<WebSocketLink, Task> Disconnected;
+  public event Func<WebSocketLink, string, Task> MatchmakingEvent;
 
   public async Task HandleEventAsync() {
     while (IsOpen)
