@@ -25,13 +25,13 @@ export type DecodedToken = {
 export type GenericMessage = {
   MessageType: string;
   Body: Record<string, unknown>;
-} | null | undefined;
+};
 
 export type MenuData = {
   OnlineUsers: number;
   PlayingUsers: number;
 	CurrentMatches: number;
-} | null | undefined;
+};
 
 export type User = {
   Id: number

@@ -4,7 +4,7 @@ import { DecodedToken } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { LogOut } from "@/features/auth/actions/server-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import Title from "../utils/title";
 
 export default function ProfileInfo() {
@@ -23,13 +23,13 @@ export default function ProfileInfo() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-full items-center justify-center overflow-hidden rounded-full cursor-pointer">
+        <Avatar className="h-full aspect-square items-center justify-center overflow-hidden rounded-full cursor-pointer">
           <AvatarImage src={avatarUrl} alt="X" className="size-full object-scale-down"/>
-          <AvatarFallback delayMs={600}>{decodedToken?.unique_name.charAt(0)}</AvatarFallback>
+          <AvatarFallback delayMs={600} className="title">{decodedToken?.unique_name.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="text-body relative right-2 overflow-hidden rounded-md bg-popover p-2 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+        className="z-20 text-body relative right-2 overflow-hidden rounded-md bg-popover p-2 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
         sideOffset={5}
       >
         <DropdownMenuLabel>
@@ -51,7 +51,3 @@ export default function ProfileInfo() {
     </DropdownMenu>
   );
 };
-
-function getInitial(name: string) {
-  name.charAt(0)
-}

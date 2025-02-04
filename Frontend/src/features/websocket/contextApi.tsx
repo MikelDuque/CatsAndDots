@@ -3,15 +3,12 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { HTTPS_WEBSOCKET, WEBSOCKET_URL } from "@/lib/endpoints";
 import { getAuth } from "@/features/auth/queries/get-auth";
-import { GenericMessage } from "../../lib/types";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import useFetch from "../auth/queries/useFetch";
 
 /* ---- TIPADOS ---- */
 type WebsocketContextType = {
-    socket: WebSocket | null | undefined;
-    message: GenericMessage;
-    sendMessage: (message: object) => void;
+    socket: WebSocket | undefined;
 }
 
 type WebsocketProviderProps = {
@@ -30,21 +27,22 @@ export const useWebsocketContext = (): WebsocketContextType => {
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
     const {fetchingData, fetchError} = useFetch();
-    const router = useRouter();
+    const pathName = usePathname();
     
     const [token, setToken] = useState<string>();
-    const [socket, setSocket] = useState<WebSocket | null>(null);
-    const [message, setMessage] = useState<GenericMessage | null | undefined>(null);
+    const [socket, setSocket] = useState<WebSocket>();
+    //const [message, setMessage] = useState<GenericMessage | null | undefined>(null);
     
     useEffect(() => {
+        console.log("renderiza context api");
         
         async function LeerToken() {
             const auth = await getAuth();
-            setToken(auth.token);
+            if(auth.token) setToken(auth.token);
             if (!auth.token) await fetchingData({url: HTTPS_WEBSOCKET, type: "GET", token: auth.token, needAuth: true});
         }
         LeerToken();
-    }, [router]);
+    }, [pathName]);
 
     useEffect(() => {
         if (!token || socket || fetchError) return;
@@ -56,6 +54,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
             console.log("WebSocket conectado.", ws);
         };
 
+        /*
         ws.onmessage = (event: MessageEvent) => {
             console.log("evento", event.data);
             
@@ -63,9 +62,10 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
             setMessage(jsonData);
             console.log("mensaje ws: ", jsonData)
         };
+        */
 
         ws.onclose = () => {
-            setSocket(null);
+            setSocket(undefined);
             console.log("WebSocket desconectado.");
         };
 
@@ -84,6 +84,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
 
     }, [token]);
 
+    /*
     function sendMessage(message: object) {
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(message));
@@ -91,12 +92,12 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
             console.warn("No hay conexión WebSocket activa.");
         }
     };
+    */
 
     /* ----- Fin Context ----- */
     const contextValue: WebsocketContextType = {
-        socket,
-        message,
-        sendMessage
+        socket
+        //message
     };
 
     return <WebsocketContext.Provider value={contextValue}>{children}</WebsocketContext.Provider>
