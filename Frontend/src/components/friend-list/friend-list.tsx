@@ -14,7 +14,9 @@ import useFetch from "@/features/endpoints/useFetch";
 import { useAuth } from "@/features/auth/auth-context";
 
 export default function FriendList() {
+  const {messages} = useWebsocket();
   const {token, decodedToken} = useAuth();
+
   const {fetchData} = useFetch({url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true});
 
   const [hideFriends, setHideFriendlist] = useState(false);
@@ -23,6 +25,10 @@ export default function FriendList() {
   useEffect(() => {
     if(fetchData) setFriendlist(fetchData);
   }, [fetchData]);
+    
+  useEffect(() => { 
+    //TERMINAR
+  }, [messages]);
 
   /*
   useEffect(() => {

@@ -1,14 +1,15 @@
 "use client";
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { WEBSOCKET_URL } from "@/features/endpoints/endpoints";
+import { HTTPS_WEBSOCKET, WEBSOCKET_URL } from "@/features/endpoints/endpoints";
 import { useAuth } from "../auth/auth-context";
-import { usePathname } from "next/navigation";
-import { getAuth } from "../auth/queries/get-auth";
+import useFetch from "../endpoints/useFetch";
+import { GenericMessage } from "@/lib/types";
 
 /* ---- TIPADOS ---- */
 type WebsocketContextType = {
     socket: WebSocket | undefined;
+    messages: Record<string, Record<string, unknown>> | undefined;
 }
 
 type WebsocketProviderProps = {
@@ -16,7 +17,7 @@ type WebsocketProviderProps = {
 }
 
 /* ----- DECLARACIÓN Context ----- */
-const WebsocketContext = createContext<WebsocketContextType>({socket: undefined});
+const WebsocketContext = createContext<WebsocketContextType>({socket: undefined, messages: undefined});
 
 export const useWebsocket = (): WebsocketContextType => {
     const context = useContext(WebsocketContext);
@@ -27,45 +28,34 @@ export const useWebsocket = (): WebsocketContextType => {
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
     const {token}  = useAuth();
-    //const {fetchError} = useFetch({url: HTTPS_WEBSOCKET, type: "GET", token: token, needAuth: true, condition: !!token});
-    const pathName = usePathname();
+    const {fetchError} = useFetch({url: HTTPS_WEBSOCKET, type: "GET", token: token, needAuth: true, condition: !!token});
     
-    //const [token, setToken] = useState<string>();
     const [socket, setSocket] = useState<WebSocket>();
-    const [messages, setMessages] = useState<string[]>([]);
-    //const [message, setMessage] = useState<GenericMessage | null | undefined>(null);
-    
-    /*
-    useEffect(() => {
-        console.log("renderiza context api");
-        
-        async function LeerToken() {
-            const auth = await getAuth();
-            if(auth.token) setToken(auth.token);
-            //if (!auth.token) await fetchingData({url: HTTPS_WEBSOCKET, type: "GET", token: auth.token, needAuth: true});
-        }
-        LeerToken();
-    }, [pathName]);
-    */
+    const [messages, setMessages] = useState<Record<string, Record<string, unknown>>>({});
 
     useEffect(() => {
-        if (!token || socket) return;
+        if (!token || socket || fetchError) return;
+        //¿Va aquí la lógica de cerrar el socket + sesión?
         
-        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);     
+        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
+        console.log("Llamada al websocket", ws);
+        
 
         ws.onopen = () => {
             setSocket(ws);
             console.log("WebSocket conectado.", ws);
         };
-
-        /*
+        
         ws.onmessage = (event: MessageEvent) => {
-            //const jsonData = JSON.parse(event.data);
-            setMessages((prevMessages) => [...prevMessages, event.data]);
+            const jsonData = JSON.parse(event.data) as GenericMessage;
 
-            console.log("mensaje ws: ", event.data);
+            setMessages(prevMessages => ({
+                ...prevMessages,
+                [jsonData.MessageType]: jsonData.Body
+            }));
+
+            console.log("json ws", JSON.parse(event.data));
         };
-        */
 
         ws.onclose = () => {
             setSocket(undefined);
@@ -99,8 +89,8 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
 
     /* ----- Fin Context ----- */
     const contextValue: WebsocketContextType = {
-        socket
-        //message
+        socket,
+        messages
     };
 
     return <WebsocketContext.Provider value={contextValue}>{children}</WebsocketContext.Provider>

@@ -28,6 +28,10 @@ export type GenericMessage = {
   Body: Record<string, unknown>;
 };
 
+export type SocketMessage<K extends keyof string, T> = {
+  [P in K]: T;
+};
+
 export type MenuData = {
   OnlineUsers: number;
   PlayingUsers: number;
