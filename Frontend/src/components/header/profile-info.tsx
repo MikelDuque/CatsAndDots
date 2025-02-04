@@ -8,12 +8,12 @@ import { LogOut } from "@/features/auth/actions/server-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import Title from "../utils/title";
-import { useWebsocketContext } from "@/features/websocket/contextApi";
+import { useWebsocket } from "@/features/websocket/websocket-context";
 
 export default function ProfileInfo() {
   const [decodedToken, setDecodedToken] = useState<DecodedToken>(null);
   const avatarUrl = `${BASE_HTTPS_URL}${decodedToken?.avatar}`;
-  const socket = useWebsocketContext();
+  const socket = useWebsocket();
   
   function HanldeLogOut() {
     socket.socket?.close()

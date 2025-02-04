@@ -8,7 +8,6 @@ import { LOGIN_URL, REGISTER_URL } from "@/features/endpoints/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
 import { cookies } from "next/headers";
-import { useWebsocketContext } from "@/features/websocket/contextApi";
 
 
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
