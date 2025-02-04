@@ -12,11 +12,13 @@ public class WebSocketNetwork
 
   private readonly UserSystem _userSystem;
   private readonly FriendshipSystem _friendshipSystem;
+  private readonly MatchmakingSystem _matchmakingSystem;
 
   public WebSocketNetwork(IServiceScopeFactory scopeFactory)
   {
     _friendshipSystem = new FriendshipSystem(scopeFactory);
     _userSystem = new UserSystem(scopeFactory);
+    _matchmakingSystem = new MatchmakingSystem();
   }
 
   public async Task HandleAsync(WebSocket webSocket, long userId)
@@ -33,6 +35,8 @@ public class WebSocketNetwork
     WebSocketLink newConnection = new(userId, webSocket);
 		newConnection.FriendRequest += OnFriendRequestAsync;
 		newConnection.Disconnected += OnDisconnectedAsync;
+    newConnection.MatchmakingEvent += OnMatchmakingAsync;
+
 
     _connections.Add(newConnection);
     _semaphore.Release();
@@ -66,6 +70,10 @@ public class WebSocketNetwork
 
 		await _friendshipSystem.ChangeFriendship(_connections.ToArray(), connectedUser, request.Body);
 	}
-  
+ 
+  private async Task OnMatchmakingAsync(WebSocketLink connectedUser, string message)
+  {
+    await _matchmakingSystem.HandleMatchmakingAsync(connectedUser, message);
+  }
 }
 
