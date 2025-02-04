@@ -11,7 +11,8 @@ export type FetchProps = {
   token?: string;
   params?: BodyInit | object;
   needAuth?: boolean;
-}
+  condition?: boolean;
+};
 
 export type DecodedToken = {
   id: number,
@@ -34,10 +35,10 @@ export type MenuData = {
 };
 
 export type User = {
-  Id: number
-  Username: string
-  Avatar: string
-  ConnectionState: ConnectionState
+  id: number
+  username: string
+  avatar: string
+  connectionState: ConnectionState
 }
 
 export enum ConnectionState

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useWebsocketContext } from "@/features/websocket/contextApi";
+import { useWebsocket } from "@/features/websocket/websocket-context";
 import { Button } from "../ui/button";
 import { ConnectionState, User } from "@/lib/types";
 import { Input } from "../ui/input";
@@ -9,16 +9,26 @@ import { ChevronLeft, ChevronRight, Circle, Heading1, Search, Sword, UserPlus, U
 import Title from "../utils/title";
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from "@radix-ui/react-context-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { BASE_HTTPS_URL } from "@/lib/endpoints";
+import { BASE_HTTPS_URL, GET_FRIENDLIST } from "@/features/endpoints/endpoints";
+import useFetch from "@/features/endpoints/useFetch";
+import { useAuth } from "@/features/auth/auth-context";
 
 export default function FriendList() {
-const {message} = useWebsocketContext();
-  const [hideFriends, setHideFriendlist] = useState(false);
-  const [friendList, setFriendlist] = useState<Array<User>>();
+  const {token, decodedToken} = useAuth();
+  const {fetchData} = useFetch({url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true});
 
+  const [hideFriends, setHideFriendlist] = useState(false);
+  const [friendList, setFriendlist] = useState<Array<User>>([]);
+
+  useEffect(() => {
+    if(fetchData) setFriendlist(fetchData);
+  }, [fetchData]);
+
+  /*
   useEffect(() => {
     if(message?.MessageType === "FriendList" && Array.isArray(message?.Body)) setFriendlist(message?.Body);
   }, [message]);
+  */
 
   function onHide() {setHideFriendlist((previousState) => !previousState)};
 
@@ -44,7 +54,7 @@ const {message} = useWebsocketContext();
           <Button type="submit" size="icon" variant="ghost"><Search/></Button>
         </form>
         <ul className="text-body">
-          {ListMapper(friendList || [])}
+          {ListMapper(friendList)}
         </ul>
       </aside>
     </>
@@ -54,14 +64,14 @@ const {message} = useWebsocketContext();
 function ListMapper(list: Array<User>) {
   return (list.length > 0 ? (
     list.map((user) => (
-      <li key={user.Id}>
+      <li key={user.id}>
         <ContextMenu>
           <ContextMenuTrigger className="flex">
             <Avatar className="h-full aspect-square items-center justify-center overflow-hidden rounded-full cursor-pointer">
-              <AvatarImage src={`${BASE_HTTPS_URL}${user.Avatar}`} alt="X" className="size-full object-scale-down"/>
-              <AvatarFallback delayMs={600} className="title">{user.Username.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarImage src={`${BASE_HTTPS_URL}${user.avatar}`} alt="X" className="size-full object-scale-down"/>
+              <AvatarFallback delayMs={600} className="title">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
-            <Heading1/>{user.Username}
+            <Heading1/>{user.username}
             {SetConnectionState(user)}
           </ContextMenuTrigger>
           <ContextMenuContent>
@@ -73,10 +83,10 @@ function ListMapper(list: Array<User>) {
 };
 
 function SetConnectionState(user: User) {
-  return user.ConnectionState === ConnectionState.Playing ? <Sword color="green"/> : <Circle color={SetColor()}/>
+  return user.connectionState === ConnectionState.Playing ? <Sword color="green"/> : <Circle color={SetColor()}/>
 
   function SetColor() {
-    switch (user.ConnectionState) {
+    switch (user.connectionState) {
       case ConnectionState.Online:
         return "green";
       case ConnectionState.Offline:

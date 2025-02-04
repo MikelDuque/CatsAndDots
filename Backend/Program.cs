@@ -79,7 +79,7 @@ public class Program
 		builder.Services.AddSingleton<WebSocketNetwork>();
 
     builder.Services.AddScoped<AuthService>();
-    builder.Services.AddScoped<FriendshipService>();
+    builder.Services.AddScoped<UserService>();
 
 
     var app = builder.Build();

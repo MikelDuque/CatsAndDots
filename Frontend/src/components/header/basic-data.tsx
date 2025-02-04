@@ -1,10 +1,10 @@
-import { useWebsocketContext } from "@/features/websocket/contextApi";
+import { useWebsocket } from "@/features/websocket/websocket-context";
 import { GenericMessage, MenuData } from "@/lib/types";
 import { Dices, Swords, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function BasicData() {
-  const {socket} = useWebsocketContext();
+  const {socket} = useWebsocket();
   const [menuData, setMenuData] = useState<MenuData>();
 
   useEffect(() => {

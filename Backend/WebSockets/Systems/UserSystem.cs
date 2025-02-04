@@ -5,6 +5,7 @@ using Backend.Models.DTOs;
 using Backend.Models.Mappers;
 using System.Text.Json;
 using Backend.WebSockets.Messages;
+using Backend.Services;
 
 namespace Backend.WebSockets.Systems;
 
@@ -20,7 +21,7 @@ public class UserSystem
 	public async Task OnConnectedAsync(WebSocketLink connectedUser, WebSocketLink[] connections)
 	{
 		await GetMenuData(connections);
-		await SendFriendList(connectedUser);
+		//await SendFriendList(connectedUser);
 		await UpdateUserData(connectedUser.Id, connections, ConnectionState.Online);
 	}
 
@@ -35,6 +36,7 @@ public class UserSystem
 
 		UserDto thisUser = await GetUserDto(thisUserId);
 		thisUser.ConnectionState = connectionState;
+		UserDataMessage userDataMessage = new UserDataMessage(thisUser);
 
 		IEnumerable<UserDto> friendList = await GetFriendListDB(thisUserId);
 
@@ -42,7 +44,8 @@ public class UserSystem
 		{
 			if (friendList.Any(friend => friend.Id == connectedUser.Id))
 			{
-				tasks.Add(connectedUser.SendAsync(JsonSerializer.Serialize(thisUser)));
+				
+				tasks.Add(connectedUser.SendAsync(JsonSerializer.Serialize(userDataMessage)));
 			}
 		}
 
@@ -61,33 +64,34 @@ public class UserSystem
 			PlayingUsers = 0, //CAMBIAR
 			CurrentMatches = 0 //CAMBIAR
 		};
+		MenuDataMessage menuDataMessage = new MenuDataMessage(menuData);
 
 		foreach (WebSocketLink user in connections)
 		{
-			tasks.Add(user.SendAsync(JsonSerializer.Serialize(new MenuDataMessage(menuData))));
+			tasks.Add(user.SendAsync(JsonSerializer.Serialize(menuDataMessage)));
 		}
 
 		return Task.WhenAll(tasks);
 	}
 
+	/*
 	private async Task SendFriendList(WebSocketLink thisUser)
 	{
 		IEnumerable<UserDto> friendList = await GetFriendListDB(thisUser.Id);
 
 		await thisUser.SendAsync(JsonSerializer.Serialize(new FriendListMessage(friendList)));
 	}
+	*/
 	
 
 	/* ----- METODOS SCOPED ----- */
+	
 	private async Task<IEnumerable<UserDto>> GetFriendListDB(long userId)
 	{
 		using IServiceScope serviceScope = _scopeFactory.CreateScope();
-		UnitOfWork unitOfWork = serviceScope.ServiceProvider.GetService<UnitOfWork>();
-		UserMapper userMapper = serviceScope.ServiceProvider.GetService<UserMapper>();
+		UserService friendshipService = serviceScope.ServiceProvider.GetService<UserService>();
 
-		List<User> friendList = await unitOfWork.userFriendshipRepository.GetFriendList(userId);
-
-		return userMapper.ToDto(friendList);
+		return await friendshipService.GetFriendList(userId);
 	}
 
 	private async Task<UserDto> GetUserDto(long userId)

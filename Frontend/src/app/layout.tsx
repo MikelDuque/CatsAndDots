@@ -3,7 +3,8 @@ import "./globals.css";
 import { gameTitle, text } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { WebsocketProvider } from "@/features/websocket/contextApi";
+import { WebsocketProvider } from "@/features/websocket/websocket-context";
+import { AuthProvider } from "@/features/auth/auth-context";
 
 export const metadata: Metadata = {
   title: "Cats & Dots",
@@ -21,10 +22,12 @@ export default async function RootLayout({
         className={`${gameTitle.variable} ${text.variable} antialiased`} 
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Toaster/>
-          <WebsocketProvider>
-            {children}
-          </WebsocketProvider>
+          <AuthProvider>
+            <WebsocketProvider>
+              <Toaster/>
+              {children}
+            </WebsocketProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

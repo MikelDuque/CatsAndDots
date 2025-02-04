@@ -1,10 +1,10 @@
-import fetchEndpoint from "@/features/auth/queries/fetch-endpoint";
+import fetchEndpoint from "@/features/endpoints/fetch-endpoint";
 import { FetchProps } from "@/lib/types";
 import { useState } from "react";
-import { LogOut } from "../actions/server-actions";
+import { LogOut } from "../auth/actions/server-actions";
 
 export default function useFetch() {
-  const [fetchData, setFetchData] = useState(null);
+  const [fetchData, setFetchData] = useState<Promise<any> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<Record<string, unknown> | unknown>(null);
 

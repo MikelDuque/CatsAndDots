@@ -1,10 +1,10 @@
 "use server"
 
 import { ActionState } from "../../../lib/types";
-import fetchEndpoint from "../queries/fetch-endpoint";
+import fetchEndpoint from "../../endpoints/fetch-endpoint";
 import { redirect } from "next/navigation";
 import { homePath, menuPath } from "@/lib/paths";
-import { LOGIN_URL, REGISTER_URL } from "@/lib/endpoints";
+import { LOGIN_URL, REGISTER_URL } from "@/features/endpoints/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
 import { cookies } from "next/headers";;

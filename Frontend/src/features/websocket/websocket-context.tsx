@@ -1,10 +1,10 @@
 "use client";
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { HTTPS_WEBSOCKET, WEBSOCKET_URL } from "@/lib/endpoints";
-import { getAuth } from "@/features/auth/queries/get-auth";
+import { WEBSOCKET_URL } from "@/features/endpoints/endpoints";
+import { useAuth } from "../auth/auth-context";
 import { usePathname } from "next/navigation";
-import useFetch from "../auth/queries/useFetch";
+import { getAuth } from "../auth/queries/get-auth";
 
 /* ---- TIPADOS ---- */
 type WebsocketContextType = {
@@ -16,9 +16,9 @@ type WebsocketProviderProps = {
 }
 
 /* ----- DECLARACIÓN Context ----- */
-const WebsocketContext = createContext<WebsocketContextType | undefined>(undefined);
+const WebsocketContext = createContext<WebsocketContextType>({socket: undefined});
 
-export const useWebsocketContext = (): WebsocketContextType => {
+export const useWebsocket = (): WebsocketContextType => {
     const context = useContext(WebsocketContext);
     if (!context) throw new Error("El contexto debe usarse dentro del provider");
     return context;
@@ -26,28 +26,32 @@ export const useWebsocketContext = (): WebsocketContextType => {
 
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
-    const {fetchingData, fetchError} = useFetch();
+    const {token}  = useAuth();
+    //const {fetchError} = useFetch({url: HTTPS_WEBSOCKET, type: "GET", token: token, needAuth: true, condition: !!token});
     const pathName = usePathname();
     
-    const [token, setToken] = useState<string>();
+    //const [token, setToken] = useState<string>();
     const [socket, setSocket] = useState<WebSocket>();
+    const [messages, setMessages] = useState<string[]>([]);
     //const [message, setMessage] = useState<GenericMessage | null | undefined>(null);
     
+    /*
     useEffect(() => {
         console.log("renderiza context api");
         
         async function LeerToken() {
             const auth = await getAuth();
             if(auth.token) setToken(auth.token);
-            if (!auth.token) await fetchingData({url: HTTPS_WEBSOCKET, type: "GET", token: auth.token, needAuth: true});
+            //if (!auth.token) await fetchingData({url: HTTPS_WEBSOCKET, type: "GET", token: auth.token, needAuth: true});
         }
         LeerToken();
     }, [pathName]);
+    */
 
     useEffect(() => {
-        if (!token || socket || fetchError) return;
-
-        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
+        if (!token || socket) return;
+        
+        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);     
 
         ws.onopen = () => {
             setSocket(ws);
@@ -56,11 +60,10 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
 
         /*
         ws.onmessage = (event: MessageEvent) => {
-            console.log("evento", event.data);
-            
-            const jsonData = JSON.parse(event.data);
-            setMessage(jsonData);
-            console.log("mensaje ws: ", jsonData)
+            //const jsonData = JSON.parse(event.data);
+            setMessages((prevMessages) => [...prevMessages, event.data]);
+
+            console.log("mensaje ws: ", event.data);
         };
         */
 

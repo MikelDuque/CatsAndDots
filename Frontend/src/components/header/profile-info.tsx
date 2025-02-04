@@ -1,5 +1,5 @@
 import { getAuth } from "@/features/auth/queries/get-auth";
-import { BASE_HTTPS_URL } from "@/lib/endpoints";
+import { BASE_HTTPS_URL } from "@/features/endpoints/endpoints";
 import { DecodedToken } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { LogOut } from "@/features/auth/actions/server-actions";
