@@ -77,7 +77,7 @@ function ListMapper(list: Array<User>) {
       <li key={user.id}>
         <ContextMenu>
           <ContextMenuTrigger className="flex">
-            <Avatar className="h-full aspect-square items-center justify-center overflow-hidden rounded-full cursor-pointer">
+            <Avatar className="h-full aspect-square items-center justify-center overflow-hidden rounded-full">
               <AvatarImage src={`${BASE_HTTPS_URL}${user.avatar}`} alt="X" className="size-full object-scale-down"/>
               <AvatarFallback delayMs={600} className="title">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
