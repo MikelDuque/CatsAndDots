@@ -73,24 +73,4 @@ public class AuthService
 
     return stringToken;
   }
-
-  public async Task<long> GetUserIdFromToken(string token)
-  {
-    try
-    {
-			JwtSecurityTokenHandler tokenHandler = new();
-
-			TokenValidationResult decodedToken = await tokenHandler.ValidateTokenAsync(token, _tokenParameters);
-
-			IDictionary<string, object> claims = decodedToken.Claims;
-
-      if (claims.TryGetValue("id", out object id)) return Convert.ToInt64(id);
-
-      throw new SecurityTokenValidationException("No se ha podido obtener el ID de usuario");
-		}
-    catch (SecurityTokenValidationException)
-    {
-			throw;
-		}
-	}
 }

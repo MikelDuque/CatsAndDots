@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.WebSockets;
+using System.Security.Claims;
 
 namespace Backend.Controllers;
 
@@ -26,20 +27,8 @@ public class WebSocketController : ControllerBase
   public async Task ConnectAsync()
   {
 		WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-		string token = await HttpContext.GetTokenAsync("access_token");
+		long userId = long.Parse(User.FindFirstValue("id"));
 
-		try
-		{
-			long userId = await _authService.GetUserIdFromToken(token);
-			await _websocketNetwork.HandleAsync(webSocket, userId);
-		}
-		catch (SecurityTokenValidationException)
-		{
-			HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-		}
-		catch (Exception)
-		{
-			HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-		}
+		await _websocketNetwork.HandleAsync(webSocket, userId);
 	}
 }

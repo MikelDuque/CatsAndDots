@@ -2,19 +2,18 @@ import fetchEndpoint from "@/features/endpoints/fetch-endpoint";
 import { FetchProps } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { LogOut } from "../auth/actions/server-actions";
-import { boolean } from "zod";
 
 export default function useFetch({url, type, token, params, needAuth, condition}: FetchProps) {
-  const [fetchData, setFetchData] = useState<any>(undefined);
+  const [fetchData, setFetchData] = useState<unknown>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<Record<string, unknown> | unknown>(null);
 
   useEffect(() => {
-    if(typeof condition === "boolean" && !condition) return; //Si la condicion es booleana (NO null o undefined), y esta es FALSA, retorna.
+    if(typeof condition === "boolean" && condition === false) return; //Si la condicion es booleana (NO null o undefined), y esta es FALSA, retorna.
 
     fetchingData();
 
-  }, [url, type, params, token, condition])
+  }, [url, type, params, condition]);
 
   async function fetchingData() {
     try {

@@ -92,9 +92,9 @@ public class Program
     });
 
     app.UseCors(options =>
-        options.AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin());
+      options.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin());
 
 		app.UseHttpsRedirection();
 		app.UseRouting();

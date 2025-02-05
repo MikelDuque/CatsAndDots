@@ -17,17 +17,21 @@ export default function FriendList() {
   const {messages} = useWebsocket();
   const {token, decodedToken} = useAuth();
 
-  const {fetchData} = useFetch({url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true});
+  const {fetchData} = useFetch({url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true, condition: !!token});
 
   const [hideFriends, setHideFriendlist] = useState(false);
   const [friendList, setFriendlist] = useState<Array<User>>([]);
 
   useEffect(() => {
-    if(fetchData) setFriendlist(fetchData);
+    if(fetchData) setFriendlist(fetchData as Array<User>);
   }, [fetchData]);
     
   useEffect(() => { 
-    //TERMINAR
+    const user = messages ? messages["UserData"] as User : undefined; 
+    setFriendlist(previousState => previousState.map(friend => {console.log("user", user); console.log("friend", friend);
+    
+     return friend.id === user?.id ? user : friend}));
+    
   }, [messages]);
 
   /*
@@ -36,7 +40,7 @@ export default function FriendList() {
   }, [message]);
   */
 
-  function onHide() {setHideFriendlist((previousState) => !previousState)};
+  function onHide() {setHideFriendlist(previousState => !previousState)};
 
   return (
     <>
@@ -93,12 +97,12 @@ function SetConnectionState(user: User) {
 
   function SetColor() {
     switch (user.connectionState) {
-      case ConnectionState.Online:
-        return "green";
       case ConnectionState.Offline:
         return "red";
+      case ConnectionState.Online:
+        return "green";
       default:
-        return "";
+        return "white";
     };
   };
 };
