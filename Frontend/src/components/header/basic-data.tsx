@@ -13,9 +13,9 @@ export default function BasicData() {
 
   return (
     <div className="flex gap-5 items-center">
-      <div className="flex gap-2"><Users/> {menuData?.OnlineUsers || 0}</div>
-      <div className="flex gap-2"><Swords/> {menuData?.PlayingUsers || 0}</div>
-      <div className="flex gap-2"><Dices/> {menuData?.CurrentMatches || 0}</div>
+      <div className="flex gap-2"><Users/> {menuData?.onlineUsers || 0}</div>
+      <div className="flex gap-2"><Swords/> {menuData?.playingUsers || 0}</div>
+      <div className="flex gap-2"><Dices/> {menuData?.currentMatches || 0}</div>
     </div>
   );
 }

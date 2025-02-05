@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Database;
 using Backend.Models.DTOs;
@@ -9,16 +10,18 @@ namespace Backend.WebSockets.Systems;
 public class FriendshipSystem
 {
 	private readonly IServiceScopeFactory _scopeFactory;
+	private readonly HashSet<WebSocketLink> _connections;
 
-	public FriendshipSystem(IServiceScopeFactory scopeFactory)
+	public FriendshipSystem(IServiceScopeFactory scopeFactory, HashSet<WebSocketLink> connections)
 	{
 		_scopeFactory = scopeFactory;
+		_connections = connections;
 	}
 
 	public async Task ChangeFriendship(WebSocketLink[] connections, WebSocketLink thisUser, FriendRequest friendRequest)
 	{
 		await ChangeFriendshipBD(friendRequest);
-		await UpdateFriendState(connections, thisUser, friendRequest);
+		await UpdateFriendState(thisUser, friendRequest);
 	}
 
 	/* ----- MÉTODOS SCOPED (PRIVADOS)  ----- */
@@ -44,14 +47,15 @@ public class FriendshipSystem
 		await unitOfWork.SaveAsync();
 	}
 
-	private async Task UpdateFriendState(WebSocketLink[] connections, WebSocketLink thisUser, FriendRequest friendRequest)
+	private async Task UpdateFriendState(WebSocketLink thisUser, FriendRequest friendRequest)
 	{
 		List<Task> tasks = [];
+		WebSocketLink[] connections = _connections.ToArray();
 
 		WebSocketLink friendUser = connections.FirstOrDefault(user => user.Id == friendRequest.ReceiverId);
 
-		tasks.Add(thisUser.SendAsync(JsonSerializer.Serialize(friendUser)));
-		tasks.Add(friendUser.SendAsync(JsonSerializer.Serialize(friendUser)));
+		tasks.Add(thisUser.SendAsync(ParseHelper.GenericMessage("FriendRequest", friendUser)));
+		tasks.Add(friendUser.SendAsync(ParseHelper.GenericMessage("FriendRequest", friendUser)));
 
 		await Task.WhenAll(tasks);
 	}

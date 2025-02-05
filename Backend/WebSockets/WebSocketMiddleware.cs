@@ -11,21 +11,13 @@ public class WebSocketMiddleware
 
 	public async Task InvokeAsync(HttpContext context)
 	{
-		if (!context.WebSockets.IsWebSocketRequest)
+		if (context.WebSockets.IsWebSocketRequest)
 		{
-			await _next(context);
-			return;
-		}
-		
-		string token = context.Request.Query["accessToken"];
+			string token = context.Request.Query["accessToken"];
 
-		if (string.IsNullOrEmpty(token))
-		{
-			context.Response.StatusCode = StatusCodes.Status400BadRequest;
-			return;
+			context.Request.Headers.Authorization = "Bearer " + token;
 		}
 
-		context.Request.Headers.Authorization = "Bearer " + token;
 		await _next(context);
 	}
 }

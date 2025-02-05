@@ -24,8 +24,8 @@ export type DecodedToken = {
 } | null | undefined;
 
 export type GenericMessage = {
-  MessageType: string;
-  Body: Record<string, unknown>;
+  messageType: string;
+  body: Record<string, unknown>;
 };
 
 export type SocketMessage<K extends keyof string, T> = {
@@ -33,9 +33,9 @@ export type SocketMessage<K extends keyof string, T> = {
 };
 
 export type MenuData = {
-  OnlineUsers: number;
-  PlayingUsers: number;
-	CurrentMatches: number;
+  onlineUsers: number;
+  playingUsers: number;
+	currentMatches: number;
 };
 
 export type User = {

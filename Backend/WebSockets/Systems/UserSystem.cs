@@ -3,49 +3,43 @@ using Backend.Models.Database.Entities;
 using Backend.Models.Database;
 using Backend.Models.DTOs;
 using Backend.Models.Mappers;
-using System.Text.Json;
 using Backend.WebSockets.Messages;
 using Backend.Services;
+using Backend.Helpers;
 
 namespace Backend.WebSockets.Systems;
 
 public class UserSystem
 {
 	private readonly IServiceScopeFactory _scopeFactory;
+	private readonly HashSet<WebSocketLink> _connections;
 
-	public UserSystem(IServiceScopeFactory scopeFactory)
+	public UserSystem(IServiceScopeFactory scopeFactory, HashSet<WebSocketLink> connections)
 	{
 		_scopeFactory = scopeFactory;
+		_connections = connections;
 	}
 
-	public async Task OnConnectedAsync(WebSocketLink connectedUser, WebSocketLink[] connections)
+	public async Task ConnectionChangeAsync(WebSocketLink connectedUser, ConnectionState state)
 	{
-		await GetMenuData(connections);
-		//await SendFriendList(connectedUser);
-		await UpdateUserData(connectedUser.Id, connections, ConnectionState.Online);
+		await GetMenuData();
+		await UpdateUserData(connectedUser.Id, state);
 	}
 
-	public async Task OnDisconnectedAsync(WebSocketLink connectedUser, WebSocketLink[] connections)
-	{
-		await UpdateUserData(connectedUser.Id, connections, ConnectionState.Offline);
-	}
-
-	public async Task UpdateUserData(long thisUserId, WebSocketLink[] connections, ConnectionState connectionState)
+	public async Task UpdateUserData(long thisUserId, ConnectionState connectionState)
 	{
 		List<Task> tasks = [];
+		WebSocketLink[] connections = _connections.ToArray();
 
 		UserDto thisUser = await GetUserDto(thisUserId);
-		thisUser.ConnectionState = connectionState;
-		UserDataMessage userDataMessage = new UserDataMessage(thisUser);
+		UserDataMessage userDataMessage = new UserDataMessage(thisUser);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
 
 		IEnumerable<UserDto> friendList = await GetFriendListDB(thisUserId);
-
 		foreach (WebSocketLink connectedUser in connections)
 		{
 			if (friendList.Any(friend => friend.Id == connectedUser.Id))
 			{
-				
-				tasks.Add(connectedUser.SendAsync(JsonSerializer.Serialize(userDataMessage)));
+				tasks.Add(connectedUser.SendAsync(ParseHelper.Message(userDataMessage)));
 			}
 		}
 
@@ -54,9 +48,10 @@ public class UserSystem
 
 
 	/* ----- MÉTODOS PRIVADOS ----- */
-	private Task GetMenuData(WebSocketLink[] connections)
+	private Task GetMenuData()
 	{
 		List<Task> tasks = [];
+		WebSocketLink[] connections = _connections.ToArray();
 
 		MenuData menuData = new()
 		{
@@ -64,11 +59,11 @@ public class UserSystem
 			PlayingUsers = 0, //CAMBIAR
 			CurrentMatches = 0 //CAMBIAR
 		};
-		MenuDataMessage menuDataMessage = new MenuDataMessage(menuData);
+		MenuDataMessage menuDataMessage = new MenuDataMessage(menuData);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
 
 		foreach (WebSocketLink user in connections)
 		{
-			tasks.Add(user.SendAsync(JsonSerializer.Serialize(menuDataMessage)));
+			tasks.Add(user.SendAsync(ParseHelper.Message(menuDataMessage)));
 		}
 
 		return Task.WhenAll(tasks);

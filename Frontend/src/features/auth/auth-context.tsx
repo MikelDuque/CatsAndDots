@@ -36,7 +36,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     async function GetToken() {
       const auth = await getAuth();
-      if(auth.token && !authData) setAuthData(auth);
+      setAuthData(auth.token && !authData ? auth : undefined);
+      //if(auth.token && !authData) setAuthData(auth);
     }
 
     GetToken();

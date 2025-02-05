@@ -8,7 +8,6 @@ import { LOGIN_URL, REGISTER_URL } from "@/features/endpoints/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
 import { cookies } from "next/headers";
-import { useWebsocketContext } from "@/features/websocket/contextApi";
 
 
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
@@ -24,6 +23,9 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       type: "POST",
       params: loginRequest
     });
+
+    console.log("response login", response);
+    
    
     await saveAuthToken(response.accessToken);
 
@@ -77,6 +79,8 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
 
 async function saveAuthToken(token: string) {
   const cookieStore = await cookies();
+  console.log(`cookieStore: ${cookieStore}, token: ${token}`);
+  
   cookieStore.set({
     name: "authToken",
     value: token,
@@ -90,8 +94,8 @@ async function saveAuthToken(token: string) {
 export async function LogOut() {
   
   const cookieStore = await cookies();
- 
-  cookieStore.delete("authToken");
+
+  cookieStore.delete('authToken');
   
   redirect(homePath);
 }

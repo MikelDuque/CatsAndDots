@@ -1,9 +1,8 @@
 "use client";
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { HTTPS_WEBSOCKET, WEBSOCKET_URL } from "@/features/endpoints/endpoints";
+import { WEBSOCKET_URL } from "@/features/endpoints/endpoints";
 import { useAuth } from "../auth/auth-context";
-import useFetch from "../endpoints/useFetch";
 import { GenericMessage } from "@/lib/types";
 
 /* ---- TIPADOS ---- */
@@ -28,18 +27,19 @@ export const useWebsocket = (): WebsocketContextType => {
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
     const {token}  = useAuth();
-    const {fetchError} = useFetch({url: HTTPS_WEBSOCKET, type: "GET", token: token, needAuth: true, condition: !!token});
     
     const [socket, setSocket] = useState<WebSocket>();
     const [messages, setMessages] = useState<Record<string, Record<string, unknown>>>({});
 
     useEffect(() => {
-        if (!token || socket || fetchError) return;
-        //¿Va aquí la lógica de cerrar el socket + sesión?
+        if(socket) {
+            if(!token) socket.close();
+            return;
+        };
         
+        console.log(`url websocket: ${WEBSOCKET_URL}?accessToken=${token}`);
         const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
         console.log("Llamada al websocket", ws);
-        
 
         ws.onopen = () => {
             setSocket(ws);
@@ -51,7 +51,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
 
             setMessages(prevMessages => ({
                 ...prevMessages,
-                [jsonData.MessageType]: jsonData.Body
+                [jsonData.messageType]: jsonData.body
             }));
 
             console.log("json ws", JSON.parse(event.data));

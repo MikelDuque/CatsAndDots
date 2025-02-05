@@ -1,5 +1,6 @@
 using System.Net.WebSockets;
 using System.Text.Json;
+using Backend.Models;
 using Backend.WebSockets.Messages;
 using Backend.WebSockets.Systems;
 
@@ -16,8 +17,8 @@ public class WebSocketNetwork
 
   public WebSocketNetwork(IServiceScopeFactory scopeFactory)
   {
-    _friendshipSystem = new FriendshipSystem(scopeFactory);
-    _userSystem = new UserSystem(scopeFactory);
+    _friendshipSystem = new FriendshipSystem(scopeFactory, _connections);
+    _userSystem = new UserSystem(scopeFactory, _connections);
     _matchmakingSystem = new MatchmakingSystem();
   }
 
@@ -28,6 +29,10 @@ public class WebSocketNetwork
     await connection.HandleEventAsync();
   }
 
+  public WebSocketLink GetConnectedUser(long id) {
+		return _connections.Where(user => user.Id == id).FirstOrDefault();
+	}
+
   private async Task<WebSocketLink> AddWebsocketAsync(WebSocket webSocket, long userId)
   {
     await _semaphore.WaitAsync();
@@ -36,7 +41,6 @@ public class WebSocketNetwork
 		newConnection.FriendRequest += OnFriendRequestAsync;
 		newConnection.Disconnected += OnDisconnectedAsync;
     newConnection.MatchmakingEvent += OnMatchmakingAsync;
-
 
     _connections.Add(newConnection);
     _semaphore.Release();
@@ -54,14 +58,14 @@ public class WebSocketNetwork
 		disconnectedUser.Disconnected -= OnDisconnectedAsync;    
 
     _connections.Remove(disconnectedUser);
-		await _userSystem.OnDisconnectedAsync(disconnectedUser, _connections.ToArray());
+		await _userSystem.ConnectionChangeAsync(disconnectedUser, ConnectionState.Offline);
 
 		_semaphore.Release();
   }
 
   private async Task OnConnectedAsync(WebSocketLink connectedUser)
   {
-    await _userSystem.OnConnectedAsync(connectedUser, _connections.ToArray());
+    await _userSystem.ConnectionChangeAsync(connectedUser, ConnectionState.Online);
   }
 
   private async Task OnFriendRequestAsync(WebSocketLink connectedUser, string message)
