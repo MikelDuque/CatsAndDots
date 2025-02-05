@@ -8,17 +8,18 @@ namespace Backend.WebSockets.Systems
   {
    
     private readonly ConcurrentQueue<WebSocketLink> _searchingPlayers = new();
+    private readonly ConcurrentDictionary<long, long> _pendingInvitations = new();
     public async Task HandleMatchmakingAsync(WebSocketLink connectedUser, string message)
     {
-
+      
       MatchmakingMessage matchmakingMessage = JsonSerializer.Deserialize<MatchmakingMessage>(message);
 
       switch (matchmakingMessage.Body.Action)
       {
-        case "Search":
+        case "Random":
           await SearchMatchAsync(connectedUser);
           break;
-        case "CancelSearch":
+        case "CancelRandom":
           await CancelSearchAsync(connectedUser);
           break;
         case "InviteFriend":
