@@ -63,6 +63,7 @@ export default {
 				jersey_10: ['var(--font-jersey10)', 'Poppins', 'sans'],
 				audiowide: ['Audiowide', 'Poppins', 'sans'],
 				ribeye: ['Ribeye', 'Poppins', 'sans'],
+				poppins: ['var(--font-poppins)', 'sans'],
 				roboto: ['var(--font-roboto-serif)', 'Vollkorn', 'sans-serif'],
 			},
 			rotate: {

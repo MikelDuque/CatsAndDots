@@ -75,3 +75,107 @@ public async Task ConnectAsync()
   }
 }
 ```
+
+### Seeder
+```
+UserFriendship[] friendships =
+  [
+		//Mikel y Fer
+    new UserFriendship
+    {
+      UserAId = 2,
+      UserBId = 3,
+      WhenFriendship = DateTime.Now
+    },
+		new UserFriendship
+		{
+			UserAId = 3,
+			UserBId = 2,
+			WhenFriendship = DateTime.Now
+		},
+
+		//Mikel y David
+		new UserFriendship
+		{
+			UserAId = 2,
+			UserBId = 5,
+			WhenFriendship = DateTime.Now
+		},
+		new UserFriendship
+		{
+			UserAId = 5,
+			UserBId = 2,
+			WhenFriendship = DateTime.Now
+		},
+
+		//Fer y Raquel
+		new UserFriendship
+		{
+			UserAId = 6,
+			UserBId = 3,
+			WhenFriendship = DateTime.Now
+		},
+		new UserFriendship
+		{
+			UserAId = 3,
+			UserBId = 6,
+			WhenFriendship = DateTime.Now
+		},
+
+		//Mikel y Raquel
+			new UserFriendship
+		{
+			UserAId = 2,
+			UserBId = 6,
+			WhenFriendship = null
+		},
+		new UserFriendship
+		{
+			UserAId = 6,
+			UserBId = 2,
+			WhenFriendship = null
+		},
+
+		//David y Raquel
+		new UserFriendship
+		{
+			UserAId = 5,
+			UserBId = 6,
+			WhenFriendship = DateTime.Now
+		},
+		new UserFriendship
+		{
+			UserAId = 6,
+			UserBId = 5,
+			WhenFriendship = DateTime.Now
+		},
+
+		//Mikel y Jose
+		new UserFriendship
+		{
+			UserAId = 2,
+			UserBId = 4,
+			WhenFriendship = DateTime.Now
+		},
+		new UserFriendship
+		{
+			UserAId = 4,
+			UserBId = 2,
+			WhenFriendship = DateTime.Now
+		},
+
+		//Fer y Jose
+		new UserFriendship
+		{
+			UserAId = 3,
+			UserBId = 4,
+			WhenFriendship = null
+		},
+		new UserFriendship
+		{
+			UserAId = 4,
+			UserBId = 3,
+			WhenFriendship = null
+		}
+	];
+```
