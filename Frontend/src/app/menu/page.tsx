@@ -12,8 +12,8 @@ export default function Menu() {
       <main className="flex size-full">
         <MenuSection/>
         <FriendList/>
-        <ThemeSwitcher />
       </main>
+      <ThemeSwitcher />
     </>
   );
 }

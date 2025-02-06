@@ -24,10 +24,10 @@ public class AuthService
 
   public async Task<string> Register(RegisterRequest userData)
   {
-    if (await _unitOfWork.UserRepository.GetByMailOrUsername(userData.Username.ToLowerInvariant()) != null) throw new Exception("El usuario ya se encuentra registrado");
+    if (await _unitOfWork.UserRepository.GetByMailOrUsername(userData.Mail) != null) throw new Exception("El usuario ya se encuentra registrado");
 
     User newUser = new User {
-      Username = userData.Username.ToLowerInvariant(),
+      Username = userData.Username,
       Mail = userData.Mail.ToLowerInvariant(),
       Password = HashHelper.Hash(userData.Password),
       Avatar = await FileHelper.SaveAvatar(userData.Avatar, userData.Username),

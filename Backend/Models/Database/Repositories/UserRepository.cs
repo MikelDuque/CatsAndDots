@@ -10,7 +10,7 @@ public class UserRepository : Repository<User>
   public async Task<User> GetByMailOrUsername(string identifier)
   {
     return await GetQueryable()
-    .Where(user => identifier.Contains('@') ? user.Mail == identifier : user.Username == identifier)
+    .Where(user => identifier.Contains('@') ? user.Mail == identifier.ToLowerInvariant() : user.Username == identifier)
     .SingleOrDefaultAsync();
   }
 }
