@@ -8,7 +8,10 @@ namespace Backend.WebSockets.Systems
   {
    
     private readonly ConcurrentQueue<WebSocketLink> _searchingPlayers = new();
+    private readonly SemaphoreSlim _searchingPlayersSemaphore = new SemaphoreSlim(1, 1);
+
     private readonly ConcurrentDictionary<long, long> _pendingInvitations = new();
+
     public async Task HandleMatchmakingAsync(WebSocketLink connectedUser, string message)
     {
       
@@ -23,20 +26,18 @@ namespace Backend.WebSockets.Systems
           await CancelSearchAsync(connectedUser);
           break;
         case "InviteFriend":
-          // El Body debería contener el ID del amigo (por ejemplo, un número).
           long friendId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.ToString());
           await InviteFriendAsync(connectedUser, friendId);
           break;
         case "AcceptInvitation":
-          // El Body contiene el ID del host que envió la invitación.
           long hostId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.ToString());
           await AcceptInvitationAsync(connectedUser, hostId);
           break;
         case "RejectInvitation":
-          await RejectInvitationAsync(connectedUser);
+          hostId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.ToString());
+          await RejectInvitationAsync(connectedUser, hostId);
           break;
         default:
-          // Si la acción no es reconocida, se puede notificar al cliente.
           await connectedUser.SendAsync(JsonSerializer.Serialize(new
           {
             MessageType = "MatchmakingResponse",
@@ -81,16 +82,34 @@ namespace Backend.WebSockets.Systems
    
     public async Task CancelSearchAsync(WebSocketLink player)
     {
-      // Se puede implementar una lógica adicional para "ignorar" al jugador si ya está en cola.
       await player.SendAsync(JsonSerializer.Serialize(new
       {
         MessageType = "SearchCancelled",
         Body = "Búsqueda cancelada."
       }));
+
+      var tempQueue = new ConcurrentQueue<WebSocketLink>();
+      foreach (var p in _searchingPlayers)
+      {
+        if (p.Id != player.Id)
+        {
+          tempQueue.Enqueue(p);
+        }
+      }
+
+      _searchingPlayers.Clear(); 
+
+      while (!tempQueue.IsEmpty)
+      {
+        tempQueue.TryDequeue(out var p);
+        _searchingPlayers.Enqueue(p); 
+      }
     }
 
     public async Task InviteFriendAsync(WebSocketLink host, long friendId)
     {
+      _pendingInvitations[host.Id] = friendId;
+
       await host.SendAsync(JsonSerializer.Serialize(new
       {
         MessageType = "InvitationSent",
@@ -100,22 +119,32 @@ namespace Backend.WebSockets.Systems
 
     public async Task AcceptInvitationAsync(WebSocketLink guest, long hostId)
     {
-      await guest.SendAsync(JsonSerializer.Serialize(new
+      if (_pendingInvitations.TryGetValue(hostId, out long storedGuestId) && storedGuestId == guest.Id)
       {
-        MessageType = "MatchStarted",
-        Body = "Partida iniciada.",
-        Role = "Guest",
-        OpponentId = hostId
-      }));
+        _pendingInvitations.TryRemove(hostId, out _);
+        await guest.SendAsync(JsonSerializer.Serialize(new
+        {
+          MessageType = "MatchStarted",
+          Body = "Partida iniciada.",
+          Role = "Guest",
+          OpponentId = hostId
+        }));
+      }
+      
     }
 
-    public async Task RejectInvitationAsync(WebSocketLink guest)
+    public async Task RejectInvitationAsync(WebSocketLink guest, long hostId)
     {
-      await guest.SendAsync(JsonSerializer.Serialize(new
+      if (_pendingInvitations.TryGetValue(hostId, out long storedGuestId) && storedGuestId == guest.Id)
       {
-        MessageType = "InvitationRejected",
-        Body = "Invitación rechazada."
-      }));
+        _pendingInvitations.TryRemove(hostId, out _);
+        await guest.SendAsync(JsonSerializer.Serialize(new
+        {
+          MessageType = "InvitationRejected",
+          Body = "Invitación rechazada."
+        }));
+      }
+      
     }
   }
 }
