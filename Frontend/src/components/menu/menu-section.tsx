@@ -5,13 +5,9 @@ import Title from "../utils/title";
 
 export default function MenuSection() {
   return (
-    <section className="w-3/4">
-      <Button className="ml-[200] shadow-md shadow-slate-700 " >
-        <Title moreClasses="text-4xl">Buscar Partida</Title>
-      </Button>
-      <Button variant="default" size="icon" className="fixed top-20 left-5">
-          🔎
-        </Button>
+    <section className="w-full flex">
+      <div className="w-1/2 bg-red-500">Contra Bots</div>
+      <div className="w-1/2 bg-blue-500">Contra Otros</div>
     </section>
   );
 };

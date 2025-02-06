@@ -1,23 +1,29 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from "react";
 import { useWebsocket } from "@/features/websocket/websocket-context";
-import { Button } from "../ui/button";
+//UTILS
 import { ConnectionState, User } from "@/lib/types";
-import { Input } from "../ui/input";
-import { ChevronLeft, ChevronRight, Circle, Heading1, Search, Sword, UserPlus, Users } from "lucide-react";
-import Title from "../utils/title";
-import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from "@radix-ui/react-context-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { BASE_HTTPS_URL, GET_FRIENDLIST } from "@/features/endpoints/endpoints";
+import { GET_FRIENDLIST } from "@/features/endpoints/endpoints";
 import useFetch from "@/features/endpoints/useFetch";
 import { useAuth } from "@/features/auth/auth-context";
-import { useModal } from "@/features/modal/ModalContext";
+//COMPONENTS
+import Title from "../utils/title";
+import UserSearch from "./user-search";
+import FriendCard from "./friend-card";
+//SHADCN
+import { Button } from "../ui/button";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
+import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Input } from "../ui/input";
+//LUCIDE
+import { ChevronLeft, ChevronRight, Search, UserPlus, Users } from "lucide-react";
+
+
 
 export default function FriendList() {
   const {messages} = useWebsocket();
   const {token, decodedToken} = useAuth();
-  const {openModal} = useModal();
 
   const {fetchData} = useFetch({url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true, condition: !!token});
 
@@ -36,26 +42,30 @@ export default function FriendList() {
     
   }, [messages]);
 
-  /*
-  useEffect(() => {
-    if(message?.MessageType === "FriendList" && Array.isArray(message?.Body)) setFriendlist(message?.Body);
-  }, [message]);
-  */
-
   function OnHide() {setHideFriendlist(previousState => !previousState)};
-  function HandleOpen() {openModal("UserSearch")};
 
   return (
     <>
-      <div className={`p-2 flex items-center gap-1 absolute right-0 ${hideFriends ? "" : "hidden"}`}>
-        <Button variant="ghost" size="icon" onClick={OnHide}><ChevronLeft/></Button >
-        <Button variant="ghost" size="icon"><Users/></Button>
-      </div>
-      <aside className={`z-10 fixed flex flex-col w-1/4 h-full bg-secondary p-2 gap-5 ${hideFriends ? "right-full" : "right-0"}`}>
+      {hideFriends && 
+        <Button variant="ghost" onClick={OnHide} className={`absolute right-0 ${hideFriends ? "" : "hidden"}`}>
+          <ChevronLeft/><Users/>
+        </Button >
+      }
+      <aside className={`p-2 flex flex-col w-1/6 h-full bg-secondary gap-5 ${hideFriends && "fixed right-full duration-300 ease-linear"}`}>
         <div className="flex justify-between">
           <Button variant="ghost" size="icon" onClick={OnHide}><ChevronRight/></Button >
           <Title moreClasses="w-full">Amigos</Title>
-          <Button variant="ghost" size="icon" onClick={HandleOpen}><UserPlus/></Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon"><UserPlus/></Button>
+            </DialogTrigger>
+            <DialogContent className="bg-popover">
+              <DialogHeader>
+                <DialogTitle><Title>Búsqueda de Usuarios</Title></DialogTitle>
+              </DialogHeader>
+              <UserSearch/>
+            </DialogContent>
+          </Dialog>
         </div>
         
         <form className="flex w-full gap-1">
@@ -66,7 +76,8 @@ export default function FriendList() {
           />
           <Button type="submit" size="icon" variant="ghost"><Search/></Button>
         </form>
-        <ul className="text-body">
+
+        <ul className="text-body grid gap-1">
           {ListMapper(friendList)}
         </ul>
       </aside>
@@ -77,35 +88,20 @@ export default function FriendList() {
 function ListMapper(list: Array<User>) {
   return (list.length > 0 ? (
     list.map((user) => (
-      <li key={user.id}>
+      <li key={user.id} className="cursor-pointer">
         <ContextMenu>
-          <ContextMenuTrigger className="flex">
-            <Avatar className="h-full aspect-square items-center justify-center overflow-hidden rounded-full">
-              <AvatarImage src={`${BASE_HTTPS_URL}${user.avatar}`} alt="X" className="size-full object-scale-down"/>
-              <AvatarFallback delayMs={600} className="title">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <Heading1/>{user.username}
-            {SetConnectionState(user)}
+          <ContextMenuTrigger asChild>
+            <div><FriendCard user={user}/></div>
           </ContextMenuTrigger>
           <ContextMenuContent>
-
+            <ContextMenuItem>Ver perfil</ContextMenuItem>
+            {user.connectionState !== ConnectionState.Playing && 
+              <ContextMenuItem>Invitar a la partida</ContextMenuItem>
+            }
+            <ContextMenuItem>Borrar amigo</ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
       </li>
   ))) : <p className="body-text">No se ha podido cargar tus amigos</p>);
 };
 
-function SetConnectionState(user: User) {
-  return user.connectionState === ConnectionState.Playing ? <Sword color="green"/> : <Circle color={SetColor()}/>
-
-  function SetColor() {
-    switch (user.connectionState) {
-      case ConnectionState.Offline:
-        return "red";
-      case ConnectionState.Online:
-        return "green";
-      default:
-        return "white";
-    };
-  };
-};

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { gameTitle, text } from "@/lib/fonts";
+import { gameTitle, text, poppins } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { WebsocketProvider } from "@/features/websocket/websocket-context";
@@ -20,7 +20,7 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <body suppressHydrationWarning
-        className={`${gameTitle.variable} ${text.variable} antialiased`} 
+        className={`${gameTitle.variable} ${text.variable} ${poppins.variable} antialiased`} 
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>

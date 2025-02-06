@@ -1,6 +1,8 @@
 import { useModal } from "./ModalContext";
 import classes from "./Modal.module.css";
 import { ReactNode} from "react";
+import Title from "@/components/utils/title";
+import { Button } from "@/components/ui/button";
 
 type ModalProps = {
   continueFnc?: () => void,
@@ -19,21 +21,21 @@ export default function Modal({continueFnc, cancelFnc, type, title, buttonValues
 
   return (
     (whichIsOpen === type) && (
-      <div className={classes.screen_container}>
-      <div className={`${classes.modal} ${classes[`modal--${type}`]}`}>
-        <div className={`${classes.headerContainer} ${classes.importantText}`}>
-          <h4>{title}</h4>
-          <a className={`${classes.closeButton}`} onClick={closeModal}>X</a>
+      <div className="fixed top-0 left-0 h-screen">
+        <div className={`fixed z-1010 p-2 flex flex-col gap-2 bg-popover text-body text-popover-foreground modal-${type}`}>
+          <div className="flex justify-between">
+            <Title>{title}</Title>
+            <a className="font-bold cursor-pointer" onClick={closeModal}>X</a>
+          </div>
+          <div className="h-full">{children}</div>
+          {(buttonValues !== null) && (
+            <div className="h-5 flex justify-evenly">
+            <Button className={`confirmBtn--${type}`} onClick={() => {continueFnc?.(); closeModal?.()}}><Title>{buttonValues?.continueVal}</Title></Button>
+            <Button className={`cancelBtn--${type}`} onClick={cancelFnc}><Title>{buttonValues?.cancelVal}</Title></Button>
+          </div>
+          )}
         </div>
-        <div className={classes.content}>{children}</div>
-        {(buttonValues !== null) && (
-          <div className={`${classes.buttonContainer} ${classes.importantText}`}>
-          <button className={`${classes.importantText} ${classes.button} ${classes[`confirmBtn--${type}`]}`} onClick={() => {continueFnc?.(); closeModal?.()}}>{buttonValues?.continueVal}</button>
-          <button className={`${classes.importantText} ${classes.button} ${classes[`cancelBtn--${type}`]}`} onClick={cancelFnc}>{buttonValues?.cancelVal}</button>
-        </div>
-        )}
-      </div>
-      <div className={classes.overlay} onClick={closeModal}/>
+        <div className="fixed top-0 left-0 h-screen w-screen z-10000 bg-black/50" onClick={closeModal}/>
       </div>
     )
   );
