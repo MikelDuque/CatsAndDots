@@ -12,10 +12,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { BASE_HTTPS_URL, GET_FRIENDLIST } from "@/features/endpoints/endpoints";
 import useFetch from "@/features/endpoints/useFetch";
 import { useAuth } from "@/features/auth/auth-context";
+import { useModal } from "@/features/modal/ModalContext";
 
 export default function FriendList() {
   const {messages} = useWebsocket();
   const {token, decodedToken} = useAuth();
+  const {openModal} = useModal();
 
   const {fetchData} = useFetch({url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true, condition: !!token});
 
@@ -40,19 +42,20 @@ export default function FriendList() {
   }, [message]);
   */
 
-  function onHide() {setHideFriendlist(previousState => !previousState)};
+  function OnHide() {setHideFriendlist(previousState => !previousState)};
+  function HandleOpen() {openModal("UserSearch")};
 
   return (
     <>
       <div className={`p-2 flex items-center gap-1 absolute right-0 ${hideFriends ? "" : "hidden"}`}>
-        <Button variant="ghost" size="icon" onClick={onHide}><ChevronLeft/></Button >
-        <Users/>
+        <Button variant="ghost" size="icon" onClick={OnHide}><ChevronLeft/></Button >
+        <Button variant="ghost" size="icon"><Users/></Button>
       </div>
       <aside className={`z-10 fixed flex flex-col w-1/4 h-full bg-secondary p-2 gap-5 ${hideFriends ? "right-full" : "right-0"}`}>
         <div className="flex justify-between">
-          <Button variant="ghost" size="icon" onClick={onHide}><ChevronRight/></Button >
+          <Button variant="ghost" size="icon" onClick={OnHide}><ChevronRight/></Button >
           <Title moreClasses="w-full">Amigos</Title>
-          <Button variant="ghost" size="icon"><UserPlus/></Button>
+          <Button variant="ghost" size="icon" onClick={HandleOpen}><UserPlus/></Button>
         </div>
         
         <form className="flex w-full gap-1">

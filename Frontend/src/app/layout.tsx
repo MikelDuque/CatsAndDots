@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { WebsocketProvider } from "@/features/websocket/websocket-context";
 import { AuthProvider } from "@/features/auth/auth-context";
+import { ModalProvider } from "@/features/modal/ModalContext";
 
 export const metadata: Metadata = {
   title: "Cats & Dots",
@@ -25,7 +26,9 @@ export default async function RootLayout({
           <AuthProvider>
             <WebsocketProvider>
               <Toaster/>
-              {children}
+              <ModalProvider>
+                {children}
+              </ModalProvider>
             </WebsocketProvider>
           </AuthProvider>
         </ThemeProvider>

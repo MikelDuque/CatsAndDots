@@ -16,7 +16,10 @@ type WebsocketProviderProps = {
 }
 
 /* ----- DECLARACIÓN Context ----- */
-const WebsocketContext = createContext<WebsocketContextType>({socket: undefined, messages: undefined});
+const WebsocketContext = createContext<WebsocketContextType>({
+    socket: undefined,
+    messages: undefined
+});
 
 export const useWebsocket = (): WebsocketContextType => {
     const context = useContext(WebsocketContext);
