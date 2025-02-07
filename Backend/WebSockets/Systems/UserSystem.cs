@@ -13,12 +13,15 @@ public class UserSystem
 {
 	private readonly IServiceScopeFactory _scopeFactory;
 	private readonly HashSet<WebSocketLink> _connections;
+  private readonly WebSocketNetwork _webSocketNetwork;
 
-	public UserSystem(IServiceScopeFactory scopeFactory, HashSet<WebSocketLink> connections)
+  public UserSystem(IServiceScopeFactory scopeFactory, HashSet<WebSocketLink> connections, WebSocketNetwork webSocketNetwork)
 	{
 		_scopeFactory = scopeFactory;
 		_connections = connections;
-	}
+    _webSocketNetwork = webSocketNetwork;
+
+  }
 
 	public async Task ConnectionChangeAsync(WebSocketLink connectedUser, ConnectionState state)
 	{
@@ -57,8 +60,8 @@ public class UserSystem
 		{
 			OnlineUsers = connections.Length,
 			PlayingUsers = 0, //CAMBIAR
-			CurrentMatches = 0 //CAMBIAR
-		};
+			CurrentMatches = _webSocketNetwork.ActiveMatchesCount
+    };
 		MenuDataMessage menuDataMessage = new MenuDataMessage(menuData);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
 
 		foreach (WebSocketLink user in connections)

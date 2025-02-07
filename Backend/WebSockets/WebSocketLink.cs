@@ -96,6 +96,9 @@ public class WebSocketLink : IDisposable
       case "FriendRequest":
         if (FriendRequest != null) await FriendRequest.Invoke(this, message);
         break;
+      case "Matchmaking":
+        if (MatchmakingEvent != null) await MatchmakingEvent.Invoke(this, message);
+        break;
     }
   }
   private string GetMessageType(string JsonObject)
