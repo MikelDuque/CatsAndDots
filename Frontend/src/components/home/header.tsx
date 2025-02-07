@@ -12,7 +12,7 @@ export default function Header() {
 
   return(
     <header className="h-14 fixed flex items-center w-screen top-0 justify-between py-1 px-3 shadow-md bg-background">
-     <figure className="relative aspect-square h-4/5" onClick={scrollToTop}>
+     <figure className="relative aspect-square h-4/5 cursor-pointer" onClick={scrollToTop}>
       <Image 
         src={logo} 
         alt={"logo"}
