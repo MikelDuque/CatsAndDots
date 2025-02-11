@@ -10,7 +10,12 @@ export default {
   theme: {
   	extend: {
 			backgroundImage: {
-				background: 'var(--background)'
+				background: 'var(--background)',
+				bots_card: 'var(--bots-card)',
+				cats_card: 'var(--cats-card)'
+			},
+			textShadow: {
+				titleShadow: '0 1px 2px var(--foreground)'
 			},
   		colors: {
   			background: 'var(--background)',

@@ -5,6 +5,7 @@ import Image from "next/image"
   import logo from "@/../public/Home/gato_naranja.png"
 import { Button } from "../ui/button";
 import Title from "../utils/title";
+import { menuPath } from '@/lib/paths';
 
 export default function Header() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function Header() {
         />
      </figure>
       
-      <Button onClick={() => router.push("/menu")}>
+      <Button onClick={() => router.push(menuPath)}>
         <Title moreClasses="text-sm">Play now!</Title>
       </Button>
     </header>

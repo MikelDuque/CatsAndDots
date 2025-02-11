@@ -3,7 +3,6 @@ import { ConnectionState, User } from "@/lib/types";
 import { BASE_HTTPS_URL } from "@/features/endpoints/endpoints";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Circle, Sword } from "lucide-react";
-import Title from "../utils/title";
 
 type FriendCardProps = {
   user: User
@@ -11,7 +10,7 @@ type FriendCardProps = {
 
 export default function FriendCard({user}: FriendCardProps) {
   return (
-    <div className="flex p-3 justify-between items-center h-15 rounded-lg hover:shadow-md hover:shadow-current">
+    <div className="flex p-3 justify-between items-center h-15 rounded-lg hover:textShadow">
       <div className="flex gap-3 items-center">
         <Avatar>
           <AvatarImage src={`${BASE_HTTPS_URL}${user.avatar}`} alt="X"/>

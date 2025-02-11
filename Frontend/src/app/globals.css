@@ -30,14 +30,15 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --bots-card: radial-gradient(circle, #56ffa7, #002c0d);
+    --cats-card: radial-gradient(circle, #ffa5d0, #2e0022);
   }
   .dark {
-    --background: linear-gradient(90deg, #001b08, #160010);
+    --background: linear-gradient(90deg, #002c0d, #2e0022);
     --foreground: 0 0% 95%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 95%;
     --popover: 225 20% 40%;
-    /*45 100% 30%;*/
     --popover-foreground: 0 0% 95%;
     --primary: 45 100% 75%;
     --primary-foreground: 0 0% 5%;
@@ -57,6 +58,8 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --bots-card: radial-gradient(circle, #002c0d, #56ffa7);
+    --cats-card: radial-gradient(circle, #2e0022, #ffa5d0);
   }
 }
 
@@ -80,14 +83,17 @@ body {
 }
 
 @layer components {
-  .text-body {
-    @apply text-base text-justify font-roboto;
+  .super-title {
+    @apply text-9xl text-center font-bold font-jersey_10;
   }
   .title {
     @apply text-2xl text-center font-light;
   }
   .subtitle {
     @apply text-lg text-center font-poppins;
+  }
+  .text-body {
+    @apply text-base text-justify font-roboto;
   }
 }
 
