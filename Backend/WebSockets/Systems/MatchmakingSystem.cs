@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using Backend.WebSockets.Messages;
 using Backend.Helpers;
-using Microsoft.Extensions.Hosting;
 
 namespace Backend.WebSockets.Systems
 {
@@ -49,7 +48,6 @@ namespace Backend.WebSockets.Systems
       }
     }
 
-  
     public async Task SearchMatchAsync(WebSocketLink player)
     {
       await _searchingPlayersSemaphore.WaitAsync();
@@ -91,7 +89,6 @@ namespace Backend.WebSockets.Systems
       }
     }
 
-   
     public async Task CancelSearchAsync(WebSocketLink player)
     {
       await player.SendAsync(ParseHelper.GenericMessage("SearchCancelled", "Búsqueda cancelada."));
