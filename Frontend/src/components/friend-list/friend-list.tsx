@@ -47,7 +47,7 @@ export default function FriendList() {
   return (
     <>
       {hideFriends && 
-        <Button variant="ghost" onClick={OnHide} className={`absolute right-0 ${hideFriends ? "" : "hidden"}`}>
+        <Button variant="ghost" onClick={OnHide} className={`absolute right-0 text-white ${hideFriends ? "" : "hidden"}`}>
           <ChevronLeft/><Users/>
         </Button >
       }

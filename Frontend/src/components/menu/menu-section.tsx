@@ -22,4 +22,4 @@ function MenuCard({isHuman, divClass}: MenuCard) {
       </h1>
     </div>
   );
-}
+};
