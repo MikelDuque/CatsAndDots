@@ -74,14 +74,14 @@ namespace Backend.WebSockets.Systems
           {
             Body = "Partida encontrada.",
             Role = "Host",
-            OpponentId = player2.Id
+            Opponent = player2
           }));
 
           await player2.SendAsync(ParseHelper.GenericMessage("MatchFound", new
           {
             Body = "Partida encontrada.",
             Role = "Guest",
-            OpponentId = player1.Id
+            Opponent = player1
           }));
 
           await _webSocketNetwork.StartMatchAsync(player1.Id, player2.Id);
