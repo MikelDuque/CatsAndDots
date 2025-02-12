@@ -4,14 +4,22 @@ import Header from "@/components/header/header";
 import MenuSection from "@/components/menu/menu-section";
 import FriendList from "@/components/friend-list/friend-list";
 import ThemeSwitcher from "@/components/theme/theme-switcher";
+import Matchmaking from "@/components/menu/matchmaking";
+import { useState } from "react";
 
 export default function Menu() {
+  const [showMatchmaking, setShowMatchmaking] = useState(false);
+
   return (
     <>
-      <Header/>
+      <Header />
       <main className="flex size-full">
-        <MenuSection/>
-        <FriendList/>
+        {showMatchmaking ? (
+          <Matchmaking onBack={() => setShowMatchmaking(false)} />
+        ) : (
+          <MenuSection onSelectCats={() => setShowMatchmaking(true)} />
+        )}
+        <FriendList />
       </main>
       <ThemeSwitcher />
     </>
