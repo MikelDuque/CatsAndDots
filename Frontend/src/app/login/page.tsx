@@ -10,7 +10,9 @@ import { useState } from "react";
 
 export default function Login() {
   const router = useRouter();
-  const [currentView, setCurrentView] = useState<"login" | "register">("login");
+  const [flipCard, setFlipCard] = useState(false);
+
+  function OnFlip() {setFlipCard(previousState => !previousState)};
 
   return (
     <>
@@ -19,9 +21,13 @@ export default function Login() {
           <ChevronLeft />
         </Button>
       </header>
-      <main className="h-screen w-screen flex justify-center items-center">
-        {currentView === "login" && (<LoginForm onSwitchToRegister={() => setCurrentView("register")} />)}
-        {currentView === "register" && (<RegisterForm onSwitchToLogin={() => setCurrentView("login")} />)}
+      <main className="size-full flex justify-center items-center">
+        <div className="relative w-1/4 h-4/5 [perspective:1000rem]">
+          <LoginForm hasFlip={flipCard} flipCard={OnFlip}/>
+          <RegisterForm hasFlip={flipCard} flipCard={OnFlip}/>
+        </div>
+        
+        
         <ThemeSwitcher />
       </main>
     </>

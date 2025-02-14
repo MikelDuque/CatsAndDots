@@ -10,12 +10,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formSchema } from "@/features/auth/queries/form-validator";
+import { FormProps } from "@/lib/types";
 
-type RegisterFormProps = {
-  onSwitchToLogin: () => void;
-};
-
-export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
+export default function RegisterForm({hasFlip, flipCard}: FormProps) {
   const [registerActionState, registerAction] = useActionState(RegisterAction, {
       message: "",
       fieldErrors: {}
@@ -43,15 +40,10 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       mode: "onSubmit"
     });
 
-    /*
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      form.setValue("avatar", file || undefined);
-    }
-    */
+    const transform = hasFlip ? "[transform:rotateY(10deg)]" : "[transform:rotateY(190deg)]";
 
   return(
-    <Card className="w-1/3 h-fit">
+    <Card className={`absolute size-full [backface-visibility:hidden] ${transform} transition-all duration-1000`}>
       <CardHeader>
         <CardTitle><Title>Regístrate</Title></CardTitle>
       </CardHeader>
@@ -137,13 +129,12 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               render={({field}) => (
                 <FormItem>
                   <FormLabel>Avatar</FormLabel>
-                  <FormDescription>Puede añadir a continuación una avatar personalizado</FormDescription>
+                  <FormDescription>Personalice su imagen de perfil</FormDescription>
                   <FormControl>
                     <Input
                       type="file"
                       accept="image/*"
                       placeholder="Seleccione una imagen"
-                      //onChange={handleAvatarChange}
                       {...field}
                     />
                   </FormControl>
@@ -162,7 +153,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       <CardFooter>
         <p className="text-body">
           ¿Ya tienes cuenta?
-          <Button variant="link" onClick={onSwitchToLogin}>Inicia Sesión</Button>
+          <Button variant="link" onClick={flipCard}>Inicia Sesión</Button>
         </p>
       </CardFooter>
     </Card>

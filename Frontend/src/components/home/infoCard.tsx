@@ -1,25 +1,34 @@
 "use client"
 
 import { useTheme } from "next-themes"
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Title from "../utils/title";
+import { useEffect, useState } from "react";
 
 
 interface InfoCardProps {
   children: React.ReactNode;
   title: string;
-  img: StaticImageData;
+  img: string;
 }
 
 function InfoCard({children, title, img}:InfoCardProps ) {
   const {theme} = useTheme();
+    const [currentBorder, setCurrentBorder] = useState<string>("#7741bf");
+  
+    useEffect(() => {
+      setCurrentBorder(theme === "light" ? "#7741bf" : "#fff3b0");
+    }, [theme]);
+
   return (
     <div className="max-w-xs flex flex-col items-center gap-5">
       <Title>{title}</Title>
       <Image
         src={img}
         alt={"info image"}
-        className={theme === "light" ? "border-4 border-[#7741bf] rounded-lg" :"border-4 border-[#fff3b0] rounded-lg"}
+        height={500}
+        width={500}
+        className={`border-4 rounded-lg border-[${currentBorder}]"`}
       />
       <p className="text-body text-md">{children}</p>
     </div>

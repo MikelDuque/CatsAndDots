@@ -108,20 +108,4 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
-  .perspective {
-    perspective: 1000px; /* Asegura que la perspectiva sea 3D */
-  }
-
-  .backface-hidden {
-    backface-visibility: hidden; /* Esconde el reverso de la cara cuando se gira */
-  }
-
-  .rotate-y-180 {
-    transform: rotateY(180deg); /* Rota 180 grados en el eje Y */
-  }
-
-  .group-hover\:rotate-y-180:hover {
-    transform: rotateY(180deg); /* Añade animación para rotar al pasar el ratón */
-  }
 }

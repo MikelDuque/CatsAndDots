@@ -51,7 +51,7 @@ export default function FriendList() {
           <ChevronLeft/><Users/>
         </Button >
       }
-      <aside className={`p-2 flex flex-col w-2/6 h-full bg-secondary gap-5 ${hideFriends && "fixed right-full"}`}>
+      <aside className={`p-2 flex flex-col w-1/5 h-full bg-secondary gap-5 ${hideFriends && "fixed right-full"}`}>
         <div className="flex justify-between">
           <Button variant="ghost" size="icon" onClick={OnHide}><ChevronRight/></Button >
           <Title moreClasses="w-full">Amigos</Title>

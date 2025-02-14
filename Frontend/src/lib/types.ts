@@ -5,6 +5,11 @@ export type ActionState = {
   fieldErrors: Record<string, string[] | undefined>;
 };
 
+export type FormProps = {
+  hasFlip: boolean,
+  flipCard: () => void
+}
+
 export type FetchProps = {
   url: string;
   type: string;

@@ -15,16 +15,14 @@ import { LoginAction } from "@/features/auth/actions/server-actions";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
+import { FormProps } from "@/lib/types";
 
 interface LoginFormInputs {
   identifier: string;
   password: string;
 }
-interface LoginFormProps {
-  onSwitchToRegister: () => void;
-}
 
-export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
+export default function LoginForm({hasFlip, flipCard}: FormProps) {
   const [loginActionState, loginAction] = useActionState(LoginAction, {
     message: "",
     fieldErrors: {},
@@ -48,8 +46,12 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     mode: "onSubmit",
   });
 
+  console.log("flip", hasFlip);
+  const transform = hasFlip ? "[transform:rotateY(-190deg)]" : "[transform:rotateY(10deg)]";
+  
+
   return (
-    <Card className="w-1/4 h-fit">
+    <Card className={`absolute h-fit w-full top-1/4 [backface-visibility:hidden] ${transform} transition-all duration-1000`}>
 
       <CardHeader>
         <CardTitle><Title>Inicia Sesión</Title></CardTitle>
@@ -103,7 +105,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       <CardFooter>
         <p className="text-body text-left">
           ¿No tienes cuenta?
-          <Button variant="link" onClick={onSwitchToRegister}>¡Regístrate!</Button>
+          <Button variant="link" onClick={flipCard}>¡Regístrate!</Button>
         </p> 
       </CardFooter>
     </Card>
