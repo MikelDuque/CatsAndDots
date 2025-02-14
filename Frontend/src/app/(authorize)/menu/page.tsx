@@ -13,7 +13,7 @@ export default function Menu() {
   return (
     <>
       <Header />
-      <main className="flex size-full">
+      <main className="flex w-full h-[92.5%]">
         {showMatchmaking ? (
           <Matchmaking onBack={() => setShowMatchmaking(false)} />
         ) : (
