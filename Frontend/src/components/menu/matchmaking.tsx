@@ -17,11 +17,12 @@ type Player = {
   avatar: string | null;
 } | null;
 
+
 export default function Matchmaking({ onBack }: { onBack: () => void }) {
   const [players, setPlayers] = useState<Player[]>([null, null]);
   const [showFriendsModal, setShowFriendsModal] = useState(false)
   const [friendList, setFriendlist] = useState<Array<User>>([]);
-  const { messages } = useWebsocket();
+  const { messages, sendMessage } = useWebsocket();
   const {token, decodedToken} = useAuth();
   const {fetchData} = useFetch({url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true, condition: !!token});
 
@@ -51,6 +52,30 @@ export default function Matchmaking({ onBack }: { onBack: () => void }) {
 
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (!messages || typeof messages !== "object") return;
+  
+    const matchStartedMessage = messages["MatchStarted"];
+  
+      const role = matchStartedMessage.role
+      const opponentId = matchStartedMessage.opponentId
+      
+      console.log("el rival", role, opponentId)
+      if (role === "Host") {
+        const opponent = friendList.find(friend => friend.id === opponentId);
+        
+        if (opponent) {
+          const opponentPlayer: Player = {
+            name: opponent.username,
+            avatar: opponent.avatar ? `${BASE_HTTPS_URL}${opponent.avatar}` : null,
+          };
+  
+          setPlayers(prevPlayers => [prevPlayers[0], opponentPlayer]);
+        }
+      }
+    
+  }, [messages, friendList]);
 
 
 
@@ -90,7 +115,7 @@ export default function Matchmaking({ onBack }: { onBack: () => void }) {
           </DialogHeader>
           <div>
             <ul className="text-body grid gap-1">
-              {ListMapper(friendList)}
+            <ListMapper list={friendList} sendMessage={sendMessage} />
             </ul>
 
           </div>
@@ -102,14 +127,26 @@ export default function Matchmaking({ onBack }: { onBack: () => void }) {
 
 }
 
-function ListMapper(list: Array<User>) {
-  return (list.length > 0 ? (
+function ListMapper({ list, sendMessage }: { list: Array<User>, sendMessage: (message: any) => void }) {
+  return list.length > 0 ? (
     list.map((user) => (user.connectionState === ConnectionState.Online &&
-      <li key={user.id} className="flex items-center justify-around ">
+      <li key={user.id} className="flex items-center justify-around">
         <FriendCard user={user} />
-        <Button>
+        <Button onClick={() => inviteFriend(user.id, sendMessage)}>
           ✔
         </Button>
       </li>
-    ))) : <p className="body-text">No hay amigos disponibles para invitar</p>);
-};
+    ))
+  ) : <p className="body-text">No hay amigos disponibles para invitar</p>;
+}
+
+
+function inviteFriend(friendId: number, sendMessage: (message: any) => void) {
+  sendMessage({
+    MessageType: "MatchmakingMessage",
+    Body: {
+      Action: "InviteFriend",
+      GuestId: friendId
+    }
+  });
+}
