@@ -84,7 +84,7 @@ body {
 
 @layer components {
   .super-title {
-    @apply text-9xl text-center font-bold font-jersey_10;
+    @apply text-9xl text-center font-bold font-jersey_10 tracking-wide;
   }
   .title {
     @apply text-2xl text-center font-light;

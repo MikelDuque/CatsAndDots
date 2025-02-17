@@ -31,16 +31,16 @@ namespace Backend.WebSockets.Systems
           await CancelSearchAsync(connectedUser);
           break;
         case "InviteFriend":
-          long friendId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.ToString());
+          long friendId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.GuestId);
           await InviteFriendAsync(connectedUser, friendId);
           break;
         case "AcceptInvitation":
-          long hostId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.ToString());
+          long hostId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.HostId);
           await AcceptInvitationAsync(connectedUser, hostId);
           break;
         case "RejectInvitation":
-          hostId = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.ToString());
-          await RejectInvitationAsync(connectedUser, hostId);
+          long Id = JsonSerializer.Deserialize<long>(matchmakingMessage.Body.HostId);
+          await RejectInvitationAsync(connectedUser, Id);
           break;
         default:
           await connectedUser.SendAsync(ParseHelper.GenericMessage("MatchmakingResponse", "Acción no reconocida."));
@@ -89,6 +89,7 @@ namespace Backend.WebSockets.Systems
       }
     }
 
+   
     public async Task CancelSearchAsync(WebSocketLink player)
     {
       await player.SendAsync(ParseHelper.GenericMessage("SearchCancelled", "Búsqueda cancelada."));
@@ -116,7 +117,18 @@ namespace Backend.WebSockets.Systems
     {
       _pendingInvitations[host.Id] = friendId;
 
-      await host.SendAsync(ParseHelper.GenericMessage("InvitationSent", $"Invitación enviada al amigo con ID {friendId}."));
+      WebSocketLink? friendSocket = _webSocketNetwork.GetConnectedUser(friendId);
+
+      if (friendSocket != null)
+      {
+        var invitationMessage = new
+        {
+          type = "GameInvitation",
+          senderId = host.Id
+        };
+
+        await friendSocket.SendAsync(ParseHelper.GenericMessage("GameInvitation", invitationMessage));
+      }
 
     }
 
@@ -125,15 +137,27 @@ namespace Backend.WebSockets.Systems
       if (_pendingInvitations.TryGetValue(hostId, out long storedGuestId) && storedGuestId == guest.Id)
       {
         _pendingInvitations.TryRemove(hostId, out _);
+        WebSocketLink? hostSocket = _webSocketNetwork.GetConnectedUser(hostId);
+
+        if (hostSocket != null)
+        {
+          await hostSocket.SendAsync(ParseHelper.GenericMessage("MatchStarted", new
+          {
+            Body = "El invitado ha aceptado la partida.",
+            Role = "Host",
+            OpponentId = guest.Id
+          }));
+        }
+
         await guest.SendAsync(ParseHelper.GenericMessage("MatchStarted", new
         {
           Body = "Partida iniciada.",
           Role = "Guest",
           OpponentId = hostId
         }));
+
         await _webSocketNetwork.StartMatchAsync(hostId, guest.Id);
       }
-      
     }
 
     public async Task RejectInvitationAsync(WebSocketLink guest, long hostId)
@@ -141,10 +165,15 @@ namespace Backend.WebSockets.Systems
       if (_pendingInvitations.TryGetValue(hostId, out long storedGuestId) && storedGuestId == guest.Id)
       {
         _pendingInvitations.TryRemove(hostId, out _);
-        await guest.SendAsync(ParseHelper.GenericMessage("InvitationRejected", "Invitación rechazada."));
+        WebSocketLink? hostSocket = _webSocketNetwork.GetConnectedUser(hostId);
 
+        if (hostSocket != null)
+        {
+          await hostSocket.SendAsync(ParseHelper.GenericMessage("InvitationRejected", "El invitado ha rechazado la partida."));
+        }
+
+        await guest.SendAsync(ParseHelper.GenericMessage("InvitationRejected", "Has rechazado la invitación."));
       }
-
     }
   }
 }

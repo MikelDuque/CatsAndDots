@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import RegisterForm from "@/components/auth/register-form";
 import ThemeSwitcher from "@/components/theme/theme-switcher";
 import { useState } from "react";
+import { homePath } from "@/lib/paths";
 
 export default function Login() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function Login() {
   return (
     <>
       <header className="fixed">
-        <Button variant="ghost" size="icon" onClick={() => router.push("/")}>
+        <Button variant="ghost" size="icon" onClick={() => router.push(homePath)}>
           <ChevronLeft />
         </Button>
       </header>

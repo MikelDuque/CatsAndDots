@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using Backend.Models;
+using Backend.WebSockets.Messages;
 
 namespace Backend.WebSockets;
 
@@ -96,15 +97,14 @@ public class WebSocketLink : IDisposable
       case "FriendRequest":
         if (FriendRequest != null) await FriendRequest.Invoke(this, message);
         break;
-      case "Matchmaking":
+      case "MatchmakingMessage":
         if (MatchmakingEvent != null) await MatchmakingEvent.Invoke(this, message);
         break;
     }
   }
   private string GetMessageType(string JsonObject)
   {
-    IMessage<Object> message = JsonSerializer.Deserialize<IMessage<Object>>(JsonObject);
-
-    return message.MessageType;
+    var message = JsonSerializer.Deserialize<Message<object>>(JsonObject);
+    return message?.MessageType ?? string.Empty;
   }
 }

@@ -9,6 +9,7 @@ import { GenericMessage } from "@/lib/types";
 type WebsocketContextType = {
     socket: WebSocket | undefined;
     messages: Record<string, Record<string, unknown>> | undefined;
+    sendMessage: (message: object) => void;
 }
 
 type WebsocketProviderProps = {
@@ -18,7 +19,10 @@ type WebsocketProviderProps = {
 /* ----- DECLARACIÓN Context ----- */
 const WebsocketContext = createContext<WebsocketContextType>({
     socket: undefined,
-    messages: undefined
+    messages: undefined,
+    sendMessage: () => {
+        console.warn("Intentando enviar mensaje sin conexión WebSocket.");
+    }
 });
 
 export const useWebsocket = (): WebsocketContextType => {
@@ -57,7 +61,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
                 [jsonData.messageType]: jsonData.body
             }));
 
-            console.log("json ws", JSON.parse(event.data));
+            console.log("recibi este mensaje: ", event.data)
         };
 
         ws.onclose = () => {
@@ -80,20 +84,22 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
 
     }, [token]);
 
-    /*
+    
     function sendMessage(message: object) {
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(message));
+            console.log("mande este mensaje: ", message)
         } else {
             console.warn("No hay conexión WebSocket activa.");
         }
     };
-    */
+    
 
     /* ----- Fin Context ----- */
     const contextValue: WebsocketContextType = {
         socket,
-        messages
+        messages,
+        sendMessage,
     };
 
     return <WebsocketContext.Provider value={contextValue}>{children}</WebsocketContext.Provider>
