@@ -23,4 +23,4 @@ function MenuCard({isHuman, divClass, onClick }: MenuCard) {
       </h1>
     </div>
   );
-}
+};
