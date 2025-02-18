@@ -29,4 +29,15 @@ public class UserController : Controller
 
 		return Ok(await _userService.GetFriendList(id));
 	}
+
+	[HttpGet("PendingFriendList/{id}")]
+	public async Task<ActionResult> GetPendingFriends(long id)
+	{
+		Claim userClaimId = User.FindFirst("id");
+		if (userClaimId == null) return Unauthorized(new { Message = "Debe iniciar sesión para llevar a cabo esta acción" });
+
+		if (id <= 0) return BadRequest(new { Message = "El ID del usuario es inválido." });
+
+		return Ok(await _userService.GetPendingFriends(id));
+	}
 }

@@ -1,10 +1,12 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import Title from "../utils/title";
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { BASE_HTTPS_URL, GET_FRIENDLIST } from "@/features/endpoints/endpoints";
 import { Button } from "../ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import FriendCard from "../friend-list/friend-card";
 import { ConnectionState, User } from "@/lib/types";
@@ -58,8 +60,8 @@ export default function Matchmaking({ onBack }: { onBack: () => void }) {
   
     const matchStartedMessage = messages["MatchStarted"];
   
-      const role = matchStartedMessage.role
-      const opponentId = matchStartedMessage.opponentId
+      const role = matchStartedMessage?.role || null;
+      const opponentId = matchStartedMessage?.opponentId || 0;
       
       console.log("el rival", role, opponentId)
       if (role === "Host") {
@@ -98,7 +100,7 @@ export default function Matchmaking({ onBack }: { onBack: () => void }) {
             ) : (
               <span className="title w-48 h-48 bg-black/50 text-white flex items-center justify-center rounded-full cursor-pointer "
                 onClick={() => setShowFriendsModal(true)}>
-                ➕
+                <Plus size="25%"/>
               </span>
             )}
             <Title moreClasses="absolute left-1/2 -bottom-10 -translate-x-1/2 text-4xl">{player?.name}</Title>

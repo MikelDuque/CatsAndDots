@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useWebsocket } from "@/features/websocket/websocket-context";
 //UTILS
-import { ConnectionState, User } from "@/lib/types";
-import { GET_FRIENDLIST } from "@/features/endpoints/endpoints";
+import { User } from "@/lib/types";
+import { GET_FRIEND_LIST } from "@/features/endpoints/endpoints";
 import useFetch from "@/features/endpoints/useFetch";
 import { useAuth } from "@/features/auth/auth-context";
 //COMPONENTS
@@ -13,19 +13,17 @@ import UserSearch from "./user-search";
 import FriendCard from "./friend-card";
 //SHADCN
 import { Button } from "../ui/button";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
-import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Input } from "../ui/input";
 //LUCIDE
-import { ChevronLeft, ChevronRight, Search, UserPlus, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import FriendSearch from "./friend-search";
 
 
 
 export default function FriendList() {
-  const { messages, sendMessage } = useWebsocket();
   const { token, decodedToken } = useAuth();
+  const { messages, sendMessage } = useWebsocket();
 
-  const { fetchData } = useFetch({ url: GET_FRIENDLIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true, condition: !!token });
+  const { fetchData } = useFetch({ url: GET_FRIEND_LIST(decodedToken?.id || 0), type: "GET", token: token, needAuth: true, condition: !!token });
 
   const [hideFriends, setHideFriendlist] = useState(false);
   const [friendList, setFriendlist] = useState<Array<User>>([]);
@@ -38,8 +36,7 @@ export default function FriendList() {
   useEffect(() => {
     const user = messages ? messages["UserData"] as User : undefined;
     setFriendlist(previousState => previousState.map(friend => {
-
-      return friend.id === user?.id ? user : friend
+      return friend?.id === user?.id ? user : friend
     }));
 
   }, [messages]);
@@ -107,31 +104,15 @@ export default function FriendList() {
           <ChevronLeft /><Users />
         </Button >
       }
-      <aside className={`p-2 flex flex-col w-1/5 h-full bg-secondary gap-5 ${hideFriends && "fixed right-full"}`}>
+
+      <aside className={`p-2 flex flex-col min-w-1/5 max-w-1/4 h-full bg-secondary gap-5 ${hideFriends && "fixed right-full"}`}>
         <div className="flex justify-between">
           <Button variant="ghost" size="icon" onClick={OnHide}><ChevronRight /></Button >
           <Title moreClasses="w-full">Amigos</Title>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon"><UserPlus /></Button>
-            </DialogTrigger>
-            <DialogContent className="bg-popover">
-              <DialogHeader>
-                <DialogTitle><Title>Búsqueda de Usuarios</Title></DialogTitle>
-              </DialogHeader>
-              <UserSearch />
-            </DialogContent>
-          </Dialog>
+          <UserSearch />
         </div>
 
-        <form className="flex w-full gap-1">
-          <Input
-            name="friendSearch"
-            type="text"
-            placeholder="Buscar amigos"
-          />
-          <Button type="submit" size="icon" variant="ghost"><Search /></Button>
-        </form>
+        <FriendSearch/>
 
         <ul className="text-body grid gap-1">
           {ListMapper(friendList, pendingInvitations, acceptInvitation, rejectInvitation)}
@@ -149,19 +130,7 @@ function ListMapper(list: Array<User>,
   return (list.length > 0 ? (
     list.map((user) => (
       <li key={user.id} className="cursor-pointer flex items-center gap-20">
-        
-        <ContextMenu>
-          <ContextMenuTrigger asChild>
-            <div><FriendCard user={user} /></div>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <ContextMenuItem>Ver perfil</ContextMenuItem>
-            {user.connectionState !== ConnectionState.Playing &&
-              <ContextMenuItem>Invitar a la partida</ContextMenuItem>
-            }
-            <ContextMenuItem>Borrar amigo</ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
+        <FriendCard user={user} />
 
         {pendingInvitations[user.id] && (
           <div className="flex gap-5">

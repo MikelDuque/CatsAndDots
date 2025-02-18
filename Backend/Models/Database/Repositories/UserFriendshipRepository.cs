@@ -14,19 +14,19 @@ public class UserFriendshipRepository : Repository<UserFriendship>
 		.ToListAsync();
 	}
 
-	public async Task<List<User>> GetSentFriendshipList(long id)
-	{
-		return await GetQueryable()
-		.Where(friendship => friendship.UserAId == id && friendship.WhenFriendship == null)
-		.Select(friendship => friendship.UserB)
-		.ToListAsync();
-	}
-
 	public async Task<List<User>> GetReceivedFriendshipList(long id)
 	{
 		return await GetQueryable()
 		.Where(friendship => friendship.UserBId == id && friendship.WhenFriendship == null)
 		.Select(friendship => friendship.UserA)
+		.ToListAsync();
+	}
+
+	public async Task<List<User>> GetSentFriendshipList(long id)
+	{
+		return await GetQueryable()
+		.Where(friendship => friendship.UserAId == id && friendship.WhenFriendship == null)
+		.Select(friendship => friendship.UserB)
 		.ToListAsync();
 	}
 

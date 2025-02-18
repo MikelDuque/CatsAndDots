@@ -61,6 +61,9 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
                 [jsonData.messageType]: jsonData.body
             }));
 
+            console.log("event", event);
+            
+
             console.log("recibi este mensaje: ", event.data)
         };
 

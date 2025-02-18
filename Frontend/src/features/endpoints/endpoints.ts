@@ -12,7 +12,8 @@ const API_AUTH_URL = `${BASE_HTTPS_URL}/api/Auth`;
 /* --- USER CONTROLLER --- */
 const API_USER_URL = `${BASE_HTTPS_URL}/api/User`;
 
-  export function GET_FRIENDLIST(id: number) {return `${API_USER_URL}/FriendList/${id}`};
+  export function GET_FRIEND_LIST(id: number) {return `${API_USER_URL}/FriendList/${id}`};
+  export function GET_PENDING_FRIENDS(id: number) {return `${API_USER_URL}/PendingFriendList/${id}`}
 
   
 /* --- WEBSOCKET CONTROLLER --- */

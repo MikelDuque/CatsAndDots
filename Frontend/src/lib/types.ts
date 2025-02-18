@@ -1,3 +1,45 @@
+import { Action, ConnectionState, Request } from "./enums";
+
+/* ----- Backend Types ----- */
+
+export type GenericMessage = {
+  messageType: string;
+  body: Record<string, unknown>;
+};
+
+export type User = {
+  id: number
+  username: string
+  avatar: string
+  connectionState: ConnectionState
+}
+
+export type MenuData = {
+  onlineUsers: number;
+  playingUsers: number;
+	currentMatches: number;
+};
+
+export type PendingFriends = {
+  receivedFriendRequests: User,
+  sentFriendRequests: User
+}
+
+export type MatchmakingRequest = {
+  hostId: number
+  guestId: number
+  action: Action
+}
+
+export type FriendRequest = {
+  senderId: number
+	receiverId: number
+	requestState: Request
+}
+
+
+/* ----- Frontend Types ----- */
+
 export type ActionState = {
   status?: "FORM-ERROR" | "SUCCESS" | "PROMISE-ERROR";
   message: string;
@@ -28,31 +70,7 @@ export type DecodedToken = {
   exp: number,
 } | null | undefined;
 
-export type GenericMessage = {
-  messageType: string;
-  body: Record<string, unknown>;
-};
-
-export type SocketMessage<K extends keyof string, T> = {
-  [P in K]: T;
-};
-
-export type MenuData = {
-  onlineUsers: number;
-  playingUsers: number;
-	currentMatches: number;
-};
-
-export type User = {
-  id: number
-  username: string
-  avatar: string
-  connectionState: ConnectionState
-}
-
-export enum ConnectionState
-{
-  Offline,
-  Online,
-  Playing
+export type GenericRequest = {
+  userId: number
+  requestState: Request
 }

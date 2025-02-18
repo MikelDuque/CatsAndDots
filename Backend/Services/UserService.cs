@@ -22,4 +22,15 @@ public class UserService
 
 		return _userMapper.ToDto(friendList);
 	}
+
+	public async Task<PendingFriendList> GetPendingFriends(long userId)
+	{
+		List<User> receivedFriendRequests = await _unitOfWork.userFriendshipRepository.GetReceivedFriendshipList(userId);
+		List<User> sentFriendRequests = await _unitOfWork.userFriendshipRepository.GetSentFriendshipList(userId);
+
+		return new PendingFriendList {
+			receivedFriendRequests = _userMapper.ToDto(receivedFriendRequests),
+			sentFriendRequests = _userMapper.ToDto(sentFriendRequests)
+		};
+	}
 }
