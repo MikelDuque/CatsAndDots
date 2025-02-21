@@ -4,9 +4,9 @@ public class GameClass
 {
   //Atributos
   private bool firstPlayerMove = true;
-  private bool[,] tablero = new bool[6, 6];
   private Player player1;
   private Player player2;
+  private Board tablero;
 
   //metodos
   public GameClass()
@@ -19,64 +19,60 @@ public class GameClass
 
     player1 = new Player(nam1);
     player2 = new Player(nam2);
+    tablero = new Board();
 
     do
     {
       if (firstPlayerMove == true)
       {
         Console.WriteLine("Es turno de " + player1.Name);
-        Jugada();
-        firstPlayerMove = false;
       }
       else
       {
         Console.WriteLine("Es turno de " + player2.Name);
-        Jugada();
-        firstPlayerMove = true;
       }
 
-      MostrarTablero();
-    }
-    while (true);
-  }
+      tablero.Jugada();
+      tablero.MostrarTablero();
 
-  public void MostrarTablero()
-  {
-    for (int i = 0; i < tablero.GetLength(0); i++)
-    {
-      for (int j = 0; j < tablero.GetLength(1); j++)
+      if (tablero.isBox == false)
       {
-        Console.Write(tablero[i, j] ? "*  " : "-  ");
-      }
-      Console.WriteLine();
-    }
-  }
-
-  public void Jugada()
-  {
-    bool jugadaValida = false;
-
-   
-    do
-    {
-      Console.WriteLine("Escriba su jugada");
-      int indice1 = int.Parse(Console.ReadLine());
-      int indice2 = int.Parse(Console.ReadLine());
-      int indice3 = int.Parse(Console.ReadLine());
-      int indice4 = int.Parse(Console.ReadLine());
-
-      if ((indice3 == indice1 + 1 && indice4 == indice2) || (indice3 == indice1 && indice4 == indice2 + 1) || (indice3 == indice1 - 1 && indice4 == indice2) || (indice3 == indice1 && indice4 == indice2 - 1))
-      {
-        tablero[indice1, indice2] = true;
-        tablero[indice3, indice4] = true;
-        jugadaValida = true;
+        firstPlayerMove = !firstPlayerMove;
       }
       else
       {
-        Console.WriteLine("Jugada no valida, los puntos deben ser consecutivos");
+        if (firstPlayerMove)
+        {
+          player1.Score++;
+          if (tablero.doublePoint)
+          {
+            player1.Score++;
+          }
+        }
+        else
+        {
+          player2.Score++;
+          if (tablero.doublePoint)
+          {
+            player2.Score++;
+          }
+        }
       }
+
+      player1.MostrarPuntuacion();
+      player2.MostrarPuntuacion();
+
+    } while (player1.Score+player2.Score < 25);
+
+    if (player1.Score<player2.Score)
+    {
+      Console.WriteLine(player2.Name+" gana la partida");
     }
-    while (jugadaValida == false);
+    else
+    {
+      Console.WriteLine(player1.Name + " gana la partida");
+    }
+
   }
 }
 
