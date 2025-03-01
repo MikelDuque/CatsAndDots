@@ -1,8 +1,8 @@
 ﻿namespace Backend.Models.DTOs;
 
-public class FriendRequest
+public class Request
 {
 	public long SenderId { get; set; }
 	public long ReceiverId { get; set; }
-	public FriendRequestState RequestState { get; set; }
+	public RequestState State { get; set; }
 }

@@ -1,14 +1,16 @@
 "use client";
 
-import { FriendRequest, GenericRequest, MatchmakingRequest } from "@/lib/types";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import { useNotification } from "../notification-context";
 import { useWebsocket } from "./websocket-context";
-import { Action, Request } from "@/lib/enums";
+import { Request } from "@/lib/types";
+import { RequestState } from "@/lib/enums";
 
 /* ---- TIPADOS ---- */
 type RequestContextType = {
-  FriendRequests: Set<GenericRequest>
-  GameRequests: Set<GenericRequest>
+  friendRequests: Request[];
+  gameRequests: Request[];
+  sendRequest: (request: Request, isGameRequest: boolean) => void
 }
 
 type RequestProviderProps = {
@@ -17,8 +19,9 @@ type RequestProviderProps = {
 
 /* ----- DECLARACIÓN Context ----- */
 const RequestContext = createContext<RequestContextType>({
-  FriendRequests: new Set(),
-  GameRequests: new Set()
+  friendRequests: [],
+  gameRequests: [],
+  sendRequest: () => {}
 });
 
 export const useRequest = (): RequestContextType => {
@@ -30,68 +33,92 @@ export const useRequest = (): RequestContextType => {
 /* ----- CUERPO del Context ----- */
 export function RequestProvider({children}: RequestProviderProps) {
   const { socket, messages } = useWebsocket();
+  const { addNotification } = useNotification();
 
-  const [FriendRequests, setFriendRequests] = useState<Set<GenericRequest>>(new Set());
-  const [GameRequests, setGameRequests] = useState<Set<GenericRequest>>(new Set());
+  const [friendRequests, setFriendRequests] = useState<Request[]>(getFromSession("friendRequests"));
+  const [gameRequests, setGameRequests] = useState<Request[]>(getFromSession("gameRequests"));
 
   useEffect(() => {
-    const backFriendRequest = messages ? messages["FriendRequest"] as FriendRequest : undefined;
-    const backMatchmakingRequest = messages ? messages["GameInvitation"] as MatchmakingRequest : undefined; //Cambiar nombre en backend a "GameRequest"
+    const backFriendRequest = messages ? messages["FriendRequest"] as Request : undefined;
+    const backMatchmakingRequest = messages ? messages["GameInvitation"] as Request : undefined;
 
-    handleFriendRequest(backFriendRequest);
-    handleGameRequest(backMatchmakingRequest);
+    if (backFriendRequest) {
+      handleRequest(backFriendRequest, setFriendRequests)
+      addNotification("Has recibido una nueva petición de amistad");
+    };
+
+    if (backMatchmakingRequest) {
+      handleRequest(backMatchmakingRequest, setGameRequests)
+      addNotification("Alguien te ha invitado a unirse a su partida");
+    };
 
   }, [messages]);
 
-  function handleFriendRequest(friendRequest: FriendRequest | undefined) {
-    if(!friendRequest) return;
-
-    switch (friendRequest.requestState) {
-      case Request.Pending:
-        //Añadir al estado
-        break;
-      case Request.Accepted:
-        //Mandar mensaje al websocket
-        //Borrar del estado
-        //(Actualizar lista amigos desde backend)
-        break;
-      case Request.Declined:
-        //Mandar mensaje al websocket
-        //Borrar del estado
-        //(Actualizar lista amigos desde backend)
-        break;
+  useEffect(() => {
+    if (friendRequests) {
+      localStorage.setItem('friendRequests', JSON.stringify(friendRequests));
     };
+
+    if (gameRequests) {
+      localStorage.setItem('gameRequests', JSON.stringify(gameRequests));
+    };
+    
+  }, [friendRequests, gameRequests]);
+
+  
+  
+  function handleRequest(request: Request, setRequests: (value: SetStateAction<Request[]>) => void) {
+    
+    setRequests(prevState => {
+      const index = existingIndex(request, prevState);
+      const copy = [...prevState];
+
+      if(index === -1) return [...copy, request];
+
+      if(request.state === RequestState.Rejected) return copy.filter((request, i) => i !== index);
+
+      copy[index] = {
+        ...copy[index],
+        state: request.state
+      }
+      return copy;
+    });
   };
 
-  function handleGameRequest(gameRequest: MatchmakingRequest | undefined) {
-    if(!gameRequest) return;
+  function sendRequest(request: Request, isGameRequest: boolean) {
+    const message = {
+      messageType: isGameRequest ? "MatchmakingRequest" : "FriendRequest",
+      body: request
+    }
+    socket?.send(JSON.stringify(message));
 
-    switch (gameRequest.action) {
-      case Action.InviteFriend:
-        //Añadir al estado
-        break;
-      case Action.AcceptInvitation:
-        //Mandar mensaje al websocket
-        //Borrar del estado
-        break;
-      case Action.RejectInvitation:
-        //Mandar mensaje al websocket
-        //Borrar del estado
-        break;
-    };
+    handleRequest(request, isGameRequest ? setGameRequests : setFriendRequests);
+
+    if (request.state !== RequestState.Pending) {
+      const notiMessage = isGameRequest ? "Invitación a partida enviada" : "Petición de amistad enviada";
+      addNotification(notiMessage);
+    }
   };
-
-  //Tomar las FriendRequest del backend en un useEffect nada más iniciar sesión
-  //Receptar ambos tipos de request de los websockets y añadirlas a sus respectivas states
-  //Al hacer eso último, llamar al contexto de notificaciones y crear una nueva notificación
-  //Hacer la funcionalidad de aceptar/rechazar invitaciones
-  //Al hacerlo, eliminarlas de los estados, así como modificarlo en el backend en el caso de las FriendRequests
 
   /* ----- Fin Context ----- */
   const contextValue: RequestContextType = {
-    FriendRequests,
-    GameRequests
+    friendRequests,
+    gameRequests,
+    sendRequest
   };
 
   return <RequestContext.Provider value={contextValue}>{children}</RequestContext.Provider>
 };
+
+function existingIndex(request: Request, requestList: Request[]) {
+  return requestList.findIndex(thisRequest =>
+    thisRequest.senderId === request.senderId &&
+    thisRequest.receiverId === request.senderId
+  );
+};
+
+function getFromSession(key: string) {
+  const value = sessionStorage.getItem(key);
+
+  return value ? JSON.parse(value) : [];
+}

@@ -79,7 +79,6 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
 
 async function saveAuthToken(token: string) {
   const cookieStore = await cookies();
-  console.log(`cookieStore: ${cookieStore}, token: ${token}`);
   
   cookieStore.set({
     name: "authToken",

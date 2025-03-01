@@ -5,7 +5,7 @@ namespace Backend.Models.Mappers;
 
 public class FriendshipMapper
 {
-	public UserFriendship ToPendingEntity(FriendRequest request)
+	public UserFriendship ToPendingEntity(Request request)
 	{
 		return new UserFriendship
 		{
@@ -14,7 +14,7 @@ public class FriendshipMapper
 			WhenFriendship = null
 		};
 	}
-	public UserFriendship ToAcceptedEntity(FriendRequest request)
+	public UserFriendship ToAcceptedEntity(Request request)
 	{
 		return new UserFriendship
 		{
@@ -24,12 +24,12 @@ public class FriendshipMapper
 		};
 	}
 
-	public IEnumerable<UserFriendship> ToPendingEntity(IEnumerable<FriendRequest> friendRequests)
+	public IEnumerable<UserFriendship> ToPendingEntity(IEnumerable<Request> friendRequests)
 	{
 		return friendRequests.Select(ToPendingEntity);
 	}
 
-	public IEnumerable<UserFriendship> ToAcceptedEntity(IEnumerable<FriendRequest> friendRequests)
+	public IEnumerable<UserFriendship> ToAcceptedEntity(IEnumerable<Request> friendRequests)
 	{
 		return friendRequests.Select(ToAcceptedEntity);
 	}

@@ -1,10 +1,14 @@
 "use client"
 
-export default function MenuSection({ onSelectCats }: { onSelectCats: () => void }) {
+type menuSectionProps = {
+  onSelect: () => void
+}
+
+export default function MenuSection({onSelect}: menuSectionProps) {
   return (
     <section className="w-full flex">
       <MenuCard isHuman={false}/>
-      <MenuCard isHuman={true} onClick={onSelectCats}/>
+      <MenuCard isHuman={true} onClick={onSelect}/>
     </section>
   );
 };

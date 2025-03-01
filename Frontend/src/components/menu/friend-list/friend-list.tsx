@@ -1,0 +1,45 @@
+"use client"
+
+import { useState } from "react";
+//UTILS
+import { User } from "@/lib/types";
+import { useRequest } from "@/features/websocket/request-context";
+//COMPONENTS
+import UserList from "../user-list/user-list";
+import UserListMapper from "../../user-data/user-list-mapper";
+import Title from "../../utils/title";
+import FriendSearch from "./friend-search";
+//SHADCN
+import { Button } from "../../ui/button";
+//LUCIDE
+import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+
+
+export default function FriendList() {
+  const { gameRequests } = useRequest();
+
+  const [hideFriends, setHideFriendlist] = useState(false);
+  const [displayFriendList, setDisplayFriendlist] = useState<User[]>([]);
+
+  function OnHide() { setHideFriendlist(previousState => !previousState) };
+
+  return (
+    <>
+      {hideFriends &&
+        <Button variant="ghost" onClick={OnHide} className={`absolute right-0 ${hideFriends ? "" : "hidden"}`}>
+          <ChevronLeft /><Users />
+        </Button >
+      }
+
+      <aside className={`p-2 flex flex-col min-w-1/5 max-w-1/4 h-full bg-secondary gap-5 ${hideFriends && "fixed right-full"}`}>
+        <div className="flex justify-between">
+          <Button variant="ghost" size="icon" onClick={OnHide}><ChevronRight /></Button >
+          <Title moreClasses="w-full">Lista de Amigos</Title>
+          <UserList />
+        </div>
+        <FriendSearch setDisplayFriendList={setDisplayFriendlist}/>
+        <UserListMapper userList={displayFriendList} requests={gameRequests} isFriendList={true} />
+      </aside>
+    </>
+  );
+};

@@ -2,12 +2,12 @@
 
 namespace Backend.WebSockets.Messages;
 
-public class MatchmakingMessage : IMessage<MatchmakingRequest>
+public class MatchmakingMessage : IMessage<Request>
 {
   public string MessageType => "Matchmaking";
-  public MatchmakingRequest Body { get; set; }
+  public Request Body { get; set; }
 
-  public MatchmakingMessage(MatchmakingRequest body)
+  public MatchmakingMessage(Request body)
   {
     Body = body;
   }

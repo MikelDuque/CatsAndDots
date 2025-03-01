@@ -9,21 +9,19 @@ namespace Backend.WebSockets;
 
 public class WebSocketNetwork
 {
-  private readonly Dictionary<long, long> _activeMatches = new();
   private readonly HashSet<WebSocketLink> _connections = [];
+    private readonly Dictionary<long, long> _activeMatches = [];  //Esto habrá que revistarlo cuando llegue el momento
   private readonly SemaphoreSlim _semaphore = new(5);
 
   private readonly UserSystem _userSystem;
-  private readonly FriendshipSystem _friendshipSystem;
-  private readonly MatchmakingSystem _matchmakingSystem;
-
-  public int ActiveMatchesCount => _activeMatches.Count;
+  private readonly RequestSystem _requestSystem;
+  private readonly LobbySystem _lobbySystem;
 
   public WebSocketNetwork(IServiceScopeFactory scopeFactory)
   {
-    _friendshipSystem = new FriendshipSystem(scopeFactory, _connections);
-    _userSystem = new UserSystem(scopeFactory, _connections, this);
-    _matchmakingSystem = new MatchmakingSystem(this);
+    _userSystem = new UserSystem(scopeFactory, _connections, _activeMatches.Count);
+    _requestSystem = new RequestSystem(scopeFactory, _connections);
+    _lobbySystem = new LobbySystem(this);
   }
 
   public async Task HandleAsync(WebSocket webSocket, long userId)
@@ -42,8 +40,8 @@ public class WebSocketNetwork
     await _semaphore.WaitAsync();
 
     WebSocketLink newConnection = new(userId, webSocket);
+    newConnection.Disconnected += OnDisconnectedAsync;
 		newConnection.FriendRequest += OnFriendRequestAsync;
-		newConnection.Disconnected += OnDisconnectedAsync;
     newConnection.MatchmakingEvent += OnMatchmakingAsync;
 
     _connections.Add(newConnection);
@@ -63,33 +61,6 @@ public class WebSocketNetwork
 
     _connections.Remove(disconnectedUser);
 
-    if (_activeMatches.ContainsKey(disconnectedUser.Id))
-    {
-      long opponentId = _activeMatches[disconnectedUser.Id];
-      _activeMatches.Remove(disconnectedUser.Id);
-
-      WebSocketLink opponent = GetConnectedUser(opponentId);
-      if (opponent != null)
-      {
-        opponent.ConnectionState = ConnectionState.Online;
-        await _userSystem.UpdateUserData(opponent.Id, ConnectionState.Online);
-        await opponent.SendAsync(ParseHelper.GenericMessage("MatchCancelled", "Tu oponente se ha desconectado."));
-      }
-    }
-    else if (_activeMatches.ContainsValue(disconnectedUser.Id))
-    {
-      long hostId = _activeMatches.FirstOrDefault(x => x.Value == disconnectedUser.Id).Key;
-      _activeMatches.Remove(hostId);
-
-      WebSocketLink host = GetConnectedUser(hostId);
-      if (host != null)
-      {
-        host.ConnectionState = ConnectionState.Online;
-        await _userSystem.UpdateUserData(host.Id, ConnectionState.Online);
-        await host.SendAsync(ParseHelper.GenericMessage("MatchCancelled", "Tu oponente se ha desconectado."));
-      }
-    }
-
     await _userSystem.ConnectionChangeAsync(disconnectedUser, ConnectionState.Offline);
 
 		_semaphore.Release();
@@ -104,28 +75,66 @@ public class WebSocketNetwork
   {
     FriendRequestMessage request = JsonSerializer.Deserialize<FriendRequestMessage>(message);
 
-		await _friendshipSystem.ChangeFriendship(_connections.ToArray(), connectedUser, request.Body);
+		await _requestSystem.HandleFriendship(request.Body);
 	}
  
   private async Task OnMatchmakingAsync(WebSocketLink connectedUser, string message)
   {
-    await _matchmakingSystem.HandleMatchmakingAsync(connectedUser, message);
+    MatchmakingMessage matchmaking = JsonSerializer.Deserialize<MatchmakingMessage>(message);
+
+    await _requestSystem.HandleMatchmaking(matchmaking.Body);
   }
 
-  public async Task StartMatchAsync(long hostId, long guestId)
+  private async Task OnLobbyAsync()
   {
-    WebSocketLink host = GetConnectedUser(hostId);
-    WebSocketLink guest = GetConnectedUser(guestId);
 
-    if (host != null && guest != null)
-    {
-      _activeMatches[hostId] = guestId;
-
-      await _userSystem.UpdateUserData(hostId, ConnectionState.Playing);
-      await _userSystem.UpdateUserData(guestId, ConnectionState.Playing);
-
-    }
   }
-
 }
 
+
+/* CODIGO DE FERNANDO sacado del "OnDisconected" */
+
+// if (_activeMatches.ContainsKey(disconnectedUser.Id))
+// {
+//   long opponentId = _activeMatches[disconnectedUser.Id];
+//   _activeMatches.Remove(disconnectedUser.Id);
+
+//   WebSocketLink opponent = GetConnectedUser(opponentId);
+//   if (opponent != null)
+//   {
+//     opponent.ConnectionState = ConnectionState.Online;
+//     await _userSystem.UpdateUserData(opponent.Id, ConnectionState.Online);
+//     await opponent.SendAsync(ParseHelper.GenericMessage("MatchCancelled", "Tu oponente se ha desconectado."));
+//   }
+// }
+// else if (_activeMatches.ContainsValue(disconnectedUser.Id))
+// {
+//   long hostId = _activeMatches.FirstOrDefault(x => x.Value == disconnectedUser.Id).Key;
+//   _activeMatches.Remove(hostId);
+
+//   WebSocketLink host = GetConnectedUser(hostId);
+//   if (host != null)
+//   {
+//     host.ConnectionState = ConnectionState.Online;
+//     await _userSystem.UpdateUserData(host.Id, ConnectionState.Online);
+//     await host.SendAsync(ParseHelper.GenericMessage("MatchCancelled", "Tu oponente se ha desconectado."));
+//   }
+// }
+
+
+/* CÓDIGO DE FERNANDO */
+
+// public async Task StartMatchAsync(long hostId, long guestId)
+// {
+//   WebSocketLink host = GetConnectedUser(hostId);
+//   WebSocketLink guest = GetConnectedUser(guestId);
+
+//   if (host != null && guest != null)
+//   {
+//     _activeMatches[hostId] = guestId;
+
+//     await _userSystem.UpdateUserData(hostId, ConnectionState.Playing);
+//     await _userSystem.UpdateUserData(guestId, ConnectionState.Playing);
+
+//   }
+// }

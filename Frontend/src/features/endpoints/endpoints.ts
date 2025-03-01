@@ -14,7 +14,8 @@ const API_USER_URL = `${BASE_HTTPS_URL}/api/User`;
 
   export function GET_FRIEND_LIST(id: number) {return `${API_USER_URL}/FriendList/${id}`};
   export function GET_PENDING_FRIENDS(id: number) {return `${API_USER_URL}/PendingFriendList/${id}`}
-
+  export const POST_FILTERED_USERS = `${API_USER_URL}/Filtered_Users`
+  
   
 /* --- WEBSOCKET CONTROLLER --- */
 export const WEBSOCKET_URL = `${BASE_WSS_URL}/Websocket`;

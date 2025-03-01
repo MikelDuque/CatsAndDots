@@ -4,16 +4,8 @@ export enum ConnectionState {
   Playing
 }
 
-export enum Request {
+export enum RequestState {
   Pending,
   Accepted,
-  Declined
-}
-
-export enum Action {
-  Random,
-  CancelRandom,
-  InviteFriend,
-  AcceptInvitation,
-  RejectInvitation
+  Rejected
 }

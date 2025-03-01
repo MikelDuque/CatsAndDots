@@ -40,4 +40,11 @@ public class UserController : Controller
 
 		return Ok(await _userService.GetPendingFriends(id));
 	}
+
+	[HttpPost("Filtered_Users")]
+  public async Task<ActionResult> GetFilteredProducts([FromBody]String search)
+  {
+    if (search == null) return BadRequest(new {Message= "La búsqueda introducida es inválida."});
+    return Ok(await _userService.GetFilteredUsers(search));
+  }
 }

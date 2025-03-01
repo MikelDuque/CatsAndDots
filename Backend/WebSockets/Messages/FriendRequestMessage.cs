@@ -2,12 +2,12 @@ using Backend.Models.DTOs;
 
 namespace Backend.WebSockets.Messages;
 
-public class FriendRequestMessage : IMessage<FriendRequest>
+public class FriendRequestMessage : IMessage<Request>
 {
-  public string MessageType => "FriendRequest";
-  public FriendRequest Body { get; set; }
+  public string MessageType => "Request";
+  public Request Body { get; set; }
 
-  public FriendRequestMessage(FriendRequest body)
+  public FriendRequestMessage(Request body)
   {
     Body = body;
   }

@@ -33,4 +33,11 @@ public class UserService
 			sentFriendRequests = _userMapper.ToDto(sentFriendRequests)
 		};
 	}
+
+	public async Task<IEnumerable<UserDto>> GetFilteredUsers(string search) {
+
+    IEnumerable<User> filteredUsers = await _unitOfWork.UserRepository.GetFilteredUsers(search);
+
+    return _userMapper.ToDto(filteredUsers);
+	}
 }

@@ -1,4 +1,4 @@
-import { Action, ConnectionState, Request } from "./enums";
+import { ConnectionState, RequestState } from "./enums";
 
 /* ----- Backend Types ----- */
 
@@ -11,7 +11,7 @@ export type User = {
   id: number
   username: string
   avatar: string
-  connectionState: ConnectionState
+  connectionState?: ConnectionState
 }
 
 export type MenuData = {
@@ -21,20 +21,14 @@ export type MenuData = {
 };
 
 export type PendingFriends = {
-  receivedFriendRequests: User,
-  sentFriendRequests: User
+  receivedFriendRequests: User[],
+  sentFriendRequests: User[]
 }
 
-export type MatchmakingRequest = {
-  hostId: number
-  guestId: number
-  action: Action
-}
-
-export type FriendRequest = {
+export type Request = {
   senderId: number
-	receiverId: number
-	requestState: Request
+  receiverId: number
+  state: RequestState
 }
 
 
@@ -69,8 +63,3 @@ export type DecodedToken = {
   avatar: string,
   exp: number,
 } | null | undefined;
-
-export type GenericRequest = {
-  userId: number
-  requestState: Request
-}

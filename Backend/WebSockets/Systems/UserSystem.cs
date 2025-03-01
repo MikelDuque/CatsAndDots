@@ -13,14 +13,13 @@ public class UserSystem
 {
 	private readonly IServiceScopeFactory _scopeFactory;
 	private readonly HashSet<WebSocketLink> _connections;
-  private readonly WebSocketNetwork _webSocketNetwork;
+  private readonly int _currentMatches;
 
-  public UserSystem(IServiceScopeFactory scopeFactory, HashSet<WebSocketLink> connections, WebSocketNetwork webSocketNetwork)
+  public UserSystem(IServiceScopeFactory scopeFactory, HashSet<WebSocketLink> connections, int currentMatches)
 	{
 		_scopeFactory = scopeFactory;
 		_connections = connections;
-    _webSocketNetwork = webSocketNetwork;
-
+    _currentMatches = currentMatches;
   }
 
 	public async Task ConnectionChangeAsync(WebSocketLink connectedUser, ConnectionState state)
@@ -34,8 +33,8 @@ public class UserSystem
 		List<Task> tasks = [];
 		WebSocketLink[] connections = _connections.ToArray();
 
-		UserDto thisUser = await GetUserDto(thisUserId);
-		UserDataMessage userDataMessage = new UserDataMessage(thisUser);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
+		UserDto thisUser = await UserHelper.GetUserDto(_scopeFactory, thisUserId);
+		UserDataMessage userDataMessage = new(thisUser);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
 
 		IEnumerable<UserDto> friendList = await GetFriendListDB(thisUserId);
 		foreach (WebSocketLink connectedUser in connections)
@@ -59,8 +58,8 @@ public class UserSystem
 		MenuData menuData = new()
 		{
 			OnlineUsers = connections.Length,
-			PlayingUsers = 0, //CAMBIAR
-			CurrentMatches = _webSocketNetwork.ActiveMatchesCount
+			PlayingUsers = connections.Where(user => user.ConnectionState == ConnectionState.Playing).Count(),
+			CurrentMatches = _currentMatches
     };
 		MenuDataMessage menuDataMessage = new MenuDataMessage(menuData);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
 
@@ -90,16 +89,5 @@ public class UserSystem
 		UserService friendshipService = serviceScope.ServiceProvider.GetService<UserService>();
 
 		return await friendshipService.GetFriendList(userId);
-	}
-
-	private async Task<UserDto> GetUserDto(long userId)
-	{
-		using IServiceScope serviceScope = _scopeFactory.CreateScope();
-		UnitOfWork unitOfWork = serviceScope.ServiceProvider.GetService<UnitOfWork>();
-		UserMapper userMapper = serviceScope.ServiceProvider.GetService<UserMapper>();
-
-		User user = await unitOfWork.UserRepository.GetByIdAsync(userId);
-
-		return userMapper.ToDto(user);
 	}
 }
