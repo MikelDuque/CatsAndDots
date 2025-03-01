@@ -18,7 +18,7 @@ export default function FriendSearch({setDisplayFriendList}: friendSearchProps) 
   useEffect(() => {
     filterFriendList();
 
-  }, [inputValue, friendList]);
+  }, [friendList, debouncedValue]);
 
   function filterFriendList() {
     let filteredList = friendList;
@@ -36,7 +36,8 @@ export default function FriendSearch({setDisplayFriendList}: friendSearchProps) 
   };
 
   return (
-    <form className="flex w-full gap-1">
+    <form className="flex items-center w-full gap-2">
+      <Search/>
       <Input
         name="friendname"
         type="text"
@@ -44,7 +45,6 @@ export default function FriendSearch({setDisplayFriendList}: friendSearchProps) 
         value={inputValue}
         onChange={handleInputChange}
       />
-      <Search/>
     </form>
   );
 };

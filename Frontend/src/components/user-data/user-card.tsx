@@ -9,7 +9,7 @@ import { useRequest } from "@/features/websocket/request-context";
 
 type FriendCardProps = {
   user: User,
-  request: Request,
+  request?: Request,
   isFriend: boolean
 }
 
@@ -23,22 +23,25 @@ export default function UserCard({user, request, isFriend}: FriendCardProps) {
     state: RequestState.Pending
   }
 
-  const requestMessage = isFriend ? "Invitar a la partida" : "Añadir como amigo"
-
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
-        <UserData myUserId={decodedToken?.id || 0} user={user} request={request} isFriend={isFriend}/>
+        <div className="w-full"><UserData myUserId={decodedToken?.id || 0} user={user} request={request} isFriend={isFriend}/></div>
       </ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem>Ver perfil</ContextMenuItem>
-        {user.connectionState == ConnectionState.Online &&
+        {isFriend ?
+         user.connectionState == ConnectionState.Online &&
           <ContextMenuItem onClick={() => sendRequest(newRequest, isFriend)}>
-            {requestMessage}
+            Invitar a la partida
+          </ContextMenuItem>
+        :
+          <ContextMenuItem onClick={() => sendRequest(newRequest, isFriend)}>
+            Añadir como amigo
           </ContextMenuItem>
         }
         <ContextMenuItem>Borrar amigo</ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   );
-}
+};

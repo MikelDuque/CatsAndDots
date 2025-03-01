@@ -23,12 +23,13 @@ export function useFriendList() {
     if(!messages) return;
     const user = messages["UserData"] as User;
 
+    if(!user) return;
     setFriendlist(previousState => {
       const exists = previousState.some(friend => friend.id === user.id);
       if(!exists) return [...previousState, user];
 
       return previousState.map(friend => {
-        return friend?.id === user?.id ? user : friend
+        return friend.id === user.id ? user : friend
       });
     });
     

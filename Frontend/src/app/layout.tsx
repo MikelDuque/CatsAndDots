@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { WebsocketProvider } from "@/features/websocket/websocket-context";
 import { AuthProvider } from "@/features/auth/auth-context";
 import { NotificationProvider } from "@/features/notification-context";
+import { RequestProvider } from "@/features/websocket/request-context";
 
 export const metadata: Metadata = {
   title: "Cats & Dots",
@@ -26,8 +27,10 @@ export default async function RootLayout({
           <AuthProvider>
             <WebsocketProvider>
               <NotificationProvider>
-                <Toaster/>
-                {children}
+                <RequestProvider>
+                  <Toaster/>
+                  {children}
+                </RequestProvider>
               </NotificationProvider>
             </WebsocketProvider>
           </AuthProvider>

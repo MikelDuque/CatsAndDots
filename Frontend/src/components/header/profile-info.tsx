@@ -35,7 +35,7 @@ export default function ProfileInfo() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          <AvatarImage src={avatarUrl} alt="X"/>
+          <AvatarImage src={avatarUrl} alt="X" className="cursor-pointer"/>
           <AvatarFallback delayMs={600} className="title">{decodedToken?.unique_name.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

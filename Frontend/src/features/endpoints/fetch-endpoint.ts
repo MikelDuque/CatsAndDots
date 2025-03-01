@@ -10,8 +10,6 @@ export default async function fetchEndpoint({url, type, token, params, needAuth}
     await defineFetch({url, type, token, params});
 
   const jsonResponse = await response.json();
-  console.log("jsonresponse fetch", jsonResponse);
-  
 
   if (response.ok) return jsonResponse;
   

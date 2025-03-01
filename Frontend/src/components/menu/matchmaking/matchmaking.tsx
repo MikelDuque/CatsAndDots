@@ -61,11 +61,12 @@ export default function Matchmaking({ onBack }: matchmakingProps) {
   };
 
   return (
-    <section className="flex justify-around items-center size-full relative">
+    <section className="w-full relative flex justify-around items-center">
       <Button variant="ghost" size="icon" className="absolute left-4 top-4" onClick={onExist}>
         <ChevronLeft />
       </Button>
       <PlayerCard player={players?.Host} isHost={true}/>
+      <span className="super-title text-primary">VS</span>
       <PlayerCard player={players?.Guest} isHost={false}/>
       <Button className="absolute bottom-20">Empezar Partida</Button>
     </section>

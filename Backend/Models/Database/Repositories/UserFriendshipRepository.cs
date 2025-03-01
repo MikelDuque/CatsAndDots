@@ -14,6 +14,14 @@ public class UserFriendshipRepository : Repository<UserFriendship>
 		.ToListAsync();
 	}
 
+	public async Task<List<User>> GetSentFriendshipList(long id)
+	{
+		return await GetQueryable()
+		.Where(friendship => friendship.UserAId == id && friendship.WhenFriendship == null)
+		.Select(friendship => friendship.UserB)
+		.ToListAsync();
+	}
+
 	public async Task<List<User>> GetReceivedFriendshipList(long id)
 	{
 		return await GetQueryable()
@@ -22,11 +30,10 @@ public class UserFriendshipRepository : Repository<UserFriendship>
 		.ToListAsync();
 	}
 
-	public async Task<List<User>> GetSentFriendshipList(long id)
+	public async Task<List<UserFriendship>> GetReceivedFriendshipRequests(long id)
 	{
 		return await GetQueryable()
-		.Where(friendship => friendship.UserAId == id && friendship.WhenFriendship == null)
-		.Select(friendship => friendship.UserB)
+		.Where(friendship => friendship.UserBId == id && friendship.WhenFriendship == null)
 		.ToListAsync();
 	}
 

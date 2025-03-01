@@ -30,14 +30,16 @@ export function NotificationProvider({children}: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<string[]>([]);
 
   useEffect(() => {
-    toast(notifications[notifications.length]);
+    if (notifications.length <= 0) return;
+    toast(notifications.slice(-1)[0]);
+    
   }, [notifications])
 
   function addNotification(newNotification: string) {
-    setNotifications(prevState => ({
-      ...prevState,
-      newNotification
-    }));
+    setNotifications(prevState => 
+      [...prevState,
+      newNotification]
+    );
   }
 
   /* ----- Fin Context ----- */

@@ -10,7 +10,7 @@ import { POST_FILTERED_USERS } from "@/features/endpoints/endpoints";
 import { useAuth } from "@/features/auth/auth-context";
 
 type userSearchProps = {
-  setDisplayUserList: (users: User[]) => void
+  setDisplayUserList: (users: User[] | undefined) => void
 }
 
 export default function UserSearch({setDisplayUserList}: userSearchProps) {
@@ -20,9 +20,10 @@ export default function UserSearch({setDisplayUserList}: userSearchProps) {
   const [debouncedValue] = useDebounce(inputValue, 100);
 
   const { fetchData } = useFetch({url: POST_FILTERED_USERS, type: 'POST', params:debouncedValue, token: token, needAuth: true, condition: !!token});
-
+  
   useEffect(() => {
-    if (fetchData) setDisplayUserList(fetchData as User[]);
+    if (fetchData) setDisplayUserList(fetchData as User[])
+    else setDisplayUserList(undefined);
 
   }, [fetchData]);
 
@@ -32,15 +33,15 @@ export default function UserSearch({setDisplayUserList}: userSearchProps) {
   };
 
   return (
-    <form className="flex w-full gap-1">
+    <form className="flex items-center w-full gap-2" onSubmit={(e) => e.preventDefault()}>
+      <Search/>
       <Input
         name="username"
         type="text"
-        placeholder="Buscar amigo"
+        placeholder="Buscar usuario"
         value={inputValue}
         onChange={handleInputChange}
       />
-      <Search/>
     </form>
   );
 };

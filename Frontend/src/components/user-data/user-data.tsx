@@ -10,7 +10,7 @@ import { Circle, Sword } from "lucide-react";
 type userDataProps = {
   myUserId: number,
   user: User,
-  request: Request,
+  request?: Request,
   isFriend: boolean
 }
 
@@ -27,7 +27,7 @@ export default function UserData({myUserId, user, request, isFriend}: userDataPr
         </figure>
         <h2 className="subtitle">{user.username}</h2>
       </div>
-      <RequestInteraction thisUserId={myUserId} request={request} isGameRequest={isFriend}/>
+      <RequestInteraction myUserId={myUserId} otherUser={user} request={request} isGameRequest={isFriend}/>
     </div>
   );
 };

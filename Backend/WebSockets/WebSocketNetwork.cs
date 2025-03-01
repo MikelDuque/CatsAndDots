@@ -1,6 +1,5 @@
 using System.Net.WebSockets;
 using System.Text.Json;
-using Backend.Helpers;
 using Backend.Models;
 using Backend.WebSockets.Messages;
 using Backend.WebSockets.Systems;
@@ -21,7 +20,7 @@ public class WebSocketNetwork
   {
     _userSystem = new UserSystem(scopeFactory, _connections, _activeMatches.Count);
     _requestSystem = new RequestSystem(scopeFactory, _connections);
-    _lobbySystem = new LobbySystem(this);
+    //_lobbySystem = new LobbySystem(this);
   }
 
   public async Task HandleAsync(WebSocket webSocket, long userId)
@@ -42,7 +41,7 @@ public class WebSocketNetwork
     WebSocketLink newConnection = new(userId, webSocket);
     newConnection.Disconnected += OnDisconnectedAsync;
 		newConnection.FriendRequest += OnFriendRequestAsync;
-    newConnection.MatchmakingEvent += OnMatchmakingAsync;
+    newConnection.MatchmakingRequest += OnMatchmakingAsync;
 
     _connections.Add(newConnection);
     _semaphore.Release();

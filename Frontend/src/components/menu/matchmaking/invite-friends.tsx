@@ -17,7 +17,7 @@ export default function InviteFriends() {
       <DialogTrigger asChild>
         <Plus size="25%" className="cursor-pointer"/>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-1/4">
         <DialogHeader>
           <DialogTitle> Invita un amigo</DialogTitle>
         </DialogHeader>

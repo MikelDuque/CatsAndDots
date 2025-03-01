@@ -14,7 +14,7 @@ export default function Menu() {
   return (
     <>
       <Header />
-      <main className="flex w-full h-[92.5%]">
+      <main className="h-[92.5%] w-full flex">
         {showMatchmaking ? 
           <Matchmaking onBack={() => setShowMatchmaking(false)} />
         : 

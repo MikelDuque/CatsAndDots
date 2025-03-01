@@ -20,6 +20,7 @@ export default {
   		colors: {
   			background: 'var(--background)',
   			foreground: 'hsl(var(--foreground))',
+				invert_foreground: 'hsl(var(--invert-foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

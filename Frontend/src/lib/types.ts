@@ -21,8 +21,9 @@ export type MenuData = {
 };
 
 export type PendingFriends = {
-  receivedFriendRequests: User[],
-  sentFriendRequests: User[]
+  receivedFriendList: User[],
+  sentFriendList: User[],
+  receivedFriendRequests?: Request[]
 }
 
 export type Request = {

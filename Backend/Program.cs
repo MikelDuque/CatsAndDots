@@ -74,6 +74,7 @@ public class Program
 
 		//Mappers
 		builder.Services.AddScoped<UserMapper>();
+    builder.Services.AddScoped<FriendshipMapper>();
 
 		//Servicios
 		builder.Services.AddSingleton<WebSocketNetwork>();

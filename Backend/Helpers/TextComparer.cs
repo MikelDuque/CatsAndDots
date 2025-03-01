@@ -37,10 +37,8 @@ public class TextComparer
           listaFiltrada.Add(User);
         }
       }
-
-      return listaFiltrada;
     }
-    return users.ToList();
+    return listaFiltrada;
   }
 
   private bool IsMatch(string[] queryKeys, string[] itemKeys)

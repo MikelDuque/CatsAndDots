@@ -1,10 +1,13 @@
-"use client";
+"use client"
 
 import { createContext, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { useNotification } from "../notification-context";
 import { useWebsocket } from "./websocket-context";
-import { Request } from "@/lib/types";
+import { PendingFriends, Request } from "@/lib/types";
 import { RequestState } from "@/lib/enums";
+import useFetch from "../endpoints/useFetch";
+import { GET_PENDING_FRIENDS } from "../endpoints/endpoints";
+import { useAuth } from "../auth/auth-context";
 
 /* ---- TIPADOS ---- */
 type RequestContextType = {
@@ -32,16 +35,29 @@ export const useRequest = (): RequestContextType => {
 
 /* ----- CUERPO del Context ----- */
 export function RequestProvider({children}: RequestProviderProps) {
+  const { token, decodedToken } = useAuth();
   const { socket, messages } = useWebsocket();
   const { addNotification } = useNotification();
 
+  const { fetchData } = useFetch({ url: GET_PENDING_FRIENDS(decodedToken?.id || 0), type: 'GET', token: token, needAuth: true, condition: !!token });
+
   const [friendRequests, setFriendRequests] = useState<Request[]>(getFromSession("friendRequests"));
   const [gameRequests, setGameRequests] = useState<Request[]>(getFromSession("gameRequests"));
-
+  
+  useEffect(() => {
+    if(fetchData && friendRequests.length <= 0) {
+      const backPendingFriends = fetchData as PendingFriends;
+      setFriendRequests(backPendingFriends.receivedFriendRequests || []);
+    };
+  }, [fetchData]);
+  
   useEffect(() => {
     const backFriendRequest = messages ? messages["FriendRequest"] as Request : undefined;
     const backMatchmakingRequest = messages ? messages["GameInvitation"] as Request : undefined;
 
+
+    console.log("matchmaking", backMatchmakingRequest);
+    
     if (backFriendRequest) {
       handleRequest(backFriendRequest, setFriendRequests)
       addNotification("Has recibido una nueva petición de amistad");
@@ -90,14 +106,16 @@ export function RequestProvider({children}: RequestProviderProps) {
       messageType: isGameRequest ? "MatchmakingRequest" : "FriendRequest",
       body: request
     }
+    console.log("socket", socket ? socket : "nada");
+    
     socket?.send(JSON.stringify(message));
 
     handleRequest(request, isGameRequest ? setGameRequests : setFriendRequests);
 
-    if (request.state !== RequestState.Pending) {
+    if (request.state === RequestState.Pending) {
       const notiMessage = isGameRequest ? "Invitación a partida enviada" : "Petición de amistad enviada";
       addNotification(notiMessage);
-    }
+    };
   };
 
   /* ----- Fin Context ----- */

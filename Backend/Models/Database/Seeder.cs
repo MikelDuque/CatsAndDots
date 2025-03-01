@@ -118,17 +118,11 @@ public class Seeder
 				WhenFriendship = DateTime.Now
 			},
 
-			//Mikel y Raquel
+			//Mikel a Raquel pendiente
 			 new UserFriendship
 			{
 				UserAId = 2,
 				UserBId = 6,
-				WhenFriendship = null
-			},
-			new UserFriendship
-			{
-				UserAId = 6,
-				UserBId = 2,
 				WhenFriendship = null
 			},
 
@@ -146,18 +140,12 @@ public class Seeder
 				WhenFriendship = DateTime.Now
 			},
 
-			//Mikel y Jose
-			new UserFriendship
-			{
-				UserAId = 2,
-				UserBId = 4,
-				WhenFriendship = DateTime.Now
-			},
+			//Jose a Mikel pendiente
 			new UserFriendship
 			{
 				UserAId = 4,
 				UserBId = 2,
-				WhenFriendship = DateTime.Now
+				WhenFriendship = null
 			},
 
 			//Fer y Jose

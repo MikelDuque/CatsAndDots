@@ -31,9 +31,9 @@ public class WebSocketLink : IDisposable
   }
 
   //EVENTOS
-  public event Func<WebSocketLink, string, Task> FriendRequest;
   public event Func<WebSocketLink, Task> Disconnected;
-  public event Func<WebSocketLink, string, Task> MatchmakingEvent;
+  public event Func<WebSocketLink, string, Task> FriendRequest;
+  public event Func<WebSocketLink, string, Task> MatchmakingRequest;
 
   public async Task HandleEventAsync() {
     while (IsOpen)
@@ -97,8 +97,8 @@ public class WebSocketLink : IDisposable
       case "FriendRequest":
         if (FriendRequest != null) await FriendRequest.Invoke(this, message);
         break;
-      case "MatchmakingMessage":
-        if (MatchmakingEvent != null) await MatchmakingEvent.Invoke(this, message);
+      case "MatchmakingRequest":
+        if (MatchmakingRequest != null) await MatchmakingRequest.Invoke(this, message);
         break;
     }
   }

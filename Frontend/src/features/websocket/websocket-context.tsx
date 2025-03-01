@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { WEBSOCKET_URL } from "@/features/endpoints/endpoints";
@@ -43,11 +43,11 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
             if(!token) socket.close();
             return;
         };
-        
-        console.log(`url websocket: ${WEBSOCKET_URL}?accessToken=${token}`);
-        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
-        console.log("Llamada al websocket", ws);
 
+        if(!token) return; 
+
+        const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
+        
         ws.onopen = () => {
             setSocket(ws);
             console.log("WebSocket conectado.", ws);
@@ -61,10 +61,7 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
                 [jsonData.messageType]: jsonData.body
             }));
 
-            console.log("event", event);
-            
-
-            console.log("recibi este mensaje: ", event.data)
+            console.log("event data", event.data);
         };
 
         ws.onclose = () => {
@@ -89,9 +86,11 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
 
     
     function sendMessage(message: object) {
+        console.log("mensaje enviado", message);
+        
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(message));
-            console.log("mande este mensaje: ", message)
+            console.log("send message: ", message)
         } else {
             console.warn("No hay conexión WebSocket activa.");
         }

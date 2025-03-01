@@ -28,6 +28,7 @@ export default function useFetch({url, type, token, params, needAuth, condition}
     } catch (error) {
       if(error === "Unauthorized") await LogOut();
       setFetchError(error);
+      setFetchData(undefined)
 
     } finally {
       setIsLoading(false);

@@ -9,11 +9,13 @@ public class UserService
 {
   private readonly UnitOfWork _unitOfWork;
 	private readonly UserMapper _userMapper;
+	private readonly FriendshipMapper _friendshipMapper;
 
-	public UserService(UnitOfWork unitOfWork, UserMapper friendMapper)
+	public UserService(UnitOfWork unitOfWork, UserMapper friendMapper, FriendshipMapper friendshipMapper)
 	{
 		_unitOfWork = unitOfWork;
 		_userMapper = friendMapper;
+		_friendshipMapper = friendshipMapper;
 	}
 
 	public async Task<IEnumerable<UserDto>> GetFriendList(long userId)
@@ -23,14 +25,18 @@ public class UserService
 		return _userMapper.ToDto(friendList);
 	}
 
-	public async Task<PendingFriendList> GetPendingFriends(long userId)
+	public async Task<PendingFriends> GetPendingFriends(long userId)
 	{
-		List<User> receivedFriendRequests = await _unitOfWork.userFriendshipRepository.GetReceivedFriendshipList(userId);
-		List<User> sentFriendRequests = await _unitOfWork.userFriendshipRepository.GetSentFriendshipList(userId);
+		IEnumerable<User> pendingReceivedFriendList = await _unitOfWork.userFriendshipRepository.GetReceivedFriendshipList(userId);
+		IEnumerable<User> pendingSentFriendList = await _unitOfWork.userFriendshipRepository.GetSentFriendshipList(userId);
 
-		return new PendingFriendList {
-			receivedFriendRequests = _userMapper.ToDto(receivedFriendRequests),
-			sentFriendRequests = _userMapper.ToDto(sentFriendRequests)
+		IEnumerable<UserFriendship> receivedFriendRequests = await _unitOfWork.userFriendshipRepository.GetReceivedFriendshipRequests(userId);
+
+		return new PendingFriends()
+    {
+			sentFriendList = _userMapper.ToDto(pendingSentFriendList),
+			receivedFriendList = _userMapper.ToDto(pendingReceivedFriendList),
+			receivedFriendRequests = _friendshipMapper.ToDto(receivedFriendRequests)
 		};
 	}
 
