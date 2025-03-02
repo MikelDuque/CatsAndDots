@@ -61,7 +61,7 @@ public class UserSystem
 			PlayingUsers = connections.Where(user => user.ConnectionState == ConnectionState.Playing).Count(),
 			CurrentMatches = _currentMatches
     };
-		MenuDataMessage menuDataMessage = new MenuDataMessage(menuData);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
+		MenuDataMessage menuDataMessage = new(menuData);	//Esto se puede cambiar al usar en el "ParseHelper" el "GenericMessage"
 
 		foreach (WebSocketLink user in connections)
 		{

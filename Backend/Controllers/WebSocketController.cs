@@ -1,9 +1,7 @@
 ﻿using Backend.Services;
 using Backend.WebSockets;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using System.Net.WebSockets;
 using System.Security.Claims;
 
@@ -28,6 +26,8 @@ public class WebSocketController : ControllerBase
   {
 		WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 		long userId = long.Parse(User.FindFirstValue("id"));
+   
+    Console.WriteLine("Websockt entrante" + webSocket);
 
 		await _websocketNetwork.HandleAsync(webSocket, userId);
 	}

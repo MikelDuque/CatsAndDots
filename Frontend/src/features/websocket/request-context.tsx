@@ -41,8 +41,13 @@ export function RequestProvider({children}: RequestProviderProps) {
 
   const { fetchData } = useFetch({ url: GET_PENDING_FRIENDS(decodedToken?.id || 0), type: 'GET', token: token, needAuth: true, condition: !!token });
 
-  const [friendRequests, setFriendRequests] = useState<Request[]>(getFromSession("friendRequests"));
-  const [gameRequests, setGameRequests] = useState<Request[]>(getFromSession("gameRequests"));
+  const [friendRequests, setFriendRequests] = useState<Request[]>([]);
+  const [gameRequests, setGameRequests] = useState<Request[]>([]);
+
+  useEffect(() => {
+    setFriendRequests(getFromSession("friendRequests"));
+    setGameRequests(getFromSession("gameRequests"));
+  }, []);
   
   useEffect(() => {
     if(fetchData && friendRequests.length <= 0) {
@@ -54,15 +59,11 @@ export function RequestProvider({children}: RequestProviderProps) {
   useEffect(() => {
     const backFriendRequest = messages ? messages["FriendRequest"] as Request : undefined;
     const backMatchmakingRequest = messages ? messages["GameInvitation"] as Request : undefined;
-
-
-    console.log("matchmaking", backMatchmakingRequest);
     
     if (backFriendRequest) {
       handleRequest(backFriendRequest, setFriendRequests)
       addNotification("Has recibido una nueva petición de amistad");
     };
-
     if (backMatchmakingRequest) {
       handleRequest(backMatchmakingRequest, setGameRequests)
       addNotification("Alguien te ha invitado a unirse a su partida");
@@ -74,13 +75,11 @@ export function RequestProvider({children}: RequestProviderProps) {
     if (friendRequests) {
       localStorage.setItem('friendRequests', JSON.stringify(friendRequests));
     };
-
     if (gameRequests) {
       localStorage.setItem('gameRequests', JSON.stringify(gameRequests));
     };
     
   }, [friendRequests, gameRequests]);
-
   
   
   function handleRequest(request: Request, setRequests: (value: SetStateAction<Request[]>) => void) {
@@ -106,7 +105,7 @@ export function RequestProvider({children}: RequestProviderProps) {
       messageType: isGameRequest ? "MatchmakingRequest" : "FriendRequest",
       body: request
     }
-    console.log("socket", socket ? socket : "nada");
+    console.log("socket", socket);
     
     socket?.send(JSON.stringify(message));
 
@@ -136,6 +135,8 @@ function existingIndex(request: Request, requestList: Request[]) {
 };
 
 function getFromSession(key: string) {
+  if(!window.sessionStorage) return;
+
   const value = sessionStorage.getItem(key);
 
   return value ? JSON.parse(value) : [];

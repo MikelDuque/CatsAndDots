@@ -9,7 +9,7 @@ namespace Backend.WebSockets;
 public class WebSocketNetwork
 {
   private readonly HashSet<WebSocketLink> _connections = [];
-    private readonly Dictionary<long, long> _activeMatches = [];  //Esto habrá que revistarlo cuando llegue el momento
+  private readonly Dictionary<long, long> _activeMatches = [];  //Esto habrá que revistarlo cuando llegue el momento
   private readonly SemaphoreSlim _semaphore = new(5);
 
   private readonly UserSystem _userSystem;
@@ -37,6 +37,8 @@ public class WebSocketNetwork
   private async Task<WebSocketLink> AddWebsocketAsync(WebSocket webSocket, long userId)
   {
     await _semaphore.WaitAsync();
+
+    Console.WriteLine("websocket" + webSocket);
 
     WebSocketLink newConnection = new(userId, webSocket);
     newConnection.Disconnected += OnDisconnectedAsync;
