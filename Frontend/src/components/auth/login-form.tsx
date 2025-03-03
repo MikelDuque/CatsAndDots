@@ -46,10 +46,8 @@ export default function LoginForm({hasFlip, flipCard}: FormProps) {
     mode: "onSubmit",
   });
 
-  console.log("flip", hasFlip);
   const transform = hasFlip ? "[transform:rotateY(-190deg)]" : "[transform:rotateY(10deg)]";
   
-
   return (
     <Card className={`absolute h-fit w-full top-1/4 [backface-visibility:hidden] ${transform} transition-all duration-1000`}>
 

@@ -33,20 +33,23 @@ export const useWebsocket = (): WebsocketContextType => {
 
 /* ----- CUERPO del Context ----- */
 export function WebsocketProvider({ children }: WebsocketProviderProps) {
-    const {token}  = useAuth();
+    const {token, logOut}  = useAuth();
     
     const [socket, setSocket] = useState<WebSocket>();
     const [messages, setMessages] = useState<Record<string, Record<string, unknown>>>({});
 
     useEffect(() => {
+        /*
         if(socket) {
             if(!token) socket.close();
             return;
         };
+        */
 
-        if(!token) return; 
+        if(!token || socket) return;
 
         const ws = new WebSocket(`${WEBSOCKET_URL}?accessToken=${token}`);
+        console.log("WebSocket creado.", ws);
         
         ws.onopen = () => {
             setSocket(ws);
@@ -64,9 +67,13 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
             console.log("event data", event.data);
         };
 
-        ws.onclose = () => {
+        ws.onclose = (e) => {
             setSocket(undefined);
             console.log("WebSocket desconectado.");
+
+            if(!e.wasClean) setTimeout(() => {setSocket(undefined)}, 3000);
+            logOut();
+            
         };
 
         ws.onerror = (error) => {
@@ -79,18 +86,19 @@ export function WebsocketProvider({ children }: WebsocketProviderProps) {
         };    
 
         return () => {
-            ws.close();
+            if(ws.readyState === WebSocket.OPEN) {
+                ws.close();
+                logOut();
+            };
         };
 
     }, [token]);
 
     
-    function sendMessage(message: object) {
-        console.log("mensaje enviado", message);
-        
+    function sendMessage(message: object) {   
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(message));
-            console.log("send message: ", message)
+            console.log("mensaje enviado", message);
         } else {
             console.warn("No hay conexión WebSocket activa.");
         }

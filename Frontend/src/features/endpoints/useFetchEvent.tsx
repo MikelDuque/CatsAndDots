@@ -1,14 +1,16 @@
 import fetchEndpoint from "@/features/endpoints/fetch-endpoint";
 import { FetchProps } from "@/lib/types";
-import { useState } from "react";
-import { LogOut } from "../auth/actions/server-actions";
+import { useCallback, useState } from "react";
+import { useAuth } from "../auth/auth-context";
 
 export default function useFetch() {
-  const [fetchData, setFetchData] = useState<Promise<any> | undefined>(undefined);
+  const {logOut} = useAuth();
+
+  const [fetchData, setFetchData] = useState<Promise<unknown> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<Record<string, unknown> | unknown>(null);
 
-  async function fetchingData({url, type, token, params, needAuth}: FetchProps) {
+  const fetchingData = useCallback(async({url, type, token, params, needAuth}: FetchProps) => {
     try {
       setIsLoading(true);
 
@@ -19,13 +21,13 @@ export default function useFetch() {
       return data;
 
     } catch (error) {
-      if(error === "Unauthorized") await LogOut();
+      if(error === "Unauthorized") logOut();
       setFetchError(error);
 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [logOut]);
 
   return ({
     fetchData,

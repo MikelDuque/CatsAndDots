@@ -64,8 +64,12 @@ public class Program
         });
     });
 
-    //Database
-    builder.Services.AddScoped<DataContext>();
+    //Websockets
+		builder.Services.AddSingleton<WebSocketNetwork>();
+		builder.Services.AddTransient<WebSocketMiddleware>();
+
+		//Database
+		builder.Services.AddScoped<DataContext>();
     builder.Services.AddScoped<UnitOfWork>();
 
     //Repositorios
@@ -77,8 +81,6 @@ public class Program
     builder.Services.AddScoped<FriendshipMapper>();
 
 		//Servicios
-		builder.Services.AddSingleton<WebSocketNetwork>();
-
     builder.Services.AddScoped<AuthService>();
     builder.Services.AddScoped<UserService>();
 
@@ -92,21 +94,21 @@ public class Program
         FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
     });
 
-    app.UseCors(options =>
-      options.AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowAnyOrigin());
-
 		app.UseHttpsRedirection();
 		app.UseRouting();
+		app.UseCors(options =>
+	    options.AllowAnyHeader()
+		    .AllowAnyMethod()
+		    .AllowAnyOrigin()
+    );
 
 		app.UseWebSockets();
-    app.UseMiddleware<WebSocketMiddleware>();
+		app.UseMiddleware<WebSocketMiddleware>();
 
 		app.UseAuthentication();
-    app.UseAuthorization();
+		app.UseAuthorization();
 
-    app.MapControllers();
+		app.MapControllers();
 
     if (app.Environment.IsDevelopment())
     {

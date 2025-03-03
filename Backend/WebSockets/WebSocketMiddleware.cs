@@ -1,15 +1,10 @@
-﻿namespace Backend.WebSockets;
+﻿using System.Diagnostics;
 
-public class WebSocketMiddleware
+namespace Backend.WebSockets;
+
+public class WebSocketMiddleware : IMiddleware
 {
-	private RequestDelegate _next;
-
-	public WebSocketMiddleware(RequestDelegate next)
-	{
-		_next = next;
-	}
-
-	public async Task InvokeAsync(HttpContext context)
+	public Task InvokeAsync(HttpContext context, RequestDelegate next)
 	{
 		if (context.WebSockets.IsWebSocketRequest)
 		{
@@ -17,7 +12,6 @@ public class WebSocketMiddleware
 
 			context.Request.Headers.Authorization = "Bearer " + token;
 		}
-
-		await _next(context);
+		return next(context);
 	}
-}
+};

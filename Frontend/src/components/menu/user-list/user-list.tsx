@@ -10,12 +10,11 @@ import { useEffect, useState } from "react";
 import { PendingFriends, User } from "@/lib/types";
 import UserSearch from "./user-search";
 import UserListMapper from "@/components/user-data/user-list-mapper";
-import { useRequest } from "@/features/websocket/request-context";
 import Title from "@/components/utils/title";
+import { ListType } from "@/lib/enums";
 
 export default function UserList() {
   const { token, decodedToken } = useAuth();
-  const { friendRequests } = useRequest();
   
   const { fetchData } = useFetch({ url: GET_PENDING_FRIENDS(decodedToken?.id || 0), type: 'GET', token: token, needAuth: true, condition: !!token });
   
@@ -32,7 +31,7 @@ export default function UserList() {
       setPendingFriends(backPendingFriends);
     };
 
-  }, [fetchData, friendRequests]);
+  }, [fetchData]);
   
   return (
     <Dialog>
@@ -47,18 +46,18 @@ export default function UserList() {
           <UserSearch setDisplayUserList={setDisplayedUsers}/>
           {displayedUsers ?
             displayedUsers.length > 0 ?
-              <UserListMapper userList={displayedUsers} requests={friendRequests} isFriendList={false}/>
+              <UserListMapper userList={displayedUsers} listType={ListType.users}/>
             :
             <p className="text-body">No se ha encontrado a ningún usuario con ese nombre</p>
           :
             <>
               <section>
                 <h3 className="subtitle text-left">Peticiones de amistad recibidas</h3>
-                <UserListMapper userList={pendingFriends.receivedFriendList} requests={friendRequests} isFriendList={false}/>
+                <UserListMapper userList={pendingFriends.receivedFriendList} listType={ListType.incomingFriendRequests}/>
               </section>
               <section>
                 <h3 className="subtitle text-left">Peticiones de amistad enviadas</h3>
-                <UserListMapper userList={pendingFriends.sentFriendList} requests={friendRequests} isFriendList={false}/>
+                <UserListMapper userList={pendingFriends.sentFriendList} listType={ListType.sentFriendRequests}/>
               </section>
             </>
           }

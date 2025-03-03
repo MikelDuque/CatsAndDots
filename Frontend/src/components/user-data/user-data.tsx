@@ -2,19 +2,20 @@
 
 import { BASE_HTTPS_URL } from "@/features/endpoints/endpoints";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Request, User } from "@/lib/types";
+import { User } from "@/lib/types";
 import RequestInteraction from "./request-interaction";
-import { ConnectionState } from "@/lib/enums";
+import { ConnectionState, ListType } from "@/lib/enums";
 import { Circle, Sword } from "lucide-react";
 
 type userDataProps = {
-  myUserId: number,
   user: User,
-  request?: Request,
-  isFriend: boolean
+  listType: ListType,
+  myUserId: number
 }
 
-export default function UserData({myUserId, user, request, isFriend}: userDataProps) {
+export default function UserData({ user, listType, myUserId}: userDataProps) {
+
+
   return (
     <div className="w-full h-15 p-3 flex justify-between items-center gap-5 rounded-lg hover:shadow-md hover:shadow-current">
       <div className="flex gap-5 items-center">
@@ -27,7 +28,7 @@ export default function UserData({myUserId, user, request, isFriend}: userDataPr
         </figure>
         <h2 className="subtitle">{user.username}</h2>
       </div>
-      <RequestInteraction myUserId={myUserId} otherUser={user} request={request} isGameRequest={isFriend}/>
+      <RequestInteraction user={user} listType={listType} myUserId={myUserId}/>
     </div>
   );
 };

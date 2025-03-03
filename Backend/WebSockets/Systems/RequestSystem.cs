@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Database;
@@ -40,7 +41,7 @@ public class RequestSystem
 
 		WebSocketLink senderUser = connections.FirstOrDefault(user => user.Id == request.SenderId);
 		WebSocketLink receiverUser = connections.FirstOrDefault(user => user.Id == request.ReceiverId);
-
+		Debug.WriteLine("matchRequest", request);
 		switch (request.State)
 		{
 			case RequestState.Pending:

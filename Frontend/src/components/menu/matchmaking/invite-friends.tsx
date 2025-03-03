@@ -1,16 +1,17 @@
 "use client"
 
 import { useState } from "react";
-import { useRequest } from "@/features/websocket/request-context";
 import {useFriendList} from "@/features/websocket/useFriendList";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import UserListMapper from "@/components/user-data/user-list-mapper";
+import { ListType } from "@/lib/enums";
 
 export default function InviteFriends() {
   const {friendList} = useFriendList();
-  const {gameRequests} = useRequest();
   const [showFriendsModal, setShowFriendsModal] = useState(false);
+
+  function handleUserClick() {setShowFriendsModal(prevState => !prevState)};
 
   return (
     <Dialog open={showFriendsModal} onOpenChange={setShowFriendsModal}>
@@ -21,7 +22,7 @@ export default function InviteFriends() {
         <DialogHeader>
           <DialogTitle> Invita un amigo</DialogTitle>
         </DialogHeader>
-        <UserListMapper userList={friendList} requests={gameRequests} isFriendList={true}/>
+        <UserListMapper userList={friendList} listType={ListType.matchmaking} onUserSelect={handleUserClick}/>
       </DialogContent>
     </Dialog>
   );

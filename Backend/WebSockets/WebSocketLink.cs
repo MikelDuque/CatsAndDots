@@ -1,7 +1,9 @@
 
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using Backend.Helpers;
 using Backend.Models;
 using Backend.WebSockets.Messages;
 
@@ -20,33 +22,34 @@ public class WebSocketLink : IDisposable
   public bool IsOpen => _webSocket.State == WebSocketState.Open;
   public ConnectionState ConnectionState { get; set; }
 
-  //CONSTRUCTOR
-  public WebSocketLink(long id, WebSocket webSocket)
-  {
-    _buffer = new byte[BUFFER_SIZE];
-    _webSocket = webSocket;
-
-    Id = id;
-    ConnectionState = IsOpen ? ConnectionState.Online : ConnectionState.Offline;
-  }
-
   //EVENTOS
   public event Func<WebSocketLink, Task> Disconnected;
   public event Func<WebSocketLink, string, Task> FriendRequest;
   public event Func<WebSocketLink, string, Task> MatchmakingRequest;
 
-  public async Task HandleEventAsync() {
+	//CONSTRUCTOR
+	public WebSocketLink(long id, WebSocket webSocket)
+	{
+		_buffer = new byte[BUFFER_SIZE];
+		_webSocket = webSocket;
+
+		Id = id;
+		ConnectionState = IsOpen ? ConnectionState.Online : ConnectionState.Offline;
+	}
+
+	public async Task HandleEventAsync() {
     while (IsOpen)
     {
       string message = await ReadAsync();
+      Debug.WriteLine("mensaje websocket" + message);
 
-      if (!string.IsNullOrWhiteSpace(message)) InvokeEvents(message);
+      if (!string.IsNullOrWhiteSpace(message)) await InvokeEvents(message);
 		}
 
     if (Disconnected != null)
     {
-      await Disconnected.Invoke(this);
-      ConnectionState = ConnectionState.Offline;
+			ConnectionState = ConnectionState.Offline;
+			await Disconnected.Invoke(this);
     }
   }
      
@@ -66,6 +69,7 @@ public class WebSocketLink : IDisposable
       else if (receiveResult.CloseStatus.HasValue)
       {
         await _webSocket.CloseAsync(receiveResult.CloseStatus.Value, receiveResult.CloseStatusDescription, CancellationToken.None);
+        return string.Empty;
       }
     }
     while (!receiveResult.EndOfMessage);
@@ -88,11 +92,11 @@ public class WebSocketLink : IDisposable
     _webSocket.Dispose();
   }
 
-  private async void InvokeEvents(string message)
+  private async Task InvokeEvents(string message)
   {
     string type = GetMessageType(message);
 
-    switch (type)
+		switch (type)
     {
       case "FriendRequest":
         if (FriendRequest != null) await FriendRequest.Invoke(this, message);
@@ -102,9 +106,19 @@ public class WebSocketLink : IDisposable
         break;
     }
   }
-  private string GetMessageType(string JsonObject)
+  private string GetMessageType(string jsonString)
   {
-    var message = JsonSerializer.Deserialize<Message<object>>(JsonObject);
-    return message?.MessageType ?? string.Empty;
+		IMessage<object> message = ParseHelper.DesGenericMessage<object>(jsonString);
+    return message.MessageType;
   }
+
+	public override bool Equals(object obj)
+	{
+    return obj is WebSocketLink link && link.Id == Id;
+	}
+
+	public override int GetHashCode()
+	{
+		return Id.GetHashCode();
+	}
 }

@@ -9,3 +9,11 @@ export enum RequestState {
   Accepted,
   Rejected
 }
+
+export enum ListType {
+  users,
+  friends,
+  sentFriendRequests,
+  incomingFriendRequests,
+  matchmaking
+}

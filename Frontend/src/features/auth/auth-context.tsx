@@ -1,24 +1,32 @@
 "use client"
 
-import { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import { createContext, useState, useContext, ReactNode, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { getAuth } from "./queries/get-auth";
+import { LogOut as serverLogOut } from "@/features/auth/actions/server-actions";
 import { DecodedToken } from "@/lib/types";
 
 /* ---- TIPADOS ---- */
 type AuthContextType = {
   token: string | undefined;
   decodedToken: DecodedToken;
+  logOut: () => void
 }
 
 type AuthProviderProps = {
   children: ReactNode;
 }
 
+type AuthType = {
+  token: string | undefined;
+  decodedToken: DecodedToken;
+}
+
 /* ----- DECLARACIÓN Context ----- */
 const AuthContext = createContext<AuthContextType>({
   token:undefined,
-  decodedToken:undefined
+  decodedToken:undefined,
+  logOut(){}
 });
 
 export const useAuth = (): AuthContextType => {
@@ -30,24 +38,28 @@ export const useAuth = (): AuthContextType => {
 /* ----- CUERPO del Context ----- */
 export function AuthProvider({ children }: AuthProviderProps) {
   const pathName = usePathname();
+  const [authData, setAuthData] = useState<AuthType>();
 
-  const [authData, setAuthData] = useState<AuthContextType>();
- 
+  const GetToken = useCallback(async () => {
+    const auth = await getAuth();
+    setAuthData(auth.token && !authData ? auth : undefined);
+  }, []); 
+  
   useEffect(() => {
-    async function GetToken() {
-      const auth = await getAuth();
-      setAuthData(auth.token && !authData ? auth : undefined);
-      //if(auth.token && !authData) setAuthData(auth);
-    }
-
     GetToken();
-  }, [pathName]);
+  }, [GetToken, pathName]);
 
+  const logOut = useCallback(async () => {
+    await serverLogOut();
+    setAuthData(undefined);
+  }, []);
+  
 
   /* ----- Fin Context ----- */
   const contextValue: AuthContextType = {
     token: authData?.token,
-    decodedToken: authData?.decodedToken
+    decodedToken: authData?.decodedToken,
+    logOut
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

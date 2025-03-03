@@ -1,21 +1,16 @@
 import fetchEndpoint from "@/features/endpoints/fetch-endpoint";
 import { FetchProps } from "@/lib/types";
-import { useEffect, useState } from "react";
-import { LogOut } from "../auth/actions/server-actions";
+import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "../auth/auth-context";
 
 export default function useFetch({url, type, token, params, needAuth, condition}: FetchProps) {
+  const {logOut} = useAuth();
+
   const [fetchData, setFetchData] = useState<unknown>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<Record<string, unknown> | unknown>(null);
 
-  useEffect(() => {
-    if(typeof condition === "boolean" && condition === false) return; //Si la condicion es booleana (NO null o undefined), y esta es FALSA, retorna.
-
-    fetchingData();
-
-  }, [url, type, params, condition]);
-
-  async function fetchingData() {
+  const fetchingData = useCallback(async () => {
     try {
       setIsLoading(true);
 
@@ -26,14 +21,20 @@ export default function useFetch({url, type, token, params, needAuth, condition}
       return data;
 
     } catch (error) {
-      if(error === "Unauthorized") await LogOut();
+      if(error === "Unauthorized") logOut();
       setFetchError(error);
       setFetchData(undefined)
 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [url, type, token, params, needAuth, logOut]);
+
+  useEffect(() => {
+    if(typeof condition === "boolean" && condition === false) return; //Si la condicion es booleana (NO null o undefined), y esta es FALSA, retorna.
+    fetchingData();
+
+  }, [fetchingData, condition]);
 
   return ({
     fetchData,

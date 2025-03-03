@@ -1,6 +1,9 @@
+using System.Net.WebSockets;
+using System.Runtime.Serialization.Json;
 using System.Text.Json;
 using Backend.WebSockets;
 using Backend.WebSockets.Messages;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Backend.Helpers;
 
@@ -9,6 +12,11 @@ public static class ParseHelper
   public static JsonSerializerOptions Options => new ()
   {
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+  };
+
+  public static JsonSerializerOptions OtherOptions => new()
+  {
+    PropertyNameCaseInsensitive = true
   };
   
   public static string GenericMessage<T>(string type, T body) where T : class
@@ -26,14 +34,13 @@ public static class ParseHelper
     return JsonSerializer.Serialize(message, Options);
   }
 
-  /*
-  private string FirstCharToLower(string str)
+  public static IMessage<T> DesGenericMessage<T>(string jsonObject) where T: class
   {
-    if(string.IsNullOrWhiteSpace(str) || char.IsLower(str[0])) return str;
-
-    char firstChar = char.ToLower(str[0]);
-
-    return str.Length == 1 ? firstChar.ToString() : firstChar + str[1..];
+    return JsonSerializer.Deserialize<Message<T>>(jsonObject, OtherOptions);
   }
-  */
+
+  public static T DesMessage<T>(string jsonObject) where T: class
+  {
+    return JsonSerializer.Deserialize<T>(jsonObject, OtherOptions);
+  }
 }

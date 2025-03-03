@@ -56,6 +56,9 @@ export default function Matchmaking({ onBack }: matchmakingProps) {
 
       sendRequest(cancelRequest, true);
     };
+    console.log("players", players);
+    console.log("gameRequests", gameRequests);
+    
     
     onBack();
   };

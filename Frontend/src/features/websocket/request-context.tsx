@@ -11,9 +11,11 @@ import { useAuth } from "../auth/auth-context";
 
 /* ---- TIPADOS ---- */
 type RequestContextType = {
-  friendRequests: Request[];
-  gameRequests: Request[];
+  friendRequests: Request[]
+  gameRequests: Request[]
+  meInMatchmaking: boolean
   sendRequest: (request: Request, isGameRequest: boolean) => void
+  setMeInMatchmaking: () => void
 }
 
 type RequestProviderProps = {
@@ -24,7 +26,9 @@ type RequestProviderProps = {
 const RequestContext = createContext<RequestContextType>({
   friendRequests: [],
   gameRequests: [],
-  sendRequest: () => {}
+  meInMatchmaking: false,
+  sendRequest: () => {},
+  setMeInMatchmaking: () => {}
 });
 
 export const useRequest = (): RequestContextType => {
@@ -43,12 +47,22 @@ export function RequestProvider({children}: RequestProviderProps) {
 
   const [friendRequests, setFriendRequests] = useState<Request[]>([]);
   const [gameRequests, setGameRequests] = useState<Request[]>([]);
+  const [meInMatchmaking, setMeInMatchmaking] = useState(false);
+
+
+  // Session Storage Control
 
   useEffect(() => {
-    setFriendRequests(getFromSession("friendRequests"));
-    setGameRequests(getFromSession("gameRequests"));
-  }, []);
+    if(!friendRequests) setFriendRequests(getFromSession("friendRequests"))
+      else localStorage.setItem('friendRequests', JSON.stringify(friendRequests));
+
+    if(!gameRequests) setGameRequests(getFromSession("gameRequests"));
+      else localStorage.setItem('gameRequests', JSON.stringify(gameRequests));
+  }, [friendRequests, gameRequests]);
   
+
+  //Backend Control
+
   useEffect(() => {
     if(fetchData && friendRequests.length <= 0) {
       const backPendingFriends = fetchData as PendingFriends;
@@ -58,32 +72,23 @@ export function RequestProvider({children}: RequestProviderProps) {
   
   useEffect(() => {
     const backFriendRequest = messages ? messages["FriendRequest"] as Request : undefined;
-    const backMatchmakingRequest = messages ? messages["GameInvitation"] as Request : undefined;
+    const backMatchmakingRequest = messages ? messages["MatchmakingRequest"] as Request : undefined;
     
     if (backFriendRequest) {
-      handleRequest(backFriendRequest, setFriendRequests)
-      addNotification("Has recibido una nueva petición de amistad");
+      handleRequest(backFriendRequest, setFriendRequests);
+      if(backFriendRequest.state === RequestState.Pending) addNotification("Has recibido una nueva petición de amistad");
     };
+
     if (backMatchmakingRequest) {
       handleRequest(backMatchmakingRequest, setGameRequests)
-      addNotification("Alguien te ha invitado a unirse a su partida");
+      if(backMatchmakingRequest.state === RequestState.Pending) addNotification("Alguien te ha invitado a unirse a su partida");
     };
-
   }, [messages]);
 
-  useEffect(() => {
-    if (friendRequests) {
-      localStorage.setItem('friendRequests', JSON.stringify(friendRequests));
-    };
-    if (gameRequests) {
-      localStorage.setItem('gameRequests', JSON.stringify(gameRequests));
-    };
-    
-  }, [friendRequests, gameRequests]);
-  
-  
-  function handleRequest(request: Request, setRequests: (value: SetStateAction<Request[]>) => void) {
-    
+
+  //Handle Functions
+
+  function handleRequest(request: Request, setRequests:(value: SetStateAction<Request[]>) => void) {
     setRequests(prevState => {
       const index = existingIndex(request, prevState);
       const copy = [...prevState];
@@ -96,6 +101,7 @@ export function RequestProvider({children}: RequestProviderProps) {
         ...copy[index],
         state: request.state
       }
+      
       return copy;
     });
   };
@@ -105,23 +111,32 @@ export function RequestProvider({children}: RequestProviderProps) {
       messageType: isGameRequest ? "MatchmakingRequest" : "FriendRequest",
       body: request
     }
-    console.log("socket", socket);
     
     socket?.send(JSON.stringify(message));
 
     handleRequest(request, isGameRequest ? setGameRequests : setFriendRequests);
 
-    if (request.state === RequestState.Pending) {
-      const notiMessage = isGameRequest ? "Invitación a partida enviada" : "Petición de amistad enviada";
-      addNotification(notiMessage);
-    };
+    switch (request.state) {
+      case RequestState.Pending:
+        addNotification(isGameRequest ? "Invitación a partida enviada" : "Petición de amistad enviada");
+        break;
+      case RequestState.Accepted:
+        setMeInMatchmaking(true);
+        break;
+      default:
+        break;
+    }
   };
+
+  function handleMeInMatchmaking() {setMeInMatchmaking(prevState => !prevState);}
 
   /* ----- Fin Context ----- */
   const contextValue: RequestContextType = {
     friendRequests,
     gameRequests,
-    sendRequest
+    meInMatchmaking,
+    sendRequest,
+    setMeInMatchmaking: handleMeInMatchmaking
   };
 
   return <RequestContext.Provider value={contextValue}>{children}</RequestContext.Provider>
@@ -130,7 +145,7 @@ export function RequestProvider({children}: RequestProviderProps) {
 function existingIndex(request: Request, requestList: Request[]) {
   return requestList.findIndex(thisRequest =>
     thisRequest.senderId === request.senderId &&
-    thisRequest.receiverId === request.senderId
+    thisRequest.receiverId === request.receiverId
   );
 };
 

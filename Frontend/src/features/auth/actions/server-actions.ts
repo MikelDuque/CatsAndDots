@@ -8,8 +8,10 @@ import { LOGIN_URL, REGISTER_URL } from "@/features/endpoints/endpoints";
 import { ZodError } from "zod";
 import { formSchema } from "../queries/form-validator";
 import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
 
 
+/* ----- LOGIN ----- */
 export async function LoginAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
  
   const loginRequest = {
@@ -23,10 +25,7 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       type: "POST",
       params: loginRequest
     });
-
-    console.log("response login", response);
     
-   
     await saveAuthToken(response.accessToken);
 
   } catch (error) {
@@ -37,10 +36,11 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       fieldErrors: {},
     };
   };
-  console.log("Redireccionando a menu")
+  
   redirect(menuPath);
 };
 
+/* ----- REGISTER ----- */
 export async function RegisterAction(_actionState: ActionState, formData: FormData) : Promise<ActionState> {
   const formAvatar = formData.get("avatar");
   
@@ -74,11 +74,23 @@ export async function RegisterAction(_actionState: ActionState, formData: FormDa
       fieldErrors: {},
     };
   }
-  redirect(menuPath);
+
+  redirect(homePath);
 };
 
+/* ----- LOG OUT ----- */
+export async function LogOut() {
+  const cookieStore = await cookies();
+  cookieStore.delete('authToken');
+  
+  redirect(homePath);
+}
+
+
+/* ----- OTRAS FUNCIONES ----- */
 async function saveAuthToken(token: string) {
   const cookieStore = await cookies();
+  const maxAge = jwtDecode(token).exp! - Math.floor(Date.now() / 1000) || 3600 * 24 * 7;
   
   cookieStore.set({
     name: "authToken",
@@ -86,15 +98,7 @@ async function saveAuthToken(token: string) {
     httpOnly: true, 
     secure: process.env.NODE_ENV === "production", 
     path: "/", 
-    maxAge: 60 * 60 * 24 * 7, 
+    maxAge: maxAge, 
   });
 };
 
-export async function LogOut() {
-  
-  const cookieStore = await cookies();
-
-  cookieStore.delete('authToken');
-  
-  redirect(homePath);
-}

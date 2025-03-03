@@ -3,7 +3,6 @@
 import { useState } from "react";
 //UTILS
 import { User } from "@/lib/types";
-import { useRequest } from "@/features/websocket/request-context";
 //COMPONENTS
 import UserList from "../user-list/user-list";
 import UserListMapper from "../../user-data/user-list-mapper";
@@ -13,11 +12,10 @@ import FriendSearch from "./friend-search";
 import { Button } from "../../ui/button";
 //LUCIDE
 import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { ListType } from "@/lib/enums";
 
 
 export default function FriendList() {
-  const { gameRequests } = useRequest();
-
   const [hideFriends, setHideFriendlist] = useState(false);
   const [displayFriendList, setDisplayFriendlist] = useState<User[]>([]);
 
@@ -38,7 +36,7 @@ export default function FriendList() {
           <UserList />
         </div>
         <FriendSearch setDisplayFriendList={setDisplayFriendlist}/>
-        <UserListMapper userList={displayFriendList} requests={gameRequests} isFriendList={true} />
+        <UserListMapper userList={displayFriendList} listType={ListType.friends} />
       </aside>
     </>
   );

@@ -5,20 +5,19 @@ import MenuSection from "@/components/menu/menu-section";
 import FriendList from "@/components/menu/friend-list/friend-list";
 import ThemeSwitcher from "@/components/theme/theme-switcher";
 import Matchmaking from "@/components/menu/matchmaking/matchmaking";
-import { useState } from "react";
+import { useRequest } from "@/features/websocket/request-context";
 
 export default function Menu() {
-  const [showMatchmaking, setShowMatchmaking] = useState(false);
+  const { setMeInMatchmaking, meInMatchmaking } = useRequest();
   
-
   return (
     <>
       <Header />
       <main className="h-[92.5%] w-full flex">
-        {showMatchmaking ? 
-          <Matchmaking onBack={() => setShowMatchmaking(false)} />
+        {meInMatchmaking ? 
+          <Matchmaking onBack={setMeInMatchmaking} />
         : 
-          <MenuSection onSelect={() => setShowMatchmaking(true)} />
+          <MenuSection onSelect={setMeInMatchmaking} />
         }
         <FriendList />
       </main>
