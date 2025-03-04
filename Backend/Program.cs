@@ -21,7 +21,7 @@ public class Program
   public static void Main(string[] args)
   {
     //Entorno de prueba del Game: (Comentar esta parte cuando se quieran hacer cambios en lo demas del Backend)
-    TerminalGame.Game game = new TerminalGame.Game();
+    //TerminalGame.Game game = new TerminalGame.Game();
     //Fin del entorno de prueba del GAME
 
 

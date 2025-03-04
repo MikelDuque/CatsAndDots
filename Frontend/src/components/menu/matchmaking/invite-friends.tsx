@@ -4,7 +4,7 @@ import { useState } from "react";
 import {useFriendList} from "@/features/user-list/useFriendList";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import UserListMapper from "@/components/user-data/user-list-mapper";
+import UserListMapper from "@/features/user-list/components/user-list-mapper";
 import { ListType } from "@/lib/enums";
 
 export default function InviteFriends() {

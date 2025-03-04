@@ -4,10 +4,10 @@ import { useAuth } from "@/features/auth/auth-context";
 import { UserData } from "@/lib/types";
 
 type UserElementProps = {
-  user: UserData
-  changeRol: () => void
-  deleteUser: () => void
-}
+  user: UserData;
+  changeRol: (role: string) => void; 
+  deleteUser: () => void;
+};
 
 export default function UserElement({user, changeRol, deleteUser}: UserElementProps) {
   const {decodedToken} = useAuth();
@@ -25,7 +25,7 @@ export default function UserElement({user, changeRol, deleteUser}: UserElementPr
       </div>
 
       <form className="">
-        <select id={String(user.id)} name='role' defaultValue={role} onChange={changeRol} disabled={decodedToken?.id == user.id}>
+        <select id={String(user.id)} name='role' defaultValue={role} onChange={(e) => changeRol(e.target.value)} disabled={decodedToken?.id == user.id}>
           <option value={"usuario"}>usuario</option>
           <option value="admin">admin</option>
         </select>
