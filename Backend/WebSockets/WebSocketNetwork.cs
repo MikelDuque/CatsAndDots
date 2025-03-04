@@ -62,6 +62,7 @@ public class WebSocketNetwork
 
 		disconnectedUser.FriendRequest -= OnFriendRequestAsync;
     disconnectedUser.MatchmakingRequest -= OnMatchmakingAsync;
+		disconnectedUser.GameBotEvent -= OnGameBotEventAsync;
 		disconnectedUser.Disconnected -= OnDisconnectedAsync;
     disconnectedUser.Dispose();
 
@@ -136,8 +137,8 @@ public class WebSocketNetwork
 //     await _userSystem.UpdateUserData(hostId, ConnectionState.Playing);
 //     await _userSystem.UpdateUserData(guestId, ConnectionState.Playing);
 
-    }
-  }
+//    }
+//  }
 
   private async Task OnGameBotEventAsync(WebSocketLink connectedUser, string message)
   {
