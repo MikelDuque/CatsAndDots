@@ -177,7 +177,5 @@ public class WebSocketNetwork
     await connectedUser.SendAsync(ParseHelper.GenericMessage("GameOver", $"Partida finalizada. Ganador: {winner}"));
   }
 
-
-
 }
 
