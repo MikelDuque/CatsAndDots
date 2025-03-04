@@ -8,16 +8,19 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/
 import { Button } from "@/components/ui/button";
 import UserElement from "./user";
 import Title from "../utils/title";
+import useFetch from "@/features/endpoints/useFetch";
 
 export default function HandleUser() {
+  const { token, decodedToken } = useAuth();
   const [users, setUsers] = useState<UserData[]>([]);
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const { token, decodedToken } = useAuth();
+  
+  const { fetchData } = useFetch({url: GET_ALL_USERS, type: "GET", needAuth: true, condition: !!token});
 
   useEffect(() => {
-    if (token) fetchUsers();
-  }, [token]);
+    setUsers(fetchData as UserData[]);
+  }, [fetchData]);
 
   async function fetchUsers(): Promise<void> {
     try {
@@ -53,6 +56,7 @@ export default function HandleUser() {
       console.error(error);
     }
   }
+
 
   function confirmDelete(userId: number): void {
     setSelectedUser(userId);

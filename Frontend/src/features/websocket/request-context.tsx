@@ -49,20 +49,22 @@ export function RequestProvider({children}: RequestProviderProps) {
   const [gameRequests, setGameRequests] = useState<Request[]>([]);
   const [meInMatchmaking, setMeInMatchmaking] = useState(false);
 
-
   // Session Storage Control
-
   useEffect(() => {
-    if(!friendRequests) setFriendRequests(getFromSession("friendRequests"))
-      else localStorage.setItem('friendRequests', JSON.stringify(friendRequests));
+    if(!friendRequests) {
+      const sessionFR = sessionStorage.getItem("friendRequests");
+      if(sessionFR) setFriendRequests(JSON.parse(sessionFR) as Request[])
+    }
+    else {localStorage.setItem('friendRequests', JSON.stringify(friendRequests))};
 
-    if(!gameRequests) setGameRequests(getFromSession("gameRequests"));
-      else localStorage.setItem('gameRequests', JSON.stringify(gameRequests));
+    if(!gameRequests) {
+      const sessionGR = sessionStorage.getItem("gameRequests");
+      if(sessionGR) setFriendRequests(JSON.parse(sessionGR) as Request[])
+    }
+    else localStorage.setItem('gameRequests', JSON.stringify(gameRequests));
   }, [friendRequests, gameRequests]);
-  
 
   //Backend Control
-
   useEffect(() => {
     if(fetchData && friendRequests.length <= 0) {
       const backPendingFriends = fetchData as PendingFriends;
@@ -81,6 +83,8 @@ export function RequestProvider({children}: RequestProviderProps) {
 
     if (backMatchmakingRequest) {
       handleRequest(backMatchmakingRequest, setGameRequests)
+      console.log("backmatchmaking request", backMatchmakingRequest);
+      
       if(backMatchmakingRequest.state === RequestState.Pending) addNotification("Alguien te ha invitado a unirse a su partida");
     };
   }, [messages]);
@@ -88,7 +92,7 @@ export function RequestProvider({children}: RequestProviderProps) {
 
   //Handle Functions
 
-  function handleRequest(request: Request, setRequests:(value: SetStateAction<Request[]>) => void) {
+  function handleRequest(request: Request, setRequests:(value: SetStateAction<Request[]>) => void) { 
     setRequests(prevState => {
       const index = existingIndex(request, prevState);
       const copy = [...prevState];
@@ -97,9 +101,11 @@ export function RequestProvider({children}: RequestProviderProps) {
 
       if(request.state === RequestState.Rejected) return copy.filter((request, i) => i !== index);
 
-      copy[index] = {
-        ...copy[index],
-        state: request.state
+      if(copy[index].state !== RequestState.Accepted) {
+        copy[index] = {
+          ...copy[index],
+          state: request.state
+        }
       }
       
       return copy;
@@ -113,7 +119,7 @@ export function RequestProvider({children}: RequestProviderProps) {
     }
     
     socket?.send(JSON.stringify(message));
-
+    
     handleRequest(request, isGameRequest ? setGameRequests : setFriendRequests);
 
     switch (request.state) {
@@ -121,9 +127,7 @@ export function RequestProvider({children}: RequestProviderProps) {
         addNotification(isGameRequest ? "Invitación a partida enviada" : "Petición de amistad enviada");
         break;
       case RequestState.Accepted:
-        setMeInMatchmaking(true);
-        break;
-      default:
+        //setMeInMatchmaking(true);
         break;
     }
   };
@@ -148,11 +152,3 @@ function existingIndex(request: Request, requestList: Request[]) {
     thisRequest.receiverId === request.receiverId
   );
 };
-
-function getFromSession(key: string) {
-  if(!window.sessionStorage) return;
-
-  const value = sessionStorage.getItem(key);
-
-  return value ? JSON.parse(value) : [];
-}

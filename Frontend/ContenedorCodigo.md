@@ -256,3 +256,63 @@ useEffect(() => {
   
 }, [messages, friendList]);
 ```
+
+### Admin Fernando
+```
+async function fetchUsers(): Promise<void> {
+    try {
+      const response = await fetch(GET_ALL_USERS, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Error al obtener usuarios");
+      const data: UserData[] = await response.json();
+      setUsers(data || []);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleUpdate(userId: number, role: string): Promise<void> {
+    if (decodedToken?.id === userId) {
+      alert("No puedes modificar tu propio usuario");
+      return;
+    }
+
+    try {
+      const response = await fetch(HANDLE_USER, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, role }),
+      });
+      if (!response.ok) throw new Error("Error al actualizar el usuario");
+      await fetchUsers();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function confirmDelete(userId: number): void {
+    setSelectedUser(userId);
+    setShowDeleteDialog(true);
+  }
+
+  async function handleDelete(): Promise<void> {
+    if (!selectedUser) return;
+    try {
+      const response = await fetch(DELETE_USER(selectedUser), {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Error al eliminar el usuario");
+      await fetchUsers();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setShowDeleteDialog(false);
+      setSelectedUser(null);
+    }
+  }
+```

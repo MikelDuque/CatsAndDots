@@ -36,7 +36,7 @@ export default function UserElement({ user, changeRol, deleteUser }: UserElement
       </div>
 
 
-      <div className="flex items-center gap-3">
+      <form className="flex items-center gap-3">
         <select
           id={String(user.id)}
           name="role"
@@ -54,7 +54,7 @@ export default function UserElement({ user, changeRol, deleteUser }: UserElement
         >
           Eliminar
         </Button>
-      </div>
+      </form>
     </div>
   );
 }

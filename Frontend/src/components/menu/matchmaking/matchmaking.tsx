@@ -39,14 +39,18 @@ export default function Matchmaking({ onBack }: matchmakingProps) {
     if(messages && (meGuest || meHost)) {
       const userData = messages["UserData"] as User;
 
-      if(meGuest) setPlayers({Host: userData, Guest: me})
-      else setPlayers({Host: me, Guest: userData});
+    if(meGuest) setPlayers({Host: userData, Guest: me})
+    else setPlayers({Host: me, Guest: userData});
     }
     else setPlayers({Host: me, Guest: undefined});
     
   }, [messages, gameRequests]);
 
   function onExist() {
+    console.log("holaaaaaa");
+    
+    console.log("se cumple?", players.Host && players.Guest);
+    
     if (players.Host && players.Guest) {
       const cancelRequest = {
         senderId: players.Host.id,
@@ -56,11 +60,7 @@ export default function Matchmaking({ onBack }: matchmakingProps) {
 
       sendRequest(cancelRequest, true);
     };
-    console.log("players", players);
-    console.log("gameRequests", gameRequests);
-    
-    
-    onBack();
+    //onBack();
   };
 
   return (

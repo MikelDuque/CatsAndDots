@@ -159,13 +159,13 @@ public class Seeder
 			{
 				UserAId = 3,
 				UserBId = 4,
-				WhenFriendship = null
+				WhenFriendship = DateTime.Now
 			},
 			new UserFriendship
 			{
 				UserAId = 4,
 				UserBId = 3,
-				WhenFriendship = null
+				WhenFriendship = DateTime.Now
 			}
 		];
 

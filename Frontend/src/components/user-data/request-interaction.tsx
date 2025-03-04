@@ -17,10 +17,11 @@ type RequestInteractionProps = {
 export default function RequestInteraction({user, listType, myUserId}: RequestInteractionProps) {
   const { sendRequest, friendRequests, gameRequests } = useRequest();
   const [thisRequest, setThisRequest] = useState<Request>();
-  const display = [ListType.friends, ListType.incomingFriendRequests].includes(listType);
 
   useEffect(() => {
-    if(display) setThisRequest(getRequest);
+    const shouldDisplay = [ListType.friends, ListType.incomingFriendRequests].includes(listType);
+  
+    if(shouldDisplay) setThisRequest(getRequest);
 
   }, [friendRequests, gameRequests])
 
@@ -37,7 +38,7 @@ export default function RequestInteraction({user, listType, myUserId}: RequestIn
     if(thisRequest) sendRequest({...thisRequest, state: newState}, listType === ListType.friends);
   };
 
-  return ( display && myUserId === thisRequest?.receiverId &&
+  return ( myUserId === thisRequest?.receiverId && thisRequest.state === RequestState.Pending &&
     <div className="flex gap-1">
       <Button size="sm" onClick={(e) => (e.stopPropagation(), changeRequestState(RequestState.Accepted))}><Check/></Button>
       <Button size="sm" onClick={(e) => (e.stopPropagation(), changeRequestState(RequestState.Rejected))}><X/></Button>

@@ -17,7 +17,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_KEY": "kj453gjkuewh345rgfkuwshb455gfuswgufh567swbguf876gswedufgsuwygfus345wgfug",
+        "CONNECTION_STRING": "Server=db14885.databaseasp.net; Database=db14885; Uid=db14885; Pwd=x+7L-2YikB#3;"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5146"

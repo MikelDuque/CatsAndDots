@@ -3,7 +3,7 @@ import { FetchProps } from "@/lib/types";
 import { useCallback, useState } from "react";
 import { useAuth } from "../auth/auth-context";
 
-export default function useFetch() {
+export default function useFetchEvent() {
   const {logOut} = useAuth();
 
   const [fetchData, setFetchData] = useState<Promise<unknown> | undefined>(undefined);
