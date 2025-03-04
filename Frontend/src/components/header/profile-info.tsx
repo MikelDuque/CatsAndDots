@@ -4,11 +4,16 @@ import Title from "../utils/title";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useAuth } from "@/features/auth/auth-context";
+import { adminPath } from "@/lib/paths";
+import { useRouter } from "next/navigation";
+
 
 
 export default function ProfileInfo() {
+  const router = useRouter();
   const {decodedToken, logOut} = useAuth();
   const avatarUrl = `${BASE_HTTPS_URL}${decodedToken?.avatar}`;
+
 
   return (
     <DropdownMenu>
@@ -28,7 +33,7 @@ export default function ProfileInfo() {
         <DropdownMenuItem className="cursor-pointer rounded-sm px-2 py-1.5 focus:bg-accent focus:text-accent-foreground">
           Perfil
         </DropdownMenuItem>
-        <DropdownMenuItem disabled className="cursor-default rounded-sm px-2 py-1.5 outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+        <DropdownMenuItem disabled={decodedToken?.role == null} onSelect={() => router.push(adminPath)} className="cursor-default rounded-sm px-2 py-1.5 outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
           Administración
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={logOut} className="cursor-pointer rounded-sm px-2 py-1.5 focus:bg-accent focus:text-accent-foreground">

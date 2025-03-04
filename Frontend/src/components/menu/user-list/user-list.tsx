@@ -9,7 +9,7 @@ import { GET_PENDING_FRIENDS} from "@/features/endpoints/endpoints";
 import { useEffect, useState } from "react";
 import { PendingFriends, User } from "@/lib/types";
 import UserSearch from "./user-search";
-import UserListMapper from "@/features/user-list/components/user-list-mapper";
+import UserListMapper from "@/components/user-data/user-list-mapper";
 import Title from "@/components/utils/title";
 import { ListType } from "@/lib/enums";
 
