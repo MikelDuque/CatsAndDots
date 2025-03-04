@@ -3,6 +3,7 @@
 import { useAuth } from "@/features/auth/auth-context";
 import { GET_ALL_USERS } from "@/features/endpoints/endpoints";
 import useFetch from "@/features/endpoints/useFetch";
+import useFetchEvent from "@/features/endpoints/useFetchEvent";
 import { UserData } from "@/lib/types";
 import { useEffect, useState } from "react";
 import UserElement from "./user";
@@ -18,11 +19,15 @@ export default function HandleUser() {
   }, [fetchData]);
 
   function handleUpdate() {
+    useFetchEvent
+  }
 
+  function handleDelete() {
+    useFetchEvent
   }
 
   function shouldDelete() {
-
+    handleDelete
   }
 
   return (

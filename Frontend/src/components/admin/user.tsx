@@ -26,7 +26,7 @@ export default function UserElement({user, changeRol, deleteUser}: UserElementPr
 
       <form className="">
         <select id={String(user.id)} name='role' defaultValue={role} onChange={changeRol} disabled={decodedToken?.id == user.id}>
-          <option value={undefined}>usuario</option>
+          <option value={"usuario"}>usuario</option>
           <option value="admin">admin</option>
         </select>
         <a id={String(user.id)} onClick={deleteUser}>Eliminar</a>
