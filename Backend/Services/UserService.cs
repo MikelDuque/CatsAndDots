@@ -45,7 +45,7 @@ public class UserService
 
 		await _unitOfWork.UserRepository.SaveAsync();
 
-		return _userDataMapper.ToDto(userEntity);
+		return _userMapper.ToDto(userEntity);
 	}
 
 	public async Task<bool> DeleteUserById(long id)
