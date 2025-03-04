@@ -15,104 +15,76 @@ public class Board
   }
 
   //Metodos
-  public void MostrarTablero()
-  {
-    for (int i = 0; i < hLines.GetLength(0); i++)
-    {
-
-      for (int j = 0; j < hLines.GetLength(1); j++)
-      {
-        if (hLines[i,j] == true)
-        {
-          Console.Write("*---");
-        }
-        else
-        {
-          Console.Write("*   ");
-        }
-
-        if (j == 4) { Console.Write("*"); }
-      }
-      Console.WriteLine("");
-
-      if (i<5)
-      {
-        for (int k = 0; k < vLines.GetLength(1); k++)
-        {
-          if (vLines[i,k] == true)
-          {
-            Console.Write("|   ");
-          }
-          else
-          {
-            Console.Write("    ");
-          }
-
-        }
-      }
-      
-      Console.WriteLine("");
-    }
-  }
   
-  public void Jugada()
+
+  public void Jugada(int tipoLinea, int num1, int num2)
   {
     isBox = false;
     doublePoint = false;
 
-    Console.WriteLine("que linea quieres poner? 1.Horizontal 2.Vertical");
-    int resp = int.Parse(Console.ReadLine());
-    Console.WriteLine("que linea quieres poner?");
-    int num1 = int.Parse(Console.ReadLine());
-    int num2 = int.Parse(Console.ReadLine());
+    if (tipoLinea == 1) 
+    {
+      AgregarLineaHorizontal(num1, num2);
+    }
+    else if (tipoLinea == 2) 
+    {
+      AgregarLineaVertical(num1, num2);
+    }
+  }
 
-    switch (resp) {
-      case 1:
-        hLines[num1, num2] = true;
+  public bool ExisteLineaHorizontal(int fila, int columna)
+  {
+    return hLines[fila, columna];
+  }
 
-        switch (num1)
-        {
-          case 0:
-            if (hLines[num1 + 1, num2] && vLines[num1, num2] && vLines[num1, num2 + 1]) { isBox = true; }
-            break;
-          case 5:
-            if (hLines[num1 - 1, num2] && vLines[num1 - 1, num2] && vLines[num1 - 1, num2 + 1]) { isBox = true; }
-            break;
-          default:
-            if ((hLines[num1 - 1, num2] && vLines[num1 - 1, num2] && vLines[num1 - 1, num2 + 1]) || (hLines[num1 + 1, num2] && vLines[num1, num2] && vLines[num1, num2 + 1])) 
-            {
-              isBox = true;
-              if ((hLines[num1 - 1, num2] && vLines[num1 - 1, num2] && vLines[num1 - 1, num2 + 1]) && (hLines[num1 + 1, num2] && vLines[num1, num2] && vLines[num1, num2 + 1])) { doublePoint = true; }
-            }
+  public bool ExisteLineaVertical(int fila, int columna)
+  {
+    return vLines[fila, columna];
+  }
 
-            break;
-        }
+  public void AgregarLineaHorizontal(int num1, int num2)
+  {
+    hLines[num1, num2] = true;
+
+    switch (num1)
+    {
+      case 0:
+        if (hLines[num1 + 1, num2] && vLines[num1, num2] && vLines[num1, num2 + 1]) { isBox = true; }
         break;
-
-      case 2:
-        vLines[num1, num2] = true;
-
-        switch (num2)
-        {
-          case 0:
-            if (vLines[num1, num2 + 1] && hLines[num1, num2] && hLines[num1 + 1, num2]) { isBox = true; }
-            break;
-          case 5:
-            if (vLines[num1, num2 - 1] && hLines[num1, num2 - 1] && hLines[num1 + 1, num2 - 1]) { isBox = true; }
-            break;
-          default:
-            if ((vLines[num1, num2 - 1] && hLines[num1, num2 - 1]) && hLines[num1 + 1, num2 - 1] || (vLines[num1, num2 + 1] && hLines[num1, num2] && hLines[num1 + 1, num2])) 
-            { 
-              isBox = true;
-              if ((vLines[num1, num2 - 1] && hLines[num1, num2 - 1]) && hLines[num1 + 1, num2 - 1] && (vLines[num1, num2 + 1] && hLines[num1, num2] && hLines[num1 + 1, num2])) { doublePoint = true; }
-            }
-            break;
-        }
+      case 5:
+        if (hLines[num1 - 1, num2] && vLines[num1 - 1, num2] && vLines[num1 - 1, num2 + 1]) { isBox = true; }
         break;
+      default:
+        if ((hLines[num1 - 1, num2] && vLines[num1 - 1, num2] && vLines[num1 - 1, num2 + 1]) || (hLines[num1 + 1, num2] && vLines[num1, num2] && vLines[num1, num2 + 1]))
+        {
+          isBox = true;
+          if ((hLines[num1 - 1, num2] && vLines[num1 - 1, num2] && vLines[num1 - 1, num2 + 1]) && (hLines[num1 + 1, num2] && vLines[num1, num2] && vLines[num1, num2 + 1])) { doublePoint = true; }
+        }
 
-      default: 
-        Console.WriteLine("numero invalido");
         break;
     }
   }
+
+  public void AgregarLineaVertical(int num1, int num2)
+  {
+    vLines[num1, num2] = true;
+
+    switch (num2)
+    {
+      case 0:
+        if (vLines[num1, num2 + 1] && hLines[num1, num2] && hLines[num1 + 1, num2]) { isBox = true; }
+        break;
+      case 5:
+        if (vLines[num1, num2 - 1] && hLines[num1, num2 - 1] && hLines[num1 + 1, num2 - 1]) { isBox = true; }
+        break;
+      default:
+        if ((vLines[num1, num2 - 1] && hLines[num1, num2 - 1]) && hLines[num1 + 1, num2 - 1] || (vLines[num1, num2 + 1] && hLines[num1, num2] && hLines[num1 + 1, num2]))
+        {
+          isBox = true;
+          if ((vLines[num1, num2 - 1] && hLines[num1, num2 - 1]) && hLines[num1 + 1, num2 - 1] && (vLines[num1, num2 + 1] && hLines[num1, num2] && hLines[num1 + 1, num2])) { doublePoint = true; }
+        }
+        break;
+    }
+  }
+
 }

@@ -34,6 +34,7 @@ public class WebSocketLink : IDisposable
   public event Func<WebSocketLink, string, Task> FriendRequest;
   public event Func<WebSocketLink, Task> Disconnected;
   public event Func<WebSocketLink, string, Task> MatchmakingEvent;
+  public event Func<WebSocketLink, string, Task> GameBotEvent;
 
   public async Task HandleEventAsync() {
     while (IsOpen)
@@ -50,7 +51,7 @@ public class WebSocketLink : IDisposable
     }
   }
      
-  private async Task<string> ReadAsync() 
+  public async Task<string> ReadAsync() 
   {
     using MemoryStream stream = new();
     WebSocketReceiveResult receiveResult;
@@ -99,6 +100,9 @@ public class WebSocketLink : IDisposable
         break;
       case "MatchmakingMessage":
         if (MatchmakingEvent != null) await MatchmakingEvent.Invoke(this, message);
+        break;
+      case "GameBotEvent":
+        if (GameBotEvent != null) await GameBotEvent.Invoke(this, message);
         break;
     }
   }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Backend.Models.DTOs;
 using Backend.WebSockets;
 using Backend.WebSockets.Messages;
 
@@ -26,14 +27,9 @@ public static class ParseHelper
     return JsonSerializer.Serialize(message, Options);
   }
 
-  /*
-  private string FirstCharToLower(string str)
+  public static (int TipoLinea, int Num1, int Num2) ParseMove(string message)
   {
-    if(string.IsNullOrWhiteSpace(str) || char.IsLower(str[0])) return str;
-
-    char firstChar = char.ToLower(str[0]);
-
-    return str.Length == 1 ? firstChar.ToString() : firstChar + str[1..];
+    var data = JsonSerializer.Deserialize<MoveData>(message);
+    return (data.TipoLinea, data.Num1, data.Num2);
   }
-  */
 }

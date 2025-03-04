@@ -19,9 +19,6 @@ public class Program
 {
   public static void Main(string[] args)
   {
-    //Entorno de prueba del Game: (Comentar esta parte cuando se quieran hacer cambios en lo demas del Backend)
-    GameClass game = new();
-    //Fin del entorno de prueba del GAME
 
 
     Directory.SetCurrentDirectory(AppContext.BaseDirectory);
