@@ -7,6 +7,7 @@ import { UserData } from "@/lib/types";
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import UserElement from "./user";
+import Title from "../utils/title";
 
 export default function HandleUser() {
   const [users, setUsers] = useState<UserData[]>([]);
@@ -76,8 +77,9 @@ export default function HandleUser() {
   }
 
   return (
-    <div>
-      <ul className="grid gap-2">
+    <div className="flex flex-col ustify-center item-center w-full p-4 gap-10">
+      <Title >Gestión de Usuarios</Title>
+      <ul className="grid grid-cols-3  gap-4">
         {users.length > 0 ? (
           users.map((user) => (
             <UserElement
