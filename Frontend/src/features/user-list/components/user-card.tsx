@@ -1,7 +1,7 @@
 "use client"
 
 import { User } from "@/lib/types";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "../ui/context-menu";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { ConnectionState, ListType, RequestState } from "@/lib/enums";
 import UserData from "./user-data";
 import { useAuth } from "@/features/auth/auth-context";

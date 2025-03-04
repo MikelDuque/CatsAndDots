@@ -29,7 +29,8 @@ public class Seeder
         Mail = "admin@catsanddots.es",
         Password = HashHelper.Hash("12345"),
         Avatar = "/ProfilePictures/Default-Avatar.png",
-        Role = "admin"
+        Role = "admin",
+				IsBanned = false
       },
       new User
       {
@@ -37,23 +38,26 @@ public class Seeder
         Mail = "mikel@catsanddots.es",
         Password = HashHelper.Hash("12345"),
         Avatar = "/ProfilePictures/Default-Avatar.png",
-        Role = "admin"
-      },
+        Role = "admin",
+				IsBanned = false
+			},
       new User
       {
         Username = "fer",
         Mail = "fernando@catsanddots.es",
         Password = HashHelper.Hash("12345"),
         Avatar = "/ProfilePictures/Default-Avatar.png",
-        Role = "admin"
-      },
+        Role = "admin",
+				IsBanned = false
+			},
 			new User
 			{
 				Username = "Jose",
 				Mail = "jose@gmail.es",
 				Password = HashHelper.Hash("12345"),
 				Avatar = "/ProfilePictures/Default-Avatar.png",
-				Role = "admin"
+				Role = "admin",
+				IsBanned = false
 			},
 			new User
 			{
@@ -61,7 +65,8 @@ public class Seeder
 				Mail = "david@gmail.es",
 				Password = HashHelper.Hash("12345"),
 				Avatar = "/ProfilePictures/Default-Avatar.png",
-				Role = null
+				Role = null,
+				IsBanned = false
 			},
 			new User
 			{
@@ -69,7 +74,8 @@ public class Seeder
 				Mail = "raquel@gmail.es",
 				Password = HashHelper.Hash("12345"),
 				Avatar = "/ProfilePictures/Default-Avatar.png",
-				Role = null
+				Role = null,
+				IsBanned = false
 			}
 		];
 

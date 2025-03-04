@@ -3,7 +3,7 @@ import { Input } from "../../ui/input";
 import { User } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
-import {useFriendList} from "@/features/websocket/useFriendList";
+import {useFriendList} from "@/features/user-list/useFriendList";
 
 type friendSearchProps = {
   setDisplayFriendList: (friends: User[]) => void

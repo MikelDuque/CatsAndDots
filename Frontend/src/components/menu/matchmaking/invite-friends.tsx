@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import {useFriendList} from "@/features/websocket/useFriendList";
+import {useFriendList} from "@/features/user-list/useFriendList";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import UserListMapper from "@/components/user-data/user-list-mapper";

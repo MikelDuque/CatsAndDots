@@ -1,7 +1,7 @@
 "use client"
 
 import { BASE_HTTPS_URL } from "@/features/endpoints/endpoints";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "@/lib/types";
 import RequestInteraction from "./request-interaction";
 import { ConnectionState, ListType } from "@/lib/enums";

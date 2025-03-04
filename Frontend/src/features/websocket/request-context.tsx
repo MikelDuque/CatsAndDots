@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import { useNotification } from "../notification-context";
+import { useNotification } from "../notifications/notification-context";
 import { useWebsocket } from "./websocket-context";
 import { PendingFriends, Request } from "@/lib/types";
 import { RequestState } from "@/lib/enums";

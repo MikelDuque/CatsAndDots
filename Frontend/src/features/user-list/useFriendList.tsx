@@ -1,6 +1,6 @@
 "use client"
 
-import { useWebsocket } from "./websocket-context";
+import { useWebsocket } from "../websocket/websocket-context";
 import { useEffect, useState } from "react";
 import { User } from "@/lib/types";
 import { useAuth } from "../auth/auth-context";

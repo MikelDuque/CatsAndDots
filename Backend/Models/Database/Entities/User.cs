@@ -11,6 +11,7 @@ public class User
   public required string Password {get; set;}
   public required string Avatar {get; set;}
   public string Role {get; set;}
+  public bool IsBanned { get; set; }
 
   /* RELACIONES N:M */
   public ICollection<User> Friends { get; } = [];

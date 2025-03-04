@@ -6,6 +6,7 @@ using Backend.Models.Mappers;
 using Backend.WebSockets.Messages;
 using Backend.Services;
 using Backend.Helpers;
+using Backend.Models.DTOs.User;
 
 namespace Backend.WebSockets.Systems;
 

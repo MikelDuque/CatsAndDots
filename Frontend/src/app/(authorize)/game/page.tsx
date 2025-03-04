@@ -1,6 +1,6 @@
 import Header from "@/components/game/game-header";
-import Chat from "./chat";
-import Gameplay from "./gameplay";
+import Chat from "../../../components/game/chat";
+import Gameplay from "../../../components/game/gameplay";
 
 export default function Game() {
   return (

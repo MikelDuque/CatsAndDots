@@ -1,3 +1,5 @@
+using Backend.Models.DTOs.User;
+
 namespace Backend.Models.DTOs;
 
 public class PendingFriends

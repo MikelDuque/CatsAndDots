@@ -78,6 +78,7 @@ public class Program
 
 		//Mappers
 		builder.Services.AddScoped<UserMapper>();
+    builder.Services.AddScoped<UserDataMapper>();
     builder.Services.AddScoped<FriendshipMapper>();
 
 		//Servicios
@@ -94,6 +95,9 @@ public class Program
         FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
     });
 
+		app.UseWebSockets();
+		app.UseMiddleware<WebSocketMiddleware>();
+
 		app.UseHttpsRedirection();
 		app.UseRouting();
 		app.UseCors(options =>
@@ -101,9 +105,6 @@ public class Program
 		    .AllowAnyMethod()
 		    .AllowAnyOrigin()
     );
-
-		app.UseWebSockets();
-		app.UseMiddleware<WebSocketMiddleware>();
 
 		app.UseAuthentication();
 		app.UseAuthorization();

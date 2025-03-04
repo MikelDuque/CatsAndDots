@@ -1,6 +1,6 @@
 using Backend.Models.Database;
 using Backend.Models.Database.Entities;
-using Backend.Models.DTOs;
+using Backend.Models.DTOs.User;
 using Backend.Models.Mappers;
 
 namespace Backend.Helpers;

@@ -1,4 +1,4 @@
-using Backend.Models.DTOs;
+using Backend.Models.DTOs.User;
 
 namespace Backend.WebSockets.Messages;
 

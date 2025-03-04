@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { gameTitle, text, poppins } from "@/lib/fonts";
-import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ThemeProvider } from "@/features/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { WebsocketProvider } from "@/features/websocket/websocket-context";
 import { AuthProvider } from "@/features/auth/auth-context";
-import { NotificationProvider } from "@/features/notification-context";
+import { NotificationProvider } from "@/features/notifications/notification-context";
 import { RequestProvider } from "@/features/websocket/request-context";
 
 export const metadata: Metadata = {

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Backend.WebSockets;
 
@@ -10,7 +11,13 @@ public class WebSocketMiddleware : IMiddleware
 		{
 			string token = context.Request.Query["accessToken"];
 
-			context.Request.Headers.Authorization = "Bearer " + token;
+			if (!string.IsNullOrEmpty(token))
+			{
+				context.Request.Headers.Authorization = "Bearer " + token;
+			} else
+			{
+				Task.FromResult(AuthenticateResult.Fail("Invalid Credentials"));
+			}
 		}
 		return next(context);
 	}

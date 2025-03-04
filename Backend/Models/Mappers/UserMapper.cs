@@ -1,5 +1,5 @@
 ﻿using Backend.Models.Database.Entities;
-using Backend.Models.DTOs;
+using Backend.Models.DTOs.User;
 using Backend.WebSockets;
 
 namespace Backend.Models.Mappers;
@@ -22,6 +22,7 @@ public class UserMapper
       Id = user.Id,
       Username = user.Username,
       Avatar = user.Avatar,
+      Role = user.Role,
       ConnectionState = connectedUser != null ? connectedUser.ConnectionState : ConnectionState.Offline
     };
   }

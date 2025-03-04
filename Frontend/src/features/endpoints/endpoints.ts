@@ -13,8 +13,16 @@ const API_AUTH_URL = `${BASE_HTTPS_URL}/api/Auth`;
 const API_USER_URL = `${BASE_HTTPS_URL}/api/User`;
 
   export function GET_FRIEND_LIST(id: number) {return `${API_USER_URL}/FriendList/${id}`};
-  export function GET_PENDING_FRIENDS(id: number) {return `${API_USER_URL}/PendingFriendList/${id}`}
-  export const POST_FILTERED_USERS = `${API_USER_URL}/Filtered_Users`
+  export function GET_PENDING_FRIENDS(id: number) {return `${API_USER_URL}/PendingFriendList/${id}`};
+  export const POST_FILTERED_USERS = `${API_USER_URL}/Filtered_Users`;
+
+
+/* --- ADMIN CONTROLLER --- */
+const API_ADMIN_URL = `${BASE_HTTPS_URL}/api/Admin`;
+
+  export const GET_ALL_USERS = `${API_ADMIN_URL}/Get_Users`;
+  export const HANDLE_USER = `${API_ADMIN_URL}/Handle_User`;
+  export function DELETE_USER(id: number) {return `${API_ADMIN_URL}/Delete_User/${id}`};
   
   
 /* --- WEBSOCKET CONTROLLER --- */

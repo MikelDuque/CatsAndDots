@@ -14,6 +14,21 @@ export type User = {
   connectionState?: ConnectionState
 }
 
+export type UserData = {
+  id: number
+  username: string
+  mail: string
+  avatar: string
+  role: string
+  isBanned: boolean
+}
+
+export type HandleUser = {
+  id: number
+  role: string
+  isBanned: boolean
+}
+
 export type MenuData = {
   onlineUsers: number;
   playingUsers: number;

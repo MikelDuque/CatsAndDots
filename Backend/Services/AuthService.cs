@@ -45,8 +45,9 @@ public class AuthService
     User loggedUser = await _unitOfWork.UserRepository.GetByMailOrUsername(model.Identifier) ?? throw new UnauthorizedAccessException("El usuario introducido no existe");
     
     if (loggedUser.Password != HashHelper.Hash(model.Password)) throw new UnauthorizedAccessException("Usuario o contraseña incorrectos");
+		if (loggedUser.IsBanned) throw new UnauthorizedAccessException("El usuario especificado tiene restringido el acceso");
 
-    return Login(loggedUser);
+		return Login(loggedUser);
   }
 
   private string Login(User user)

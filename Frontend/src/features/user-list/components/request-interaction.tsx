@@ -1,11 +1,11 @@
 "use client"
 
 import { Check, X } from "lucide-react";
-import { Button } from "../ui/button";
 import { useRequest } from "@/features/websocket/request-context";
 import { Request, User } from "@/lib/types";
 import { ListType, RequestState } from "@/lib/enums";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type RequestInteractionProps = {
   myUserId: number,
