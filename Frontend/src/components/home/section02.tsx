@@ -1,6 +1,4 @@
 import Image from "next/image";
-  import gatoNaranja from '@/../public/Home/gato_naranja.png'
-  import gatoCeleste from '@/../public/Home/gato_celeste.png'
 import Title from "../utils/title";
 
 function Section02() {
@@ -9,14 +7,14 @@ function Section02() {
 
       <Title moreClasses="text-6xl">¿En qué consiste?</Title>
 
-      <div className="flex justify-center gap-x-24">
-        <figure>
-          <Image
-            className="rotate-30"
-            src={gatoCeleste}
-            alt="Gato blanco"
-          />
-        </figure>
+      <div className="flex justify-center items-center gap-x-24">
+        <Image
+          src="/Home/gato_celeste.png"
+          alt="Gato blanco"
+          width={175}
+          height={175}
+          className="rotate-30"
+        />
 
         <p className="max-w-2xl text-body text-2xl">
           Puntos y Cajas es un juego de estrategia en el que los jugadores toman turnos para dibujar líneas 
@@ -26,13 +24,13 @@ function Section02() {
           más cuadrados.
         </p>
 
-        <figure>
-          <Image
-            className="-rotate-30"
-            src={gatoNaranja}
-            alt="Gato naranja"
-          />
-        </figure>
+        <Image
+          src="/Home/gato_naranja.png"
+          alt="Gato blanco"
+          width={175}
+          height={175}
+          className="-rotate-30"
+        />
       </div>
     </section>
   );

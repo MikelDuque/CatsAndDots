@@ -9,9 +9,18 @@ export default {
   ],
   theme: {
   	extend: {
+			backgroundImage: {
+				background: 'var(--background)',
+				bots_card: 'var(--bots-card)',
+				cats_card: 'var(--cats-card)'
+			},
+			textShadow: {
+				titleShadow: '0 1px 2px var(--foreground)'
+			},
   		colors: {
-  			background: 'hsl(var(--background))',
+  			background: 'var(--background)',
   			foreground: 'hsl(var(--foreground))',
+				invert_foreground: 'hsl(var(--invert-foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -60,11 +69,13 @@ export default {
 				jersey_10: ['var(--font-jersey10)', 'Poppins', 'sans'],
 				audiowide: ['Audiowide', 'Poppins', 'sans'],
 				ribeye: ['Ribeye', 'Poppins', 'sans'],
+				poppins: ['var(--font-poppins)', 'sans'],
 				roboto: ['var(--font-roboto-serif)', 'Vollkorn', 'sans-serif'],
 			},
 			rotate: {
         '30': '30deg', 
         '-30': '-30deg', 
+				'180': '180deg',
       }
   	}
   },

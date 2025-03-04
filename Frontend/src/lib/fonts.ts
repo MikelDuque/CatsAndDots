@@ -1,7 +1,13 @@
-import { Jersey_10, Ribeye, Audiowide, Roboto_Serif } from "next/font/google";
+import { Jersey_10, Ribeye, Audiowide, Poppins, Roboto_Serif } from "next/font/google";
 
 export const gameTitle = Jersey_10({
   variable: "--font-jersey10",
+  weight: "400",
+  subsets: ["latin"]
+});
+
+export const poppins = Poppins({
+  variable: "--font-poppins",
   weight: "400",
   subsets: ["latin"]
 });
