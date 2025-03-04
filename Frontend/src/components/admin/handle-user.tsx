@@ -19,15 +19,15 @@ export default function HandleUser() {
   }, [fetchData]);
 
   function handleUpdate() {
-    useFetchEvent
+    //useFetchEvent
   }
 
   function handleDelete() {
-    useFetchEvent
+    //useFetchEvent
   }
 
   function shouldDelete() {
-    handleDelete
+    //handleDelete
   }
 
   return (
