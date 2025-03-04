@@ -25,8 +25,8 @@ export default function Gameplay() {
 
   useEffect(() => {
     if (messages?.MoveConfirmed) {
-      const { tipoLinea, num1, num2, jugador } = messages.MoveConfirmed as {
-        tipoLinea: number; num1: number; num2: number; jugador: string;
+      const { num1, num2, jugador } = messages.MoveConfirmed as {
+        tipoLinea?: number; num1: number; num2: number; jugador: string;
       };
 
       if (num1 >= 0 && num1 < 5 && num2 >= 0 && num2 < 5) {
