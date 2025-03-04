@@ -1,3 +1,5 @@
+"use client"
+
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { useRouter } from "next/navigation";
 
