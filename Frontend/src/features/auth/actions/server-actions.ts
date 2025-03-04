@@ -25,6 +25,9 @@ export async function LoginAction(_actionState: ActionState, formData: FormData)
       type: "POST",
       params: loginRequest
     });
+
+    console.log("response", response);
+    
     
     await saveAuthToken(response.accessToken);
 
