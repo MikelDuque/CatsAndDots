@@ -18,7 +18,12 @@ export default function MenuSection({onSelect}: menuSectionProps) {
   const { socket } = useWebsocket(); 
 
   const handleBotGameClick = () => {
-    socket?.send({ MessageType: "GameBotEvent", Body: "Iniciar partida contra el bot" });
+    const message = {
+      messageType: "GameBotEvent",
+      body: "Iniciar partida contra el bot"
+    }
+    
+    socket?.send(JSON.stringify(message));
     router.push("/game");
   };
 
