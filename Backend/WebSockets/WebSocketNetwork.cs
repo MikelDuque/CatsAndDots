@@ -86,11 +86,12 @@ public class WebSocketNetwork
     await _requestSystem.HandleMatchmaking(matchmaking.Body);
   }
 
+  /*
   private async Task OnLobbyAsync()
   {
 
   }
-
+  */
 
 
 /* CODIGO DE FERNANDO sacado del "OnDisconected" */

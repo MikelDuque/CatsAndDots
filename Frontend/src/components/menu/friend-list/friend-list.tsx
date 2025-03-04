@@ -5,7 +5,7 @@ import { useState } from "react";
 import { User } from "@/lib/types";
 //COMPONENTS
 import UserList from "../user-list/user-list";
-import UserListMapper from "@/features/user-list/components/user-list-mapper";
+import UserListMapper from "@/components/user-data/user-list-mapper";
 import Title from "../../utils/title";
 import FriendSearch from "./friend-search";
 //SHADCN

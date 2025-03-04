@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import LoginForm from "@/components/auth/login-form";
 import { useRouter } from "next/navigation";
 import RegisterForm from "@/components/auth/register-form";
-import ThemeSwitcher from "@/features/theme/components/theme-switcher";
+import ThemeSwitcher from "@/components/theme/theme-switcher";
 import { useState } from "react";
 import { homePath } from "@/lib/paths";
 
