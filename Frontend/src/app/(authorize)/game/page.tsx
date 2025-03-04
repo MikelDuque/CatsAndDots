@@ -6,7 +6,7 @@ export default function Game() {
   return (
     <>
       <Header/>
-      <main className="size-full flex bg-red-500">
+      <main className="size-full flex ">
         <Gameplay/>
         <Chat/>
       </main>

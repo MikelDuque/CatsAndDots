@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text.Json;
+using Backend.Game;
 using Backend.Helpers;
 using Backend.Models;
 using Backend.WebSockets.Messages;
@@ -44,6 +45,8 @@ public class WebSocketNetwork
     newConnection.Disconnected += OnDisconnectedAsync;
 		newConnection.FriendRequest += OnFriendRequestAsync;
     newConnection.MatchmakingRequest += OnMatchmakingAsync;
+    newConnection.GameBotEvent += OnGameBotEventAsync;
+
 
     _connections.Add(newConnection);
 		_semaphore.Release();
@@ -133,5 +136,55 @@ public class WebSocketNetwork
 //     await _userSystem.UpdateUserData(hostId, ConnectionState.Playing);
 //     await _userSystem.UpdateUserData(guestId, ConnectionState.Playing);
 
-//   }
-// }
+    }
+  }
+
+  private async Task OnGameBotEventAsync(WebSocketLink connectedUser, string message)
+  {
+    GameClass game = new("Jugador", "Bot", true);
+    await connectedUser.SendAsync(ParseHelper.GenericMessage("GameStarted", "Has iniciado una partida contra el bot."));
+
+    do
+    {
+      Player currentPlayer = game.IsFirstPlayerMove ? game.Player1 : game.Player2;
+
+      if (currentPlayer.isBot)
+      {
+        game.PlayTurn(0,0,0);
+        await connectedUser.SendAsync(ParseHelper.GenericMessage("BotMove", "El bot ha jugado."));
+
+      }
+      else
+      {
+        await connectedUser.SendAsync(ParseHelper.GenericMessage("PlayerMove", "Es tu turno. Env�a tu jugada."));
+
+        string playerMoveMessage;
+        do
+        {
+          playerMoveMessage = await connectedUser.ReadAsync();
+          Console.WriteLine($"Esperando jugada del jugador... Recibido: {playerMoveMessage}");
+        } while (string.IsNullOrWhiteSpace(playerMoveMessage));
+
+        var playerMoveData = ParseHelper.ParseMove(playerMoveMessage);
+
+        game.PlayTurn(playerMoveData.TipoLinea, playerMoveData.Num1, playerMoveData.Num2);
+        var moveData = new
+        {
+          tipoLinea = playerMoveData.TipoLinea,
+          num1 = playerMoveData.Num1,
+          num2 = playerMoveData.Num2,
+          jugador = currentPlayer.Name
+        };
+        await connectedUser.SendAsync(ParseHelper.GenericMessage("MoveConfirmed", JsonSerializer.Serialize(moveData)));
+
+
+      }
+
+    } while (!game.IsGameOver());
+
+    string winner = game.GetWinner();
+    await connectedUser.SendAsync(ParseHelper.GenericMessage("GameOver", $"Partida finalizada. Ganador: {winner}"));
+  }
+
+}
+

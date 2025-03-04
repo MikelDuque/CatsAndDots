@@ -1,6 +1,7 @@
 using System.Net.WebSockets;
 using System.Runtime.Serialization.Json;
 using System.Text.Json;
+using Backend.Models.DTOs;
 using Backend.WebSockets;
 using Backend.WebSockets.Messages;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -42,5 +43,11 @@ public static class ParseHelper
   public static T DesMessage<T>(string jsonObject) where T: class
   {
     return JsonSerializer.Deserialize<T>(jsonObject, OtherOptions);
+  }
+
+  public static (int TipoLinea, int Num1, int Num2) ParseMove(string message)
+  {
+    var data = JsonSerializer.Deserialize<MoveData>(message);
+    return (data.TipoLinea, data.Num1, data.Num2);
   }
 }
