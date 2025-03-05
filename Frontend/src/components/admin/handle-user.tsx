@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/features/auth/auth-context";
 import { GET_ALL_USERS, HANDLE_USER, DELETE_USER } from "@/features/endpoints/endpoints";
 import { UserData } from "@/lib/types";
@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/
 import { Button } from "@/components/ui/button";
 import UserElement from "./user";
 import Title from "../utils/title";
-import useFetch from "@/features/endpoints/useFetch";
 
 export default function HandleUser() {
   const { token, decodedToken } = useAuth();
@@ -16,12 +15,6 @@ export default function HandleUser() {
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
-  const { fetchData } = useFetch({url: GET_ALL_USERS, type: "GET", needAuth: true, condition: !!token});
-
-  useEffect(() => {
-    setUsers(fetchData as UserData[]);
-  }, [fetchData]);
-
   async function fetchUsers(): Promise<void> {
     try {
       const response = await fetch(GET_ALL_USERS, {
@@ -56,7 +49,6 @@ export default function HandleUser() {
       console.error(error);
     }
   }
-
 
   function confirmDelete(userId: number): void {
     setSelectedUser(userId);

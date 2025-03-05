@@ -127,7 +127,7 @@ export function RequestProvider({children}: RequestProviderProps) {
         addNotification(isGameRequest ? "Invitación a partida enviada" : "Petición de amistad enviada");
         break;
       case RequestState.Accepted:
-        //setMeInMatchmaking(true);
+        setMeInMatchmaking(true);
         break;
     }
   };
