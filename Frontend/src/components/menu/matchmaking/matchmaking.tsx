@@ -60,7 +60,7 @@ export default function Matchmaking({ onBack }: matchmakingProps) {
 
       sendRequest(cancelRequest, true);
     };
-    //onBack();
+    onBack();
   };
 
   return (
